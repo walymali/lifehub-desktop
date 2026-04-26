@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:1280px;height:720px;background:#09090b;font-family:'Sora',system-ui,sans-serif;overflow:hidden;position:relative}
+.mesh1{position:absolute;top:-150px;right:-100px;width:600px;height:600px;background:radial-gradient(circle,rgba(99,102,241,0.2),transparent 70%);filter:blur(80px)}
+.mesh2{position:absolute;bottom:-200px;left:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(139,92,246,0.12),transparent 70%);filter:blur(80px)}
+.content{position:relative;z-index:1;display:flex;height:100%;padding:60px 80px;gap:60px;align-items:center}
+.left{flex:1}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.15em;padding:6px 14px;border:1px solid rgba(255,255,255,0.1);border-radius:99px;margin-bottom:28px}
+h1{font-size:52px;font-weight:600;color:#fff;line-height:1.1;letter-spacing:-0.04em;margin-bottom:20px}
+h1 span{background:linear-gradient(135deg,#818cf8,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.subtitle{font-size:16px;color:rgba(255,255,255,0.4);line-height:1.7;margin-bottom:32px;max-width:420px}
+.tags{display:flex;gap:10px;flex-wrap:wrap}
+.tag{padding:6px 14px;border-radius:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.6);font-size:12px;font-weight:500}
+.right{flex:1;display:flex;flex-direction:column;gap:12px}
+.preview-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px 20px;display:flex;align-items:center;gap:16px;transition:all 0.3s}
+.preview-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.dot-purple{background:#818cf8}
+.dot-amber{background:#f59e0b}
+.dot-orange{background:#d97706}
+.preview-card h3{font-size:15px;font-weight:600;color:#fff;margin-bottom:2px}
+.preview-card p{font-size:12px;color:rgba(255,255,255,0.35)}
+.preview-label{font-size:11px;color:rgba(255,255,255,0.25);margin-left:auto;text-transform:uppercase;letter-spacing:0.05em}
+.bottom-bar{position:absolute;bottom:0;left:0;right:0;padding:20px 80px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(255,255,255,0.06)}
+.bottom-bar span{font-size:12px;color:rgba(255,255,255,0.25)}
+.price{font-size:24px;font-weight:700;color:#fff}
+.price small{font-size:12px;color:rgba(255,255,255,0.35);font-weight:400}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="mesh1"></div>
+<div class="mesh2"></div>
+<div class="content">
+  <div class="left">
+    <div class="badge">3 Templates + Arabic/RTL</div>
+    <h1>ArabLand <span>Pro</span></h1>
+    <p class="subtitle">Premium HTML landing page templates with full Arabic/RTL support. Modern dark design, real images, smooth animations.</p>
+    <div class="tags">
+      <div class="tag">HTML / CSS / JS</div>
+      <div class="tag">Responsive</div>
+      <div class="tag">RTL Support</div>
+      <div class="tag">No Dependencies</div>
+    </div>
+  </div>
+  <div class="right">
+    <div class="preview-card">
+      <div class="preview-dot dot-purple"></div>
+      <div><h3>Nexus - SaaS Startup</h3><p>Hero, Features, Pricing, Testimonials, FAQ</p></div>
+      <div class="preview-label">EN + AR</div>
+    </div>
+    <div class="preview-card">
+      <div class="preview-dot dot-amber"></div>
+      <div><h3>Noir - Agency Portfolio</h3><p>Services, Portfolio, Team, Contact Form</p></div>
+      <div class="preview-label">EN + AR</div>
+    </div>
+    <div class="preview-card">
+      <div class="preview-dot dot-orange"></div>
+      <div><h3>Saffron - Restaurant</h3><p>Menu, Gallery, Reviews, Booking Form</p></div>
+      <div class="preview-label">EN + AR</div>
+    </div>
+  </div>
+</div>
+<div class="bottom-bar">
+  <span>6 HTML Pages &bull; Sora + IBM Plex Sans Arabic &bull; CSS Variables &bull; 2026 Design</span>
+  <div class="price">$29 <small>one-time</small></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Link-in-Bio Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Sora',system-ui,sans-serif;background:#f5f5f3;color:#555}
+.app{display:grid;grid-template-columns:380px 1fr;min-height:100vh}
+.sidebar{background:#fff;border-right:1px solid rgba(0,0,0,0.06);overflow-y:auto;max-height:100vh;scrollbar-width:thin}
+.sidebar-inner{padding:24px}
+.sidebar h1{font-size:1rem;font-weight:700;color:#1a1a1a;margin-bottom:4px}
+.sidebar .tagline{font-size:0.65rem;color:#999;margin-bottom:20px}
+.section-title{font-size:0.6rem;font-weight:600;color:#999;text-transform:uppercase;letter-spacing:0.1em;margin:16px 0 8px;padding-top:12px;border-top:1px solid rgba(0,0,0,0.06)}
+.field{margin-bottom:8px}
+.field label{display:block;font-size:0.68rem;font-weight:500;color:#888;margin-bottom:2px}
+.field input,.field textarea{width:100%;padding:8px 10px;background:#f5f5f3;border:1px solid rgba(0,0,0,0.06);border-radius:8px;color:#1a1a1a;font-family:inherit;font-size:0.8rem}
+.field input:focus,.field textarea:focus{outline:none;border-color:#1a1a1a}
+.field textarea{resize:vertical;min-height:40px}
+.photo-upload{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.photo-preview{width:50px;height:50px;border-radius:50%;background:#f5f5f3;border:1px dashed rgba(0,0,0,0.1);display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;font-size:0.6rem;color:#999}
+.photo-preview img{width:100%;height:100%;object-fit:cover}
+.photo-upload input[type="file"]{display:none}
+.themes{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px}
+.theme-btn{width:24px;height:24px;border-radius:6px;border:2px solid transparent;cursor:pointer;transition:all 0.2s}
+.theme-btn.active{border-color:#1a1a1a;transform:scale(1.1)}
+/* Links Editor */
+.link-card{background:#f5f5f3;border:1px solid rgba(0,0,0,0.06);border-radius:10px;padding:10px;margin-bottom:6px;position:relative}
+.link-card .row{display:grid;grid-template-columns:1fr 1fr 24px;gap:6px;align-items:center}
+.link-card input{padding:7px 8px;font-size:0.75rem;background:#fff}
+.link-card .remove{width:24px;height:24px;border-radius:6px;background:rgba(220,38,38,0.06);color:#dc2626;border:none;cursor:pointer;font-size:0.7rem;display:flex;align-items:center;justify-content:center}
+.add-link{width:100%;padding:8px;background:transparent;border:1px dashed rgba(0,0,0,0.1);border-radius:8px;color:#999;font-size:0.72rem;cursor:pointer;font-family:inherit;margin-top:4px}
+.add-link:hover{background:rgba(0,0,0,0.02);color:#1a1a1a}
+/* Social */
+.social-row{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.actions{display:flex;gap:6px;margin-top:14px;padding-top:12px;border-top:1px solid rgba(0,0,0,0.06);position:sticky;bottom:0;background:#fff;padding-bottom:6px}
+.btn-export{flex:1;padding:10px;background:#1a1a1a;color:#fff;border:none;border-radius:8px;font-weight:600;font-size:0.78rem;cursor:pointer;font-family:inherit}
+.btn-export:hover{background:#333}
+.btn-sec{padding:10px;background:#f5f5f3;color:#888;border:1px solid rgba(0,0,0,0.06);border-radius:8px;font-size:0.78rem;cursor:pointer;font-family:inherit}
+/* Preview */
+.preview-area{display:flex;justify-content:center;align-items:center;padding:40px;background:#e8e8e6}
+.phone-frame{width:375px;height:700px;background:#f5f5f3;border-radius:40px;border:8px solid #1a1a1a;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.15);position:relative}
+.phone-notch{width:120px;height:24px;background:#1a1a1a;border-radius:0 0 14px 14px;position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:10}
+.phone-content{height:100%;overflow-y:auto;padding:40px 24px 24px;scrollbar-width:none}
+.phone-content::-webkit-scrollbar{display:none}
+/* Bio Page Styles */
+.bio-page{text-align:center}
+.bio-photo{width:80px;height:80px;border-radius:50%;margin:0 auto 12px;object-fit:cover;display:block}
+.bio-photo-placeholder{width:80px;height:80px;border-radius:50%;margin:0 auto 12px;background:rgba(0,0,0,0.06);display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:#ccc}
+.bio-name{font-size:1.1rem;font-weight:700;margin-bottom:2px}
+.bio-handle{font-size:0.75rem;opacity:0.5;margin-bottom:6px}
+.bio-desc{font-size:0.78rem;opacity:0.6;line-height:1.6;margin-bottom:20px;max-width:280px;margin-inline:auto}
+.bio-link{display:block;padding:14px 16px;border-radius:12px;margin-bottom:8px;font-size:0.82rem;font-weight:500;text-decoration:none;transition:all 0.2s;text-align:center}
+.bio-link:hover{transform:translateY(-2px)}
+.bio-socials{display:flex;justify-content:center;gap:10px;margin-top:20px}
+.bio-social{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;text-decoration:none;transition:all 0.2s}
+.bio-social:hover{transform:scale(1.1)}
+.bio-footer{margin-top:24px;font-size:0.6rem;opacity:0.3}
+@media(max-width:800px){.app{grid-template-columns:1fr}.preview-area{padding:20px}.phone-frame{width:100%;max-width:375px;height:600px}}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="sidebar">
+<div class="sidebar-inner">
+  <h1>Link-in-Bio</h1>
+  <p class="tagline">Create your bio page in seconds</p>
+
+  <div class="section-title">Theme</div>
+  <div class="themes">
+    <div class="theme-btn active" style="background:#1a1a1a" onclick="setTheme('#1a1a1a','#fff','rgba(255,255,255,0.08)','rgba(255,255,255,0.15)',this)"></div>
+    <div class="theme-btn" style="background:#fff;border:1px solid #ddd" onclick="setTheme('#ffffff','#1a1a1a','#f5f5f3','rgba(0,0,0,0.08)',this)"></div>
+    <div class="theme-btn" style="background:#1e3a5f" onclick="setTheme('#1e3a5f','#fff','rgba(255,255,255,0.1)','rgba(255,255,255,0.2)',this)"></div>
+    <div class="theme-btn" style="background:#2d1b4e" onclick="setTheme('#2d1b4e','#fff','rgba(255,255,255,0.1)','rgba(255,255,255,0.2)',this)"></div>
+    <div class="theme-btn" style="background:#fef3c7" onclick="setTheme('#fef3c7','#92400e','rgba(146,64,14,0.08)','rgba(146,64,14,0.15)',this)"></div>
+    <div class="theme-btn" style="background:#fce7f3" onclick="setTheme('#fce7f3','#9d174d','rgba(157,23,77,0.08)','rgba(157,23,77,0.15)',this)"></div>
+    <div class="theme-btn" style="background:linear-gradient(135deg,#667eea,#764ba2)" onclick="setTheme('linear-gradient(135deg,#667eea,#764ba2)','#fff','rgba(255,255,255,0.12)','rgba(255,255,255,0.2)',this)"></div>
+    <div class="theme-btn" style="background:linear-gradient(135deg,#0f2027,#203a43,#2c5364)" onclick="setTheme('linear-gradient(135deg,#0f2027,#203a43,#2c5364)','#fff','rgba(255,255,255,0.08)','rgba(255,255,255,0.15)',this)"></div>
+  </div>
+
+  <div class="section-title">Profile</div>
+  <div class="photo-upload"><div class="photo-preview" id="bio-photo-prev" onclick="document.getElementById('bio-photo-input').click()">Photo</div><div style="font-size:0.65rem;color:#999">Click to upload</div><input type="file" id="bio-photo-input" accept="image/*" onchange="handleBioPhoto(this)"></div>
+  <div class="field"><label>Name</label><input id="b-name" value="Sarah Johnson" oninput="render()"></div>
+  <div class="field"><label>Handle</label><input id="b-handle" value="@sarahdesigns" oninput="render()"></div>
+  <div class="field"><label>Bio</label><textarea id="b-bio" oninput="render()">Creative Director at Watermelons Studio. Building brands that matter.</textarea></div>
+
+  <div class="section-title">Links</div>
+  <div id="links-editor"></div>
+  <button class="add-link" onclick="addLink()">+ Add Link</button>
+
+  <div class="section-title">Social</div>
+  <div class="social-row">
+    <div class="field"><label>Instagram</label><input id="b-ig" value="@sarahdesigns" oninput="render()"></div>
+    <div class="field"><label>Twitter/X</label><input id="b-tw" value="@sarahj" oninput="render()"></div>
+  </div>
+  <div class="social-row">
+    <div class="field"><label>LinkedIn</label><input id="b-li" value="sarahjohnson" oninput="render()"></div>
+    <div class="field"><label>TikTok</label><input id="b-tt" value="" oninput="render()"></div>
+  </div>
+  <div class="social-row">
+    <div class="field"><label>YouTube</label><input id="b-yt" value="" oninput="render()"></div>
+    <div class="field"><label>GitHub</label><input id="b-gh" value="" oninput="render()"></div>
+  </div>
+
+  <div class="actions">
+    <button class="btn-export" onclick="exportHTML()">Export HTML File</button>
+    <button class="btn-sec" onclick="copyHTML()">Copy HTML</button>
+  </div>
+</div>
+</div>
+
+<div class="preview-area">
+  <div class="phone-frame">
+    <div class="phone-notch"></div>
+    <div class="phone-content" id="bio-preview"></div>
+  </div>
+</div>
+</div>
+
+<script>
+let bioTheme={bg:'#1a1a1a',text:'#fff',linkBg:'rgba(255,255,255,0.08)',linkBorder:'rgba(255,255,255,0.15)'};
+let bioPhoto=null;
+let links=[
+  {title:'My Portfolio',url:'https://watermelons.studio'},
+  {title:'Latest Blog Post',url:'https://blog.example.com'},
+  {title:'Free Design Templates',url:'https://gumroad.com'},
+  {title:'Book a Call',url:'https://cal.com'}
+];
+
+function setTheme(bg,text,linkBg,linkBorder,el){bioTheme={bg,text,linkBg,linkBorder};document.querySelectorAll('.theme-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');render();}
+function handleBioPhoto(input){const f=input.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{bioPhoto=e.target.result;document.getElementById('bio-photo-prev').innerHTML='<img src="'+bioPhoto+'">';render();};r.readAsDataURL(f);}
+function v(id){return document.getElementById(id).value.trim();}
+
+function renderLinks(){
+  document.getElementById('links-editor').innerHTML=links.map((l,i)=>`<div class="link-card"><div class="row"><input value="${l.title}" placeholder="Title" oninput="links[${i}].title=this.value;render()"><input value="${l.url}" placeholder="https://..." oninput="links[${i}].url=this.value;render()"><button class="remove" onclick="links.splice(${i},1);renderLinks();render()">x</button></div></div>`).join('');
+}
+function addLink(){links.push({title:'',url:''});renderLinks();render();}
+
+function render(){
+  const name=v('b-name'),handle=v('b-handle'),bio=v('b-bio');
+  const ig=v('b-ig'),tw=v('b-tw'),li=v('b-li'),tt=v('b-tt'),yt=v('b-yt'),gh=v('b-gh');
+  const bgStyle=bioTheme.bg.includes('gradient')?`background:${bioTheme.bg}`:`background:${bioTheme.bg}`;
+
+  let socials='';
+  const sc=(label,url)=>`<a class="bio-social" href="${url}" style="background:${bioTheme.linkBg};color:${bioTheme.text};border:1px solid ${bioTheme.linkBorder}" target="_blank">${label}</a>`;
+  if(ig)socials+=sc('IG','https://instagram.com/'+ig.replace('@',''));
+  if(tw)socials+=sc('X','https://twitter.com/'+tw.replace('@',''));
+  if(li)socials+=sc('in','https://linkedin.com/in/'+li);
+  if(tt)socials+=sc('TT','https://tiktok.com/@'+tt.replace('@',''));
+  if(yt)socials+=sc('YT','https://youtube.com/@'+yt);
+  if(gh)socials+=sc('GH','https://github.com/'+gh);
+
+  document.getElementById('bio-preview').innerHTML=`
+    <div class="bio-page" style="${bgStyle};color:${bioTheme.text};min-height:100%;padding:20px 0">
+      ${bioPhoto?`<img class="bio-photo" src="${bioPhoto}" alt="${name}">`:`<div class="bio-photo-placeholder" style="background:${bioTheme.linkBg}">👤</div>`}
+      <div class="bio-name">${name}</div>
+      <div class="bio-handle">${handle}</div>
+      <div class="bio-desc">${bio}</div>
+      ${links.filter(l=>l.title&&l.url).map(l=>`<a class="bio-link" href="${l.url}" style="background:${bioTheme.linkBg};color:${bioTheme.text};border:1px solid ${bioTheme.linkBorder}" target="_blank">${l.title}</a>`).join('')}
+      ${socials?`<div class="bio-socials">${socials}</div>`:''}
+    </div>`;
+}
+
+function getFullHTML(){
+  const preview=document.getElementById('bio-preview').innerHTML;
+  return`<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>${v('b-name')} - Links</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center}.bio-page{text-align:center;padding:40px 24px;max-width:480px;margin:0 auto;width:100%;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center}.bio-photo{width:90px;height:90px;border-radius:50%;object-fit:cover;margin-bottom:16px}.bio-photo-placeholder{width:90px;height:90px;border-radius:50%;margin-bottom:16px;display:flex;align-items:center;justify-content:center;font-size:2rem}.bio-name{font-size:1.3rem;font-weight:700;margin-bottom:4px}.bio-handle{font-size:0.8rem;opacity:0.5;margin-bottom:8px}.bio-desc{font-size:0.85rem;opacity:0.6;line-height:1.6;margin-bottom:24px;max-width:320px}.bio-link{display:block;padding:16px;border-radius:14px;margin-bottom:10px;font-size:0.9rem;font-weight:500;text-decoration:none;transition:transform 0.2s;width:100%;max-width:360px;text-align:center}.bio-link:hover{transform:translateY(-2px)}.bio-socials{display:flex;justify-content:center;gap:12px;margin-top:24px}.bio-social{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;text-decoration:none;transition:transform 0.2s}.bio-social:hover{transform:scale(1.1)}</style></head><body>${preview}</body></html>`;
+}
+
+function exportHTML(){const blob=new Blob([getFullHTML()],{type:'text/html'});const a=document.createElement('a');a.download='linkinbio.html';a.href=URL.createObjectURL(blob);a.click();}
+function copyHTML(){navigator.clipboard.writeText(getFullHTML());alert('HTML copied!');}
+
+renderLinks();
+render();
+</script>
+</body>
+</html>

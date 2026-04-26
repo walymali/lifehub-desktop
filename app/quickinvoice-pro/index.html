@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invoice Generator - Professional</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--accent:#6366f1;--bg:#09090b;--surface:#131316;--border:rgba(255,255,255,0.08);--text:rgba(255,255,255,0.6);--heading:#fff}
+body{font-family:'Sora',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+body.rtl-mode{font-family:'IBM Plex Sans Arabic',system-ui,sans-serif}
+
+.app{display:grid;grid-template-columns:400px 1fr;min-height:100vh}
+
+/* Sidebar - scrollable with visible indicator */
+.sidebar{background:var(--surface);border-right:1px solid var(--border);padding:0;overflow-y:auto;max-height:100vh;scroll-behavior:smooth;position:relative;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.25) rgba(255,255,255,0.05)}
+.sidebar::-webkit-scrollbar{width:8px}
+.sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.25);border-radius:4px}
+.sidebar::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.4)}
+.sidebar::-webkit-scrollbar-track{background:rgba(255,255,255,0.03)}
+.sidebar-inner{padding:24px 24px 100px}
+/* Scroll indicator gradient at bottom */
+.sidebar::after{content:'';position:sticky;bottom:0;left:0;right:0;display:block;height:60px;background:linear-gradient(transparent,var(--surface));pointer-events:none}
+.sidebar h1{font-size:1.2rem;font-weight:700;color:var(--heading);margin-bottom:4px}
+.sidebar h1 span{color:var(--accent)}
+.sidebar .tagline{font-size:0.7rem;color:rgba(255,255,255,0.3);margin-bottom:20px;text-transform:uppercase;letter-spacing:0.1em}
+/* Collapsible sections */
+.section-title{font-size:0.65rem;font-weight:600;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.12em;margin:20px 0 10px;padding-top:16px;border-top:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:space-between;user-select:none;transition:color 0.2s}
+.section-title:hover{color:rgba(255,255,255,0.6)}
+.section-title::after{content:'';width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid rgba(255,255,255,0.2);transition:transform 0.3s}
+.section-title.collapsed::after{transform:rotate(-90deg)}
+.section-content{overflow:hidden;max-height:2000px;transition:max-height 0.4s ease,opacity 0.3s;opacity:1}
+.section-content.hidden{max-height:0;opacity:0;margin:0}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:0.72rem;font-weight:500;color:rgba(255,255,255,0.5);margin-bottom:4px}
+.field input,.field textarea,.field select{width:100%;padding:10px 12px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;color:#fff;font-family:inherit;font-size:0.85rem;transition:border-color 0.2s}
+.field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--accent)}
+.field textarea{resize:vertical;min-height:60px}
+.field select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23666' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+/* Item cards - vertical layout */
+.items-header{display:none}
+.item-card{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;position:relative}
+.item-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.item-card-num{font-size:0.65rem;font-weight:600;color:rgba(255,255,255,0.25)}
+.remove-btn{width:26px;height:26px;border-radius:6px;background:rgba(239,68,68,0.1);color:#ef4444;border:none;cursor:pointer;font-size:0.85rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+.remove-btn:hover{background:rgba(239,68,68,0.2)}
+.item-field{margin-bottom:8px}
+.item-field:last-child{margin-bottom:0}
+.item-field label{display:block;font-size:0.65rem;font-weight:500;color:rgba(255,255,255,0.35);margin-bottom:3px}
+.item-field input{width:100%;padding:9px 11px;font-size:0.82rem}
+.item-row-inline{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.add-item-btn{width:100%;padding:10px;background:rgba(255,255,255,0.03);border:1px dashed var(--border);border-radius:10px;color:rgba(255,255,255,0.4);font-size:0.8rem;cursor:pointer;transition:all 0.2s;font-family:inherit}
+.add-item-btn:hover{background:rgba(255,255,255,0.06);color:#fff}
+
+/* Logo Upload */
+.logo-upload{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.logo-preview{width:60px;height:60px;border-radius:12px;background:rgba(255,255,255,0.04);border:1px dashed var(--border);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;cursor:pointer;transition:all 0.2s}
+.logo-preview:hover{border-color:var(--accent);background:rgba(99,102,241,0.05)}
+.logo-preview img{width:100%;height:100%;object-fit:contain}
+.logo-preview svg{width:24px;height:24px;color:rgba(255,255,255,0.2)}
+.logo-info{flex:1}
+.logo-info p{font-size:0.72rem;color:rgba(255,255,255,0.35);margin-top:2px}
+.logo-upload input[type="file"]{display:none}
+.logo-remove{font-size:0.7rem;color:#ef4444;cursor:pointer;background:none;border:none;font-family:inherit;margin-top:2px}
+
+/* Language Toggle */
+.lang-toggle{display:flex;gap:4px;background:rgba(255,255,255,0.04);border-radius:10px;padding:3px;margin-bottom:16px}
+.lang-btn{flex:1;padding:8px;border:none;border-radius:8px;font-size:0.75rem;font-weight:600;cursor:pointer;transition:all 0.2s;font-family:inherit;color:rgba(255,255,255,0.4);background:transparent}
+.lang-btn.active{background:var(--accent);color:#fff}
+
+/* Themes */
+.themes{display:flex;gap:8px;margin-bottom:8px}
+.theme-btn{width:32px;height:32px;border-radius:10px;border:2px solid transparent;cursor:pointer;transition:all 0.2s}
+.theme-btn.active{border-color:#fff;transform:scale(1.1)}
+
+/* Actions */
+.actions{display:flex;gap:8px;margin-top:20px;padding-top:16px;border-top:1px solid var(--border);position:sticky;bottom:0;background:var(--surface);padding-bottom:4px}
+.btn-print{flex:1;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-weight:600;font-size:0.85rem;cursor:pointer;font-family:inherit;transition:all 0.2s}
+.btn-print:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn-reset{padding:12px 16px;background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.5);border:1px solid var(--border);border-radius:10px;font-size:0.85rem;cursor:pointer;font-family:inherit;transition:all 0.2s}
+.btn-reset:hover{background:rgba(255,255,255,0.08);color:#fff}
+
+/* Preview */
+.preview-area{padding:40px;overflow-y:auto;display:flex;justify-content:center;align-items:flex-start;background:rgba(255,255,255,0.02)}
+
+/* Invoice */
+.invoice{width:700px;background:#fff;color:#1a1a2e;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.4)}
+.invoice.rtl{direction:rtl;font-family:'IBM Plex Sans Arabic',system-ui,sans-serif}
+.invoice-accent{height:6px}
+.invoice-body{padding:48px}
+.invoice-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:40px}
+.invoice-brand{display:flex;align-items:center;gap:14px}
+.invoice-logo{max-width:60px;max-height:60px;object-fit:contain;border-radius:8px}
+.invoice-brand-text h2{font-size:1.4rem;font-weight:700;color:#1a1a2e;letter-spacing:-0.02em}
+.invoice-brand-text p{font-size:0.8rem;color:#666;margin-top:4px;line-height:1.6}
+.invoice-meta{text-align:right}
+.invoice.rtl .invoice-meta{text-align:left}
+.invoice-meta h3{font-size:1.6rem;font-weight:700;letter-spacing:-0.02em;margin-bottom:8px}
+.invoice-meta .meta-row{font-size:0.78rem;color:#666;margin:2px 0}
+.invoice-meta .meta-row strong{color:#1a1a2e}
+.invoice-parties{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-bottom:36px;padding:24px;background:#f8f9fb;border-radius:10px}
+.invoice-parties h4{font-size:0.65rem;font-weight:600;color:#999;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px}
+.invoice-parties p{font-size:0.85rem;color:#333;line-height:1.6}
+.invoice-parties strong{color:#1a1a2e;font-weight:600}
+.invoice-table{width:100%;border-collapse:collapse;margin-bottom:24px}
+.invoice-table th{font-size:0.65rem;font-weight:600;color:#999;text-transform:uppercase;letter-spacing:0.08em;padding:12px 0;border-bottom:2px solid #eee;text-align:left}
+.invoice.rtl .invoice-table th{text-align:right}
+.invoice-table th:last-child,.invoice-table td:last-child{text-align:right}
+.invoice.rtl .invoice-table th:last-child,.invoice.rtl .invoice-table td:last-child{text-align:left}
+.invoice-table th:nth-child(2),.invoice-table td:nth-child(2),.invoice-table th:nth-child(3),.invoice-table td:nth-child(3){text-align:center;width:100px}
+.invoice-table td{padding:14px 0;border-bottom:1px solid #f0f0f0;font-size:0.85rem;color:#333}
+.invoice-totals{display:flex;justify-content:flex-end;margin-bottom:32px}
+.invoice.rtl .invoice-totals{justify-content:flex-start}
+.totals-box{width:260px}
+.total-row{display:flex;justify-content:space-between;padding:8px 0;font-size:0.85rem;color:#666}
+.total-row.grand{font-size:1.1rem;font-weight:700;color:#1a1a2e;border-top:2px solid #eee;padding-top:12px;margin-top:4px}
+.invoice-notes{padding:20px;background:#f8f9fb;border-radius:10px;margin-bottom:24px}
+.invoice-notes h4{font-size:0.7rem;font-weight:600;color:#999;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px}
+.invoice-notes p{font-size:0.8rem;color:#666;line-height:1.6}
+.invoice-footer{text-align:center;padding-top:20px;border-top:1px solid #eee;font-size:0.75rem;color:#999}
+
+@media print{body{background:#fff!important}.sidebar{display:none!important}.app{display:block!important}.preview-area{padding:0!important;background:#fff!important}.invoice{box-shadow:none!important;border-radius:0!important;width:100%!important}}
+@media(max-width:900px){.app{grid-template-columns:1fr}.sidebar{max-height:none;border-right:none;border-bottom:1px solid var(--border)}.preview-area{padding:20px}.invoice{width:100%}}
+</style>
+</head>
+<body>
+
+<div class="app">
+<div class="sidebar no-print">
+<div class="sidebar-inner">
+  <h1 style="font-size:1rem;color:rgba(255,255,255,0.5);font-weight:500">Invoice Generator</h1>
+  <p class="tagline">Professional Tool</p>
+
+  <!-- Language Toggle -->
+  <div class="lang-toggle">
+    <button class="lang-btn active" onclick="setLang('en')">English</button>
+    <button class="lang-btn" onclick="setLang('ar')">عربي</button>
+  </div>
+
+  <!-- Themes -->
+  <div class="section-title" data-i18n-section="theme" onclick="toggleSection(this)">Color Theme</div>
+  <div class="section-content">
+  <div class="themes">
+    <div class="theme-btn active" style="background:#6366f1" onclick="setTheme('#6366f1',this)"></div>
+    <div class="theme-btn" style="background:#10b981" onclick="setTheme('#10b981',this)"></div>
+    <div class="theme-btn" style="background:#f59e0b" onclick="setTheme('#f59e0b',this)"></div>
+    <div class="theme-btn" style="background:#f43f5e" onclick="setTheme('#f43f5e',this)"></div>
+    <div class="theme-btn" style="background:#06b6d4" onclick="setTheme('#06b6d4',this)"></div>
+    <div class="theme-btn" style="background:#334155" onclick="setTheme('#334155',this)"></div>
+    <label class="theme-btn custom-color-btn" title="Custom color" style="background:conic-gradient(red,yellow,lime,aqua,blue,magenta,red);position:relative;overflow:hidden">
+      <input type="color" id="customColor" value="#6366f1" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%" oninput="setTheme(this.value,this.parentElement)">
+    </label>
+  </div>
+
+  </div><!-- /section-content themes -->
+
+  <!-- Logo Upload -->
+  <div class="section-title" data-i18n-section="logo" onclick="toggleSection(this)">Your Logo</div>
+  <div class="section-content">
+  <div class="logo-upload">
+    <div class="logo-preview" id="logo-preview" onclick="document.getElementById('logo-input').click()">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0022.5 18.75V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z"/></svg>
+    </div>
+    <div class="logo-info">
+      <div class="field" style="margin:0"><label id="logo-label">Upload Logo</label></div>
+      <p id="logo-hint">PNG, JPG (max 200x200)</p>
+      <button class="logo-remove" id="logo-remove" style="display:none" onclick="removeLogo()">Remove</button>
+    </div>
+    <input type="file" id="logo-input" accept="image/*" onchange="handleLogo(this)">
+  </div>
+
+  </div><!-- /section-content logo -->
+
+  <div class="section-title" data-i18n-section="biz" onclick="toggleSection(this)">Your Business</div>
+  <div class="section-content">
+  <div class="field"><label id="lbl-bizname">Business Name</label><input type="text" id="bizName" value="Acme Studio" oninput="render()"></div>
+  <div class="field"><label id="lbl-bizdetails">Address / Details</label><textarea id="bizDetails" oninput="render()">123 Creative Ave, Suite 100&#10;New York, NY 10001&#10;hello@acmestudio.com</textarea></div>
+
+  </div><!-- /section-content biz -->
+
+  <div class="section-title" data-i18n-section="client" onclick="toggleSection(this)">Client</div>
+  <div class="section-content">
+  <div class="field"><label id="lbl-clientname">Client Name</label><input type="text" id="clientName" value="John Smith" oninput="render()"></div>
+  <div class="field"><label id="lbl-clientdetails">Client Details</label><textarea id="clientDetails" oninput="render()">456 Business Blvd&#10;Los Angeles, CA 90001&#10;john@client.com</textarea></div>
+
+  </div><!-- /section-content client -->
+
+  <div class="section-title" data-i18n-section="details" onclick="toggleSection(this)">Invoice Details</div>
+  <div class="section-content">
+  <div class="row">
+    <div class="field"><label id="lbl-invnum">Invoice #</label><input type="text" id="invNumber" value="INV-001" oninput="render()"></div>
+    <div class="field"><label id="lbl-date">Date</label><input type="date" id="invDate" oninput="render()"></div>
+  </div>
+  <div class="row">
+    <div class="field"><label id="lbl-due">Due Date</label><input type="date" id="dueDate" oninput="render()"></div>
+    <div class="field"><label id="lbl-currency">Currency</label>
+      <select id="currency" onchange="render()">
+        <option value="$">USD ($)</option><option value="EUR">EUR</option><option value="GBP">GBP</option>
+        <option value="SAR ">SAR</option><option value="AED ">AED</option><option value="EGP ">EGP</option>
+        <option value="KWD ">KWD</option><option value="QAR ">QAR</option><option value="BHD ">BHD</option>
+      </select>
+    </div>
+  </div>
+
+  </div><!-- /section-content details -->
+
+  <div class="section-title" data-i18n-section="items" onclick="toggleSection(this)">Line Items</div>
+  <div class="section-content">
+  <div class="items-header"><span id="lbl-desc"></span><span id="lbl-qty"></span><span id="lbl-price"></span><span></span></div>
+  <div id="items-container"></div>
+  <button class="add-item-btn" id="btn-additem" onclick="addItem()">+ Add Item</button>
+
+  </div><!-- /section-content items -->
+
+  <div class="section-title" data-i18n-section="tax" onclick="toggleSection(this)">Tax & Discount</div>
+  <div class="section-content">
+  <div class="row">
+    <div class="field"><label id="lbl-tax">Tax %</label><input type="number" id="taxRate" value="0" min="0" max="100" oninput="render()"></div>
+    <div class="field"><label id="lbl-discount">Discount %</label><input type="number" id="discountRate" value="0" min="0" max="100" oninput="render()"></div>
+  </div>
+
+  </div><!-- /section-content tax -->
+
+  <div class="section-title" data-i18n-section="notes" onclick="toggleSection(this)">Notes</div>
+  <div class="section-content">
+  <div class="field"><textarea id="notes" oninput="render()" placeholder="Payment terms, bank details...">Payment is due within 30 days. Thank you for your business!</textarea></div>
+
+  </div><!-- /section-content notes -->
+
+  <div class="actions">
+    <button class="btn-print" id="btn-print" onclick="window.print()">Download / Print PDF</button>
+    <button class="btn-reset" id="btn-reset" onclick="if(confirm(lang==='ar'?'مسح كل البيانات؟':'Reset all fields?')){resetAll()}">Reset</button>
+  </div>
+</div>
+</div>
+
+<div class="preview-area">
+  <div class="invoice" id="invoice-preview"></div>
+</div>
+</div>
+
+<script>
+let items=[{desc:'Website Design & Development',qty:1,price:2500},{desc:'Brand Identity Package',qty:1,price:1200},{desc:'SEO Optimization Setup',qty:1,price:800}];
+let themeColor='#6366f1', lang='en', logoDataUrl=null;
+
+const i18n={
+  en:{inv:'INVOICE',from:'From',billTo:'Bill To',desc:'Description',qty:'Qty',price:'Price',amount:'Amount',subtotal:'Subtotal',discount:'Discount',tax:'Tax',total:'Total',notes:'Notes',footer:'Thank you for your business',
+    bizSection:'Your Business',clientSection:'Client',detailsSection:'Invoice Details',itemsSection:'Line Items',taxSection:'Tax & Discount',notesSection:'Notes',themeSection:'Color Theme',logoSection:'Your Logo',
+    bizName:'Business Name',bizDetails:'Address / Details',clientName:'Client Name',clientDetails:'Client Details',invNum:'Invoice #',date:'Date',due:'Due Date',currency:'Currency',
+    descCol:'Description',qtyCol:'Qty',priceCol:'Price',taxLbl:'Tax %',discountLbl:'Discount %',addItem:'+ Add Item',print:'Download / Print PDF',reset:'Reset',uploadLogo:'Upload Logo',logoHint:'PNG, JPG (max 200x200)'},
+  ar:{inv:'فاتورة',from:'من',billTo:'إلى',desc:'الوصف',qty:'الكمية',price:'السعر',amount:'المبلغ',subtotal:'المجموع الفرعي',discount:'الخصم',tax:'الضريبة',total:'الإجمالي',notes:'ملاحظات',footer:'شكراً لتعاملكم معنا',
+    bizSection:'بيانات شركتك',clientSection:'بيانات العميل',detailsSection:'تفاصيل الفاتورة',itemsSection:'البنود',taxSection:'الضريبة والخصم',notesSection:'ملاحظات',themeSection:'لون التصميم',logoSection:'الشعار',
+    bizName:'اسم الشركة',bizDetails:'العنوان / التفاصيل',clientName:'اسم العميل',clientDetails:'تفاصيل العميل',invNum:'رقم الفاتورة',date:'التاريخ',due:'تاريخ الاستحقاق',currency:'العملة',
+    descCol:'الوصف',qtyCol:'الكمية',priceCol:'السعر',taxLbl:'الضريبة %',discountLbl:'الخصم %',addItem:'+ إضافة بند',print:'تحميل / طباعة PDF',reset:'مسح',uploadLogo:'رفع الشعار',logoHint:'PNG, JPG (حد أقصى 200x200)'}
+};
+
+document.getElementById('invDate').value=new Date().toISOString().split('T')[0];
+const due=new Date();due.setDate(due.getDate()+30);
+document.getElementById('dueDate').value=due.toISOString().split('T')[0];
+
+function setLang(l){
+  lang=l;
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.body.classList.toggle('rtl-mode',l==='ar');
+  const t=i18n[l];
+  // Update sidebar labels
+  document.querySelectorAll('[data-i18n-section]').forEach(el=>{
+    const k=el.dataset.i18nSection;
+    const map={theme:'themeSection',logo:'logoSection',biz:'bizSection',client:'clientSection',details:'detailsSection',items:'itemsSection',tax:'taxSection',notes:'notesSection'};
+    if(map[k])el.textContent=t[map[k]];
+  });
+  document.getElementById('lbl-bizname').textContent=t.bizName;
+  document.getElementById('lbl-bizdetails').textContent=t.bizDetails;
+  document.getElementById('lbl-clientname').textContent=t.clientName;
+  document.getElementById('lbl-clientdetails').textContent=t.clientDetails;
+  document.getElementById('lbl-invnum').textContent=t.invNum;
+  document.getElementById('lbl-date').textContent=t.date;
+  document.getElementById('lbl-due').textContent=t.due;
+  document.getElementById('lbl-currency').textContent=t.currency;
+  document.getElementById('lbl-desc').textContent=t.descCol;
+  document.getElementById('lbl-qty').textContent=t.qtyCol;
+  document.getElementById('lbl-price').textContent=t.priceCol;
+  document.getElementById('lbl-tax').textContent=t.taxLbl;
+  document.getElementById('lbl-discount').textContent=t.discountLbl;
+  document.getElementById('btn-additem').textContent=t.addItem;
+  document.getElementById('btn-print').textContent=t.print;
+  document.getElementById('btn-reset').textContent=t.reset;
+  document.getElementById('logo-label').textContent=t.uploadLogo;
+  document.getElementById('logo-hint').textContent=t.logoHint;
+  render();
+}
+
+function setTheme(color,el){themeColor=color;document.querySelectorAll('.theme-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');render();}
+function addItem(){items.push({desc:'',qty:1,price:0});renderItems();render();}
+function removeItem(i){items.splice(i,1);renderItems();render();}
+function updateItem(i,f,v){items[i][f]=f==='desc'?v:parseFloat(v)||0;render();}
+
+function handleLogo(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    logoDataUrl=e.target.result;
+    document.getElementById('logo-preview').innerHTML='<img src="'+logoDataUrl+'" alt="Logo">';
+    document.getElementById('logo-remove').style.display='inline';
+    render();
+  };
+  reader.readAsDataURL(file);
+}
+function removeLogo(){
+  logoDataUrl=null;
+  document.getElementById('logo-preview').innerHTML='<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0022.5 18.75V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z"/></svg>';
+  document.getElementById('logo-remove').style.display='none';
+  render();
+}
+
+function renderItems(){
+  const t=i18n[lang];
+  document.getElementById('items-container').innerHTML=items.map((item,i)=>`
+    <div class="item-card">
+      <div class="item-card-header"><span class="item-card-num">#${i+1}</span><button class="remove-btn" onclick="removeItem(${i})">x</button></div>
+      <div class="item-field"><label>${t.desc}</label><input type="text" value="${item.desc}" placeholder="${t.desc}" oninput="updateItem(${i},'desc',this.value)"></div>
+      <div class="item-row-inline">
+        <div class="item-field"><label>${t.qty}</label><input type="number" value="${item.qty}" min="1" oninput="updateItem(${i},'qty',this.value)"></div>
+        <div class="item-field"><label>${t.price}</label><input type="number" value="${item.price}" min="0" step="0.01" oninput="updateItem(${i},'price',this.value)"></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function formatDate(ds){if(!ds)return'—';const d=new Date(ds+'T00:00:00');return lang==='ar'?d.toLocaleDateString('ar-EG',{year:'numeric',month:'short',day:'numeric'}):d.toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});}
+
+function render(){
+  const t=i18n[lang],cur=document.getElementById('currency').value;
+  const fmt=n=>cur+n.toFixed(2);
+  const sub=items.reduce((s,i)=>s+(i.qty*i.price),0);
+  const disc=sub*(parseFloat(document.getElementById('discountRate').value)||0)/100;
+  const taxable=sub-disc;
+  const tax=taxable*(parseFloat(document.getElementById('taxRate').value)||0)/100;
+  const total=taxable+tax;
+  const notes=document.getElementById('notes').value;
+  const rtl=lang==='ar'?'rtl':'';
+  const logoHtml=logoDataUrl?`<img class="invoice-logo" src="${logoDataUrl}" alt="Logo">`:'';
+
+  document.getElementById('invoice-preview').className='invoice'+(rtl?' rtl':'');
+  document.getElementById('invoice-preview').innerHTML=`
+    <div class="invoice-accent" style="background:${themeColor}"></div>
+    <div class="invoice-body">
+      <div class="invoice-header">
+        <div class="invoice-brand">${logoHtml}<div class="invoice-brand-text"><h2>${document.getElementById('bizName').value||t.bizName}</h2><p>${(document.getElementById('bizDetails').value||'').replace(/\n/g,'<br>')}</p></div></div>
+        <div class="invoice-meta"><h3 style="color:${themeColor}">${t.inv}</h3><div class="meta-row"><strong>${document.getElementById('invNumber').value}</strong></div><div class="meta-row">${t.date}: <strong>${formatDate(document.getElementById('invDate').value)}</strong></div><div class="meta-row">${t.due}: <strong>${formatDate(document.getElementById('dueDate').value)}</strong></div></div>
+      </div>
+      <div class="invoice-parties">
+        <div><h4>${t.from}</h4><p><strong>${document.getElementById('bizName').value}</strong><br>${(document.getElementById('bizDetails').value||'').replace(/\n/g,'<br>')}</p></div>
+        <div><h4>${t.billTo}</h4><p><strong>${document.getElementById('clientName').value||t.clientName}</strong><br>${(document.getElementById('clientDetails').value||'').replace(/\n/g,'<br>')}</p></div>
+      </div>
+      <table class="invoice-table"><thead><tr><th>${t.desc}</th><th>${t.qty}</th><th>${t.price}</th><th>${t.amount}</th></tr></thead><tbody>${items.map(i=>`<tr><td>${i.desc||'—'}</td><td>${i.qty}</td><td>${fmt(i.price)}</td><td>${fmt(i.qty*i.price)}</td></tr>`).join('')}</tbody></table>
+      <div class="invoice-totals"><div class="totals-box">
+        <div class="total-row"><span>${t.subtotal}</span><span>${fmt(sub)}</span></div>
+        ${disc>0?`<div class="total-row"><span>${t.discount}</span><span>-${fmt(disc)}</span></div>`:''}
+        ${tax>0?`<div class="total-row"><span>${t.tax}</span><span>${fmt(tax)}</span></div>`:''}
+        <div class="total-row grand"><span>${t.total}</span><span style="color:${themeColor}">${fmt(total)}</span></div>
+      </div></div>
+      ${notes?`<div class="invoice-notes"><h4>${t.notes}</h4><p>${notes.replace(/\n/g,'<br>')}</p></div>`:''}
+      <div class="invoice-footer">${t.footer}</div>
+    </div>`;
+}
+
+function resetAll(){
+  document.getElementById('bizName').value=lang==='ar'?'اسم شركتك':'Your Business';
+  document.getElementById('bizDetails').value='';document.getElementById('clientName').value='';document.getElementById('clientDetails').value='';
+  document.getElementById('invNumber').value='INV-001';document.getElementById('taxRate').value='0';document.getElementById('discountRate').value='0';document.getElementById('notes').value='';
+  items=[{desc:'',qty:1,price:0}];removeLogo();renderItems();render();
+}
+
+function toggleSection(el){
+  el.classList.toggle('collapsed');
+  const c=el.nextElementSibling;
+  if(c&&c.classList.contains('section-content')) c.classList.toggle('hidden');
+}
+
+renderItems();render();
+</script>
+<script src="../dashboard/lifehub-sdk.js"
+        data-tool-id="quickinvoice-pro"
+        data-tool-name="QuickInvoice Pro"
+        data-category="finance"></script>
+</body>
+</html>

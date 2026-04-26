@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Client CRM - Watermelons Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #f5f5f3;
+  --card: #ffffff;
+  --heading: #1a1a1a;
+  --text: #4a4a4a;
+  --text-light: #8a8a8a;
+  --border: #e8e8e6;
+  --accent: #1a1a1a;
+  --accent-light: #f0f0ee;
+  --green: #2d8a4e;
+  --green-bg: #e8f5ec;
+  --blue: #2d6a8a;
+  --blue-bg: #e8f0f5;
+  --orange: #8a6a2d;
+  --orange-bg: #f5f0e8;
+  --purple: #6a2d8a;
+  --purple-bg: #f0e8f5;
+  --red: #8a2d2d;
+  --red-bg: #f5e8e8;
+  --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04);
+  --radius: 10px;
+  --radius-sm: 6px;
+}
+
+body {
+  font-family: 'Sora', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* Header */
+.header {
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo {
+  width: 32px;
+  height: 32px;
+  background: var(--heading);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.header h1 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--heading);
+  letter-spacing: -0.3px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Buttons */
+.btn {
+  font-family: 'Sora', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.btn:hover { background: var(--accent-light); border-color: #d0d0ce; }
+
+.btn-primary {
+  background: var(--heading);
+  color: #fff;
+  border-color: var(--heading);
+}
+
+.btn-primary:hover { background: #333; border-color: #333; }
+
+.btn-sm {
+  font-size: 12px;
+  padding: 5px 10px;
+}
+
+.btn-danger { color: var(--red); }
+.btn-danger:hover { background: var(--red-bg); border-color: var(--red); }
+
+/* Layout */
+.main {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px 32px;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 24px;
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 4px;
+  border: 1px solid var(--border);
+  width: fit-content;
+}
+
+.tab {
+  font-family: 'Sora', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 18px;
+  border: none;
+  background: transparent;
+  color: var(--text-light);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all 0.15s ease;
+}
+
+.tab:hover { color: var(--text); }
+.tab.active { background: var(--heading); color: #fff; }
+
+/* Stats */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  box-shadow: var(--shadow);
+}
+
+.stat-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--heading);
+  letter-spacing: -0.5px;
+}
+
+.stat-sub {
+  font-size: 12px;
+  color: var(--text-light);
+  margin-top: 2px;
+}
+
+/* Controls row */
+.controls {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.search-input {
+  font-family: 'Sora', sans-serif;
+  font-size: 13px;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  color: var(--text);
+  width: 280px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.search-input:focus { border-color: var(--heading); }
+
+.filter-select {
+  font-family: 'Sora', sans-serif;
+  font-size: 13px;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  color: var(--text);
+  outline: none;
+  cursor: pointer;
+}
+
+/* Client List */
+.client-table {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.table-header {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr 100px;
+  padding: 12px 20px;
+  background: var(--accent-light);
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr 100px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+  font-size: 13px;
+  transition: background 0.1s ease;
+  cursor: pointer;
+}
+
+.table-row:last-child { border-bottom: none; }
+.table-row:hover { background: #fafaf9; }
+
+.client-name {
+  font-weight: 600;
+  color: var(--heading);
+}
+
+.client-company {
+  font-size: 12px;
+  color: var(--text-light);
+}
+
+.client-email {
+  color: var(--text);
+  font-size: 12px;
+}
+
+/* Status badges */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.status-lead { background: var(--orange-bg); color: var(--orange); }
+.status-contacted { background: var(--blue-bg); color: var(--blue); }
+.status-proposal { background: var(--purple-bg); color: var(--purple); }
+.status-active { background: var(--green-bg); color: var(--green); }
+.status-completed { background: #f0f0ee; color: var(--text-light); }
+
+.value-cell {
+  font-weight: 600;
+  color: var(--heading);
+  font-size: 13px;
+}
+
+.row-actions {
+  display: flex;
+  gap: 4px;
+  justify-content: flex-end;
+}
+
+.icon-btn {
+  width: 30px;
+  height: 30px;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-light);
+  transition: all 0.15s ease;
+  font-size: 14px;
+}
+
+.icon-btn:hover { background: var(--accent-light); color: var(--heading); }
+.icon-btn.delete:hover { background: var(--red-bg); color: var(--red); }
+
+/* Pipeline / Kanban */
+.pipeline {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  min-height: 500px;
+}
+
+.pipeline-col {
+  background: var(--accent-light);
+  border-radius: var(--radius);
+  padding: 16px;
+  min-height: 400px;
+}
+
+.pipeline-col-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--border);
+}
+
+.pipeline-col-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.pipeline-col-count {
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--card);
+  padding: 2px 8px;
+  border-radius: 10px;
+  color: var(--text-light);
+}
+
+.pipeline-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.pipeline-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+
+.pipeline-card-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--heading);
+  margin-bottom: 4px;
+}
+
+.pipeline-card-company {
+  font-size: 12px;
+  color: var(--text-light);
+  margin-bottom: 8px;
+}
+
+.pipeline-card-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--green);
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.3);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.modal-overlay.active { opacity: 1; pointer-events: all; }
+
+.modal {
+  background: var(--card);
+  border-radius: var(--radius);
+  width: 520px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  transform: translateY(10px);
+  transition: transform 0.2s ease;
+}
+
+.modal-overlay.active .modal { transform: translateY(0); }
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-header h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--heading);
+}
+
+.modal-close {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-light);
+  font-size: 18px;
+  transition: all 0.15s ease;
+}
+
+.modal-close:hover { background: var(--accent-light); color: var(--heading); }
+
+.modal-body { padding: 24px; }
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  font-family: 'Sora', sans-serif;
+  font-size: 13px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  color: var(--text);
+  width: 100%;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--heading);
+}
+
+.form-group textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-light);
+}
+
+.empty-state-icon {
+  font-size: 40px;
+  margin-bottom: 12px;
+  opacity: 0.4;
+}
+
+.empty-state h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.empty-state p {
+  font-size: 13px;
+}
+
+/* View container */
+.view { display: none; }
+.view.active { display: block; }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .pipeline { grid-template-columns: repeat(2, 1fr); }
+  .table-header, .table-row {
+    grid-template-columns: 2fr 1.5fr 1fr 100px;
+  }
+  .table-header > :nth-child(3),
+  .table-row > :nth-child(3),
+  .table-header > :nth-child(5),
+  .table-row > :nth-child(5) {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .header { padding: 0 16px; }
+  .main { padding: 16px; }
+  .pipeline { grid-template-columns: 1fr; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .controls { flex-direction: column; align-items: stretch; }
+  .search-input { width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-left">
+    <div class="logo">W</div>
+    <h1>Client CRM</h1>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-sm" onclick="importData()">Import</button>
+    <button class="btn btn-sm" onclick="exportData()">Export</button>
+    <button class="btn btn-primary" onclick="openModal()">+ Add Client</button>
+  </div>
+</header>
+
+<main class="main">
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Total Clients</div>
+      <div class="stat-value" id="stat-total">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Pipeline Value</div>
+      <div class="stat-value" id="stat-value">$0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Active Projects</div>
+      <div class="stat-value" id="stat-active">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Conversion Rate</div>
+      <div class="stat-value" id="stat-conversion">0%</div>
+      <div class="stat-sub">Leads to Active/Completed</div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" data-view="list" onclick="switchView('list')">Client List</button>
+    <button class="tab" data-view="pipeline" onclick="switchView('pipeline')">Pipeline</button>
+  </div>
+
+  <!-- List View -->
+  <div class="view active" id="view-list">
+    <div class="controls">
+      <input type="text" class="search-input" id="search" placeholder="Search clients..." oninput="renderList()">
+      <select class="filter-select" id="filter-status" onchange="renderList()">
+        <option value="all">All Statuses</option>
+        <option value="lead">Lead</option>
+        <option value="contacted">Contacted</option>
+        <option value="proposal">Proposal</option>
+        <option value="active">Active</option>
+        <option value="completed">Completed</option>
+      </select>
+    </div>
+    <div class="client-table" id="client-table">
+      <div class="table-header">
+        <span>Client</span>
+        <span>Email</span>
+        <span>Phone</span>
+        <span>Status</span>
+        <span>Value</span>
+        <span></span>
+      </div>
+      <div id="table-body"></div>
+    </div>
+  </div>
+
+  <!-- Pipeline View -->
+  <div class="view" id="view-pipeline">
+    <div class="pipeline" id="pipeline-board"></div>
+  </div>
+</main>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalOverlay(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modal-title">Add Client</h2>
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-id">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" id="f-name" placeholder="Full name">
+        </div>
+        <div class="form-group">
+          <label>Company</label>
+          <input type="text" id="f-company" placeholder="Company name">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="f-email" placeholder="email@example.com">
+        </div>
+        <div class="form-group">
+          <label>Phone</label>
+          <input type="tel" id="f-phone" placeholder="+1 (555) 000-0000">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Status</label>
+          <select id="f-status">
+            <option value="lead">Lead</option>
+            <option value="contacted">Contacted</option>
+            <option value="proposal">Proposal</option>
+            <option value="active">Active</option>
+            <option value="completed">Completed</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Value ($)</label>
+          <input type="number" id="f-value" placeholder="0" min="0">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Notes</label>
+        <textarea id="f-notes" placeholder="Additional notes about this client..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveClient()">Save Client</button>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden file input for import -->
+<input type="file" id="import-input" accept=".json" style="display:none" onchange="handleImport(event)">
+
+<script>
+// ── Data ──
+const STORAGE_KEY = 'watermelons_crm_clients';
+const STATUSES = ['lead', 'contacted', 'proposal', 'active', 'completed'];
+const STATUS_LABELS = { lead: 'Lead', contacted: 'Contacted', proposal: 'Proposal', active: 'Active', completed: 'Completed' };
+
+const DEMO_DATA = [
+  {
+    id: '1',
+    name: 'Sarah Chen',
+    email: 'sarah@luminadesign.co',
+    phone: '+1 (415) 555-0142',
+    company: 'Lumina Design Co.',
+    status: 'active',
+    notes: 'Full brand identity and website redesign. Phase 2 starting next month.',
+    value: 18500,
+    created: '2026-01-15T10:00:00Z'
+  },
+  {
+    id: '2',
+    name: 'Marcus Rivera',
+    email: 'marcus@greenpathfarms.com',
+    phone: '+1 (512) 555-0198',
+    company: 'GreenPath Farms',
+    status: 'proposal',
+    notes: 'E-commerce platform for organic produce delivery. Awaiting proposal review.',
+    value: 24000,
+    created: '2026-02-20T10:00:00Z'
+  },
+  {
+    id: '3',
+    name: 'Emily Nakamura',
+    email: 'emily@arcticanalytics.io',
+    phone: '+1 (206) 555-0167',
+    company: 'Arctic Analytics',
+    status: 'lead',
+    notes: 'Interested in dashboard redesign for their SaaS product. Initial call scheduled.',
+    value: 12000,
+    created: '2026-03-05T10:00:00Z'
+  },
+  {
+    id: '4',
+    name: 'David Okonkwo',
+    email: 'david@swiftlogistics.com',
+    phone: '+1 (312) 555-0211',
+    company: 'Swift Logistics',
+    status: 'completed',
+    notes: 'Mobile app UI/UX completed. Client very satisfied, potential referral incoming.',
+    value: 32000,
+    created: '2025-10-12T10:00:00Z'
+  },
+  {
+    id: '5',
+    name: 'Ana Petrova',
+    email: 'ana@stellarhealth.co',
+    phone: '+1 (617) 555-0189',
+    company: 'Stellar Health',
+    status: 'contacted',
+    notes: 'Patient portal redesign. Sent introductory email, awaiting response.',
+    value: 15000,
+    created: '2026-03-28T10:00:00Z'
+  }
+];
+
+function loadClients() {
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if (stored) {
+    try { return JSON.parse(stored); }
+    catch { /* fall through */ }
+  }
+  // Seed demo data on first run
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(DEMO_DATA));
+  return [...DEMO_DATA];
+}
+
+function saveClients(clients) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(clients));
+}
+
+let clients = loadClients();
+
+// ── Stats ──
+function updateStats() {
+  const total = clients.length;
+  const totalValue = clients.reduce((sum, c) => sum + (c.value || 0), 0);
+  const active = clients.filter(c => c.status === 'active').length;
+  const allEntries = clients.length;
+  const converted = clients.filter(c => c.status === 'active' || c.status === 'completed').length;
+  const rate = allEntries > 0 ? Math.round((converted / allEntries) * 100) : 0;
+
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-value').textContent = '$' + totalValue.toLocaleString();
+  document.getElementById('stat-active').textContent = active;
+  document.getElementById('stat-conversion').textContent = rate + '%';
+}
+
+// ── List View ──
+function renderList() {
+  const query = document.getElementById('search').value.toLowerCase().trim();
+  const statusFilter = document.getElementById('filter-status').value;
+
+  let filtered = clients.filter(c => {
+    const matchSearch = !query ||
+      c.name.toLowerCase().includes(query) ||
+      c.email.toLowerCase().includes(query) ||
+      c.company.toLowerCase().includes(query) ||
+      (c.notes || '').toLowerCase().includes(query);
+    const matchStatus = statusFilter === 'all' || c.status === statusFilter;
+    return matchSearch && matchStatus;
+  });
+
+  const tbody = document.getElementById('table-body');
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">--</div>
+        <h3>No clients found</h3>
+        <p>Try adjusting your search or filter criteria.</p>
+      </div>
+    `;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(c => `
+    <div class="table-row" ondblclick="editClient('${c.id}')">
+      <div>
+        <div class="client-name">${esc(c.name)}</div>
+        <div class="client-company">${esc(c.company)}</div>
+      </div>
+      <div class="client-email">${esc(c.email)}</div>
+      <div style="font-size:12px;color:var(--text-light)">${esc(c.phone)}</div>
+      <div><span class="status-badge status-${c.status}">${STATUS_LABELS[c.status]}</span></div>
+      <div class="value-cell">$${(c.value || 0).toLocaleString()}</div>
+      <div class="row-actions">
+        <button class="icon-btn" onclick="event.stopPropagation();editClient('${c.id}')" title="Edit">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+        <button class="icon-btn delete" onclick="event.stopPropagation();deleteClient('${c.id}')" title="Delete">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── Pipeline View ──
+function renderPipeline() {
+  const board = document.getElementById('pipeline-board');
+  board.innerHTML = STATUSES.map(status => {
+    const items = clients.filter(c => c.status === status);
+    return `
+      <div class="pipeline-col">
+        <div class="pipeline-col-header">
+          <span class="pipeline-col-title">${STATUS_LABELS[status]}</span>
+          <span class="pipeline-col-count">${items.length}</span>
+        </div>
+        ${items.length === 0 ? '<div style="text-align:center;padding:30px 0;color:var(--text-light);font-size:12px;">No clients</div>' : ''}
+        ${items.map(c => `
+          <div class="pipeline-card" onclick="editClient('${c.id}')">
+            <div class="pipeline-card-name">${esc(c.name)}</div>
+            <div class="pipeline-card-company">${esc(c.company)}</div>
+            <div class="pipeline-card-value">$${(c.value || 0).toLocaleString()}</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }).join('');
+}
+
+// ── Views ──
+function switchView(view) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === view));
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + view).classList.add('active');
+  if (view === 'pipeline') renderPipeline();
+}
+
+// ── Modal ──
+function openModal(client) {
+  const overlay = document.getElementById('modal-overlay');
+  const title = document.getElementById('modal-title');
+
+  if (client) {
+    title.textContent = 'Edit Client';
+    document.getElementById('edit-id').value = client.id;
+    document.getElementById('f-name').value = client.name;
+    document.getElementById('f-email').value = client.email;
+    document.getElementById('f-phone').value = client.phone || '';
+    document.getElementById('f-company').value = client.company;
+    document.getElementById('f-status').value = client.status;
+    document.getElementById('f-value').value = client.value || 0;
+    document.getElementById('f-notes').value = client.notes || '';
+  } else {
+    title.textContent = 'Add Client';
+    document.getElementById('edit-id').value = '';
+    document.getElementById('f-name').value = '';
+    document.getElementById('f-email').value = '';
+    document.getElementById('f-phone').value = '';
+    document.getElementById('f-company').value = '';
+    document.getElementById('f-status').value = 'lead';
+    document.getElementById('f-value').value = '';
+    document.getElementById('f-notes').value = '';
+  }
+
+  overlay.classList.add('active');
+  document.getElementById('f-name').focus();
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('active');
+}
+
+function closeModalOverlay(e) {
+  if (e.target === e.currentTarget) closeModal();
+}
+
+// ── CRUD ──
+function saveClient() {
+  const name = document.getElementById('f-name').value.trim();
+  const email = document.getElementById('f-email').value.trim();
+  if (!name) { alert('Please enter a client name.'); return; }
+
+  const editId = document.getElementById('edit-id').value;
+  const data = {
+    name,
+    email,
+    phone: document.getElementById('f-phone').value.trim(),
+    company: document.getElementById('f-company').value.trim(),
+    status: document.getElementById('f-status').value,
+    value: parseFloat(document.getElementById('f-value').value) || 0,
+    notes: document.getElementById('f-notes').value.trim()
+  };
+
+  if (editId) {
+    const idx = clients.findIndex(c => c.id === editId);
+    if (idx !== -1) {
+      clients[idx] = { ...clients[idx], ...data };
+    }
+  } else {
+    data.id = Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+    data.created = new Date().toISOString();
+    clients.unshift(data);
+  }
+
+  saveClients(clients);
+  closeModal();
+  refresh();
+}
+
+function editClient(id) {
+  const client = clients.find(c => c.id === id);
+  if (client) openModal(client);
+}
+
+function deleteClient(id) {
+  if (!confirm('Delete this client? This cannot be undone.')) return;
+  clients = clients.filter(c => c.id !== id);
+  saveClients(clients);
+  refresh();
+}
+
+// ── Import / Export ──
+function exportData() {
+  const json = JSON.stringify(clients, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'crm-clients-' + new Date().toISOString().slice(0, 10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importData() {
+  document.getElementById('import-input').click();
+}
+
+function handleImport(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      const imported = JSON.parse(ev.target.result);
+      if (!Array.isArray(imported)) { alert('Invalid file: expected an array of clients.'); return; }
+      const count = imported.length;
+      if (!confirm('Import ' + count + ' client(s)? This will merge with existing data.')) return;
+      // Merge: add imported clients, skip duplicates by id
+      const existingIds = new Set(clients.map(c => c.id));
+      let added = 0;
+      imported.forEach(c => {
+        if (!c.id) c.id = Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+        if (!existingIds.has(c.id)) {
+          clients.push(c);
+          added++;
+        }
+      });
+      saveClients(clients);
+      refresh();
+      alert('Imported ' + added + ' new client(s). ' + (count - added) + ' duplicate(s) skipped.');
+    } catch {
+      alert('Failed to parse JSON file.');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+// ── Helpers ──
+function esc(str) {
+  if (!str) return '';
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function refresh() {
+  updateStats();
+  renderList();
+  const pipelineActive = document.querySelector('.tab[data-view="pipeline"]').classList.contains('active');
+  if (pipelineActive) renderPipeline();
+}
+
+// ── Keyboard shortcut ──
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeModal();
+  if (e.key === 'n' && !e.ctrlKey && !e.metaKey && !isInputFocused()) {
+    e.preventDefault();
+    openModal();
+  }
+});
+
+function isInputFocused() {
+  const el = document.activeElement;
+  return el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT');
+}
+
+// ── Init ──
+refresh();
+</script>
+</body>
+</html>

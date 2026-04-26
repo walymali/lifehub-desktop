@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unit Converter</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Sora', sans-serif;
+  background: #f5f5f3;
+  color: #555;
+  min-height: 100vh;
+  padding: 40px 20px 80px;
+}
+
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+h1 {
+  color: #1a1a1a;
+  font-size: 28px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 6px;
+  letter-spacing: -0.5px;
+}
+
+.subtitle {
+  text-align: center;
+  font-size: 14px;
+  color: #999;
+  margin-bottom: 32px;
+  font-weight: 400;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin-bottom: 28px;
+}
+
+.tab {
+  padding: 8px 16px;
+  border: none;
+  background: #fff;
+  color: #888;
+  font-family: 'Sora', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1.5px solid transparent;
+}
+
+.tab:hover {
+  color: #555;
+  border-color: #e0e0e0;
+}
+
+.tab.active {
+  background: #1a1a1a;
+  color: #fff;
+  border-color: #1a1a1a;
+}
+
+/* Converter Card */
+.converter-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 32px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.02);
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.input-group label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.input-row {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.input-row input {
+  flex: 1;
+  padding: 14px 16px;
+  border: 1.5px solid #e8e8e8;
+  border-radius: 10px;
+  font-family: 'Sora', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a1a1a;
+  outline: none;
+  transition: border-color 0.2s ease;
+  min-width: 0;
+}
+
+.input-row input:focus {
+  border-color: #1a1a1a;
+}
+
+.input-row input::placeholder {
+  color: #ccc;
+  font-weight: 400;
+}
+
+.input-row select {
+  width: 140px;
+  padding: 14px 12px;
+  border: 1.5px solid #e8e8e8;
+  border-radius: 10px;
+  font-family: 'Sora', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1a1a1a;
+  background: #fafafa;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='7' viewBox='0 0 12 7' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%23999' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  transition: border-color 0.2s ease;
+}
+
+.input-row select:focus {
+  border-color: #1a1a1a;
+}
+
+/* Swap Button */
+.swap-row {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.swap-btn {
+  width: 44px;
+  height: 44px;
+  border: 1.5px solid #e8e8e8;
+  background: #fff;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+  color: #999;
+}
+
+.swap-btn:hover {
+  border-color: #1a1a1a;
+  background: #1a1a1a;
+  color: #fff;
+  transform: rotate(180deg);
+}
+
+.swap-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Result Display */
+.result-display {
+  background: #fafaf8;
+  border-radius: 10px;
+  padding: 16px 20px;
+  text-align: center;
+  margin-top: 8px;
+}
+
+.result-display .formula {
+  font-size: 13px;
+  color: #aaa;
+  margin-bottom: 4px;
+}
+
+.result-display .result-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: -0.5px;
+}
+
+.result-display .result-unit {
+  font-size: 14px;
+  color: #888;
+  font-weight: 400;
+  margin-left: 4px;
+}
+
+/* Quick Conversions */
+.section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 14px;
+}
+
+.quick-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.quick-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1.5px solid transparent;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+}
+
+.quick-card:hover {
+  border-color: #1a1a1a;
+  transform: translateY(-1px);
+}
+
+.quick-card .qc-label {
+  font-size: 12px;
+  color: #aaa;
+  margin-bottom: 4px;
+  font-weight: 400;
+}
+
+.quick-card .qc-value {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+/* History */
+.history-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px 28px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.02);
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.clear-btn {
+  border: none;
+  background: none;
+  font-family: 'Sora', sans-serif;
+  font-size: 12px;
+  color: #ccc;
+  cursor: pointer;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.clear-btn:hover {
+  color: #e55;
+}
+
+.history-list {
+  list-style: none;
+}
+
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #f3f3f1;
+  font-size: 13px;
+}
+
+.history-item:last-child {
+  border-bottom: none;
+}
+
+.history-item .hi-conversion {
+  color: #1a1a1a;
+  font-weight: 500;
+}
+
+.history-item .hi-category {
+  color: #ccc;
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.empty-history {
+  text-align: center;
+  padding: 20px 0;
+  color: #ccc;
+  font-size: 13px;
+}
+
+@media (max-width: 560px) {
+  body { padding: 24px 16px 60px; }
+  h1 { font-size: 22px; }
+  .converter-card { padding: 24px 20px; }
+  .input-row { flex-direction: column; }
+  .input-row select { width: 100%; }
+  .input-row input { font-size: 18px; }
+  .result-display .result-value { font-size: 22px; }
+  .quick-cards { grid-template-columns: 1fr 1fr; }
+  .tab { padding: 7px 12px; font-size: 12px; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Unit Converter</h1>
+  <p class="subtitle">Convert between units instantly</p>
+
+  <div class="tabs" id="tabs"></div>
+
+  <div class="converter-card">
+    <div class="input-group">
+      <label>From</label>
+      <div class="input-row">
+        <input type="number" id="inputValue" placeholder="0" step="any">
+        <select id="fromUnit"></select>
+      </div>
+    </div>
+
+    <div class="swap-row">
+      <button class="swap-btn" id="swapBtn" title="Swap units">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M7 16V4m0 12l-4-4m4 4l4-4"/>
+          <path d="M17 8v12m0-12l4 4m-4-4l-4 4"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="input-group">
+      <label>To</label>
+      <div class="input-row">
+        <input type="text" id="outputValue" placeholder="0" readonly>
+        <select id="toUnit"></select>
+      </div>
+    </div>
+
+    <div class="result-display" id="resultDisplay" style="display:none;">
+      <div class="formula" id="formulaText"></div>
+      <div>
+        <span class="result-value" id="resultValue"></span>
+        <span class="result-unit" id="resultUnit"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Common Conversions</div>
+  <div class="quick-cards" id="quickCards"></div>
+
+  <div class="history-card">
+    <div class="history-header">
+      <div class="section-title" style="margin-bottom:0;">History</div>
+      <button class="clear-btn" id="clearHistory">Clear all</button>
+    </div>
+    <ul class="history-list" id="historyList">
+      <li class="empty-history">No conversions yet</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+const categories = {
+  Length: {
+    units: {
+      mm: { name: 'Millimeter', factor: 0.001 },
+      cm: { name: 'Centimeter', factor: 0.01 },
+      m: { name: 'Meter', factor: 1 },
+      km: { name: 'Kilometer', factor: 1000 },
+      inch: { name: 'Inch', factor: 0.0254 },
+      foot: { name: 'Foot', factor: 0.3048 },
+      yard: { name: 'Yard', factor: 0.9144 },
+      mile: { name: 'Mile', factor: 1609.344 }
+    },
+    quick: [
+      { from: 'km', to: 'mile', val: 1 },
+      { from: 'inch', to: 'cm', val: 1 },
+      { from: 'foot', to: 'm', val: 1 },
+      { from: 'm', to: 'yard', val: 100 }
+    ]
+  },
+  Weight: {
+    units: {
+      mg: { name: 'Milligram', factor: 0.000001 },
+      g: { name: 'Gram', factor: 0.001 },
+      kg: { name: 'Kilogram', factor: 1 },
+      oz: { name: 'Ounce', factor: 0.0283495 },
+      lb: { name: 'Pound', factor: 0.453592 },
+      ton: { name: 'Metric Ton', factor: 1000 }
+    },
+    quick: [
+      { from: 'kg', to: 'lb', val: 1 },
+      { from: 'oz', to: 'g', val: 1 },
+      { from: 'lb', to: 'kg', val: 10 },
+      { from: 'ton', to: 'kg', val: 1 }
+    ]
+  },
+  Temperature: {
+    units: {
+      celsius: { name: 'Celsius' },
+      fahrenheit: { name: 'Fahrenheit' },
+      kelvin: { name: 'Kelvin' }
+    },
+    convert: function(value, from, to) {
+      let c;
+      if (from === 'celsius') c = value;
+      else if (from === 'fahrenheit') c = (value - 32) * 5 / 9;
+      else c = value - 273.15;
+
+      if (to === 'celsius') return c;
+      if (to === 'fahrenheit') return c * 9 / 5 + 32;
+      return c + 273.15;
+    },
+    quick: [
+      { from: 'celsius', to: 'fahrenheit', val: 0 },
+      { from: 'celsius', to: 'fahrenheit', val: 100 },
+      { from: 'fahrenheit', to: 'celsius', val: 72 },
+      { from: 'celsius', to: 'kelvin', val: 25 }
+    ]
+  },
+  Volume: {
+    units: {
+      ml: { name: 'Milliliter', factor: 0.001 },
+      l: { name: 'Liter', factor: 1 },
+      gallon: { name: 'Gallon (US)', factor: 3.78541 },
+      cup: { name: 'Cup (US)', factor: 0.236588 },
+      tablespoon: { name: 'Tablespoon', factor: 0.0147868 },
+      teaspoon: { name: 'Teaspoon', factor: 0.00492892 },
+      'fl oz': { name: 'Fluid Ounce', factor: 0.0295735 }
+    },
+    quick: [
+      { from: 'l', to: 'gallon', val: 1 },
+      { from: 'cup', to: 'ml', val: 1 },
+      { from: 'gallon', to: 'l', val: 1 },
+      { from: 'tablespoon', to: 'ml', val: 1 }
+    ]
+  },
+  Speed: {
+    units: {
+      'km/h': { name: 'km/h', factor: 1 },
+      mph: { name: 'mph', factor: 1.60934 },
+      'm/s': { name: 'm/s', factor: 3.6 },
+      knots: { name: 'Knots', factor: 1.852 }
+    },
+    quick: [
+      { from: 'km/h', to: 'mph', val: 100 },
+      { from: 'mph', to: 'km/h', val: 60 },
+      { from: 'm/s', to: 'km/h', val: 1 },
+      { from: 'knots', to: 'km/h', val: 1 }
+    ]
+  },
+  Area: {
+    units: {
+      'sq m': { name: 'Square Meter', factor: 1 },
+      'sq km': { name: 'Square Kilometer', factor: 1000000 },
+      'sq ft': { name: 'Square Foot', factor: 0.092903 },
+      'sq mile': { name: 'Square Mile', factor: 2589988.11 },
+      acre: { name: 'Acre', factor: 4046.8564 },
+      hectare: { name: 'Hectare', factor: 10000 }
+    },
+    quick: [
+      { from: 'sq m', to: 'sq ft', val: 1 },
+      { from: 'acre', to: 'hectare', val: 1 },
+      { from: 'sq km', to: 'sq mile', val: 1 },
+      { from: 'hectare', to: 'acre', val: 1 }
+    ]
+  },
+  Data: {
+    units: {
+      bytes: { name: 'Bytes', factor: 1 },
+      KB: { name: 'Kilobytes', factor: 1024 },
+      MB: { name: 'Megabytes', factor: 1048576 },
+      GB: { name: 'Gigabytes', factor: 1073741824 },
+      TB: { name: 'Terabytes', factor: 1099511627776 }
+    },
+    quick: [
+      { from: 'GB', to: 'MB', val: 1 },
+      { from: 'TB', to: 'GB', val: 1 },
+      { from: 'MB', to: 'KB', val: 1 },
+      { from: 'GB', to: 'TB', val: 500 }
+    ]
+  },
+  Time: {
+    units: {
+      seconds: { name: 'Seconds', factor: 1 },
+      minutes: { name: 'Minutes', factor: 60 },
+      hours: { name: 'Hours', factor: 3600 },
+      days: { name: 'Days', factor: 86400 },
+      weeks: { name: 'Weeks', factor: 604800 },
+      months: { name: 'Months', factor: 2629746 },
+      years: { name: 'Years', factor: 31556952 }
+    },
+    quick: [
+      { from: 'hours', to: 'minutes', val: 1 },
+      { from: 'days', to: 'hours', val: 1 },
+      { from: 'weeks', to: 'days', val: 1 },
+      { from: 'years', to: 'days', val: 1 }
+    ]
+  }
+};
+
+let activeCategory = 'Length';
+let history = JSON.parse(localStorage.getItem('uc_history') || '[]');
+
+const $ = id => document.getElementById(id);
+
+function buildTabs() {
+  const container = $('tabs');
+  container.innerHTML = '';
+  Object.keys(categories).forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'tab' + (cat === activeCategory ? ' active' : '');
+    btn.textContent = cat;
+    btn.addEventListener('click', () => switchCategory(cat));
+    container.appendChild(btn);
+  });
+}
+
+function switchCategory(cat) {
+  activeCategory = cat;
+  buildTabs();
+  populateSelects();
+  buildQuickCards();
+  $('inputValue').value = '';
+  $('outputValue').value = '';
+  $('resultDisplay').style.display = 'none';
+}
+
+function populateSelects() {
+  const cat = categories[activeCategory];
+  const units = Object.keys(cat.units);
+  const fromSel = $('fromUnit');
+  const toSel = $('toUnit');
+
+  fromSel.innerHTML = '';
+  toSel.innerHTML = '';
+
+  units.forEach(u => {
+    const o1 = document.createElement('option');
+    o1.value = u;
+    o1.textContent = cat.units[u].name;
+    fromSel.appendChild(o1);
+
+    const o2 = document.createElement('option');
+    o2.value = u;
+    o2.textContent = cat.units[u].name;
+    toSel.appendChild(o2);
+  });
+
+  if (units.length > 1) toSel.value = units[1];
+}
+
+function convert(value, from, to, category) {
+  const cat = categories[category];
+  if (cat.convert) return cat.convert(value, from, to);
+  const fromFactor = cat.units[from].factor;
+  const toFactor = cat.units[to].factor;
+  return (value * fromFactor) / toFactor;
+}
+
+function formatResult(num) {
+  if (num === 0) return '0';
+  const abs = Math.abs(num);
+  if (abs >= 1e9 || (abs < 0.0001 && abs > 0)) return num.toExponential(4);
+  if (Number.isInteger(num)) return num.toLocaleString();
+  const fixed = parseFloat(num.toFixed(6));
+  return fixed.toLocaleString(undefined, { maximumFractionDigits: 6 });
+}
+
+function doConvert() {
+  const val = parseFloat($('inputValue').value);
+  const from = $('fromUnit').value;
+  const to = $('toUnit').value;
+
+  if (isNaN(val)) {
+    $('outputValue').value = '';
+    $('resultDisplay').style.display = 'none';
+    return;
+  }
+
+  const result = convert(val, from, to, activeCategory);
+  const formatted = formatResult(result);
+
+  $('outputValue').value = formatted;
+  $('resultDisplay').style.display = 'block';
+  $('resultValue').textContent = formatted;
+  $('resultUnit').textContent = categories[activeCategory].units[to].name;
+  $('formulaText').textContent = `${val} ${categories[activeCategory].units[from].name} =`;
+
+  addHistory(val, from, to, result);
+}
+
+function addHistory(val, from, to, result) {
+  const cat = categories[activeCategory];
+  const entry = {
+    text: `${val} ${cat.units[from].name} = ${formatResult(result)} ${cat.units[to].name}`,
+    category: activeCategory,
+    timestamp: Date.now()
+  };
+
+  const isDuplicate = history.length > 0 && history[0].text === entry.text;
+  if (isDuplicate) return;
+
+  history.unshift(entry);
+  if (history.length > 10) history.pop();
+  localStorage.setItem('uc_history', JSON.stringify(history));
+  renderHistory();
+}
+
+function renderHistory() {
+  const list = $('historyList');
+  if (history.length === 0) {
+    list.innerHTML = '<li class="empty-history">No conversions yet</li>';
+    return;
+  }
+  list.innerHTML = history.map(h =>
+    `<li class="history-item">
+      <span class="hi-conversion">${h.text}</span>
+      <span class="hi-category">${h.category}</span>
+    </li>`
+  ).join('');
+}
+
+function buildQuickCards() {
+  const cat = categories[activeCategory];
+  const container = $('quickCards');
+  container.innerHTML = '';
+
+  cat.quick.forEach(q => {
+    const result = convert(q.val, q.from, q.to, activeCategory);
+    const card = document.createElement('div');
+    card.className = 'quick-card';
+    card.innerHTML = `
+      <div class="qc-label">${cat.units[q.from].name} to ${cat.units[q.to].name}</div>
+      <div class="qc-value">${q.val} ${q.from} = ${formatResult(result)} ${q.to}</div>
+    `;
+    card.addEventListener('click', () => {
+      $('fromUnit').value = q.from;
+      $('toUnit').value = q.to;
+      $('inputValue').value = q.val;
+      doConvert();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    container.appendChild(card);
+  });
+}
+
+// Event listeners
+$('inputValue').addEventListener('input', doConvert);
+$('fromUnit').addEventListener('change', doConvert);
+$('toUnit').addEventListener('change', doConvert);
+
+$('swapBtn').addEventListener('click', () => {
+  const from = $('fromUnit').value;
+  const to = $('toUnit').value;
+  $('fromUnit').value = to;
+  $('toUnit').value = from;
+  if ($('inputValue').value) doConvert();
+});
+
+$('clearHistory').addEventListener('click', () => {
+  history = [];
+  localStorage.removeItem('uc_history');
+  renderHistory();
+});
+
+// Init
+buildTabs();
+populateSelects();
+buildQuickCards();
+renderHistory();
+</script>
+</body>
+</html>

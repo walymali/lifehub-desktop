@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Social Media Analytics</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f5f5f3;--card:#fff;--heading:#1a1a1a;--text:#555;--accent:#4f46e5;--accent-light:#eef2ff;--border:#e8e8e6;--green:#22c55e;--red:#ef4444;--orange:#f59e0b;--blue:#3b82f6;--purple:#a855f7;--pink:#ec4899;--teal:#14b8a6}
+body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
+h1,h2,h3,h4{color:var(--heading);font-weight:600}
+button{font-family:'Sora',sans-serif;cursor:pointer;border:none;outline:none;transition:all .2s}
+input,select,textarea{font-family:'Sora',sans-serif;outline:none;border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;color:var(--heading);background:#fff;transition:border-color .2s}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+
+.app-header{background:#fff;border-bottom:1px solid var(--border);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.app-header h1{font-size:20px;font-weight:700;letter-spacing:-0.5px}
+.app-header h1 span{color:var(--accent)}
+.header-actions{display:flex;gap:8px}
+.btn{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:#4338ca}
+.btn-outline{background:#fff;border:1.5px solid var(--border);color:var(--heading)}.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-danger{background:var(--red);color:#fff}.btn-danger:hover{background:#dc2626}
+.btn-success{background:var(--green);color:#fff}.btn-success:hover{background:#16a34a}
+
+.container{max-width:1200px;margin:0 auto;padding:24px 32px}
+
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.stat-card{background:var(--card);border-radius:12px;padding:20px;border:1px solid var(--border)}
+.stat-card .stat-label{font-size:12px;font-weight:500;color:var(--text);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
+.stat-card .stat-value{font-size:28px;font-weight:700;color:var(--heading);line-height:1.2}
+.stat-card .stat-sub{font-size:12px;color:var(--text);margin-top:4px}
+.stat-card .stat-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:12px}
+
+.platform-tabs{display:flex;gap:4px;margin-bottom:24px;background:var(--card);border-radius:12px;padding:4px;border:1px solid var(--border);overflow-x:auto}
+.platform-tab{padding:10px 20px;border-radius:8px;font-size:13px;font-weight:500;color:var(--text);background:transparent;white-space:nowrap;transition:all .2s}
+.platform-tab:hover{color:var(--heading)}
+.platform-tab.active{background:var(--accent);color:#fff}
+
+.section{background:var(--card);border-radius:12px;padding:24px;border:1px solid var(--border);margin-bottom:20px}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.section-header h3{font-size:16px}
+
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px}
+
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:12px;font-weight:500;color:var(--text);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.3px}
+.form-group input,.form-group select{width:100%;padding:9px 12px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+.post-list{max-height:400px;overflow-y:auto}
+.post-item{display:grid;grid-template-columns:100px 80px 1fr 60px;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);font-size:13px}
+.post-item:last-child{border-bottom:none}
+.post-type{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500}
+.post-type.image{background:#dbeafe;color:#2563eb}
+.post-type.video{background:#fce7f3;color:#db2777}
+.post-type.carousel{background:#fef3c7;color:#d97706}
+.post-type.text{background:#e0e7ff;color:#4f46e5}
+.post-metrics{display:flex;gap:12px;font-size:12px;color:var(--text)}
+.post-metrics span{display:flex;align-items:center;gap:3px}
+.post-delete{color:var(--red);background:none;font-size:14px;padding:4px}
+
+.chart-container{padding:16px 0}
+.bar-chart{display:flex;align-items:flex-end;gap:8px;height:180px;padding-top:10px}
+.bar-wrapper{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px}
+.bar{width:100%;border-radius:6px 6px 0 0;min-height:4px;transition:height .5s ease;position:relative}
+.bar:hover{opacity:0.85}
+.bar-label{font-size:10px;color:var(--text);text-align:center;white-space:nowrap}
+.bar-value{font-size:10px;font-weight:600;color:var(--heading)}
+
+.h-bar-chart{display:flex;flex-direction:column;gap:10px}
+.h-bar-row{display:flex;align-items:center;gap:12px}
+.h-bar-label{width:80px;font-size:12px;color:var(--text);text-align:right;flex-shrink:0}
+.h-bar-track{flex:1;height:28px;background:#f5f5f3;border-radius:6px;overflow:hidden;position:relative}
+.h-bar-fill{height:100%;border-radius:6px;transition:width .5s ease;display:flex;align-items:center;padding-left:10px}
+.h-bar-fill span{font-size:11px;font-weight:600;color:#fff;white-space:nowrap}
+
+.report-box{background:#f9fafb;border-radius:8px;padding:16px;font-size:13px;line-height:1.8;white-space:pre-wrap;max-height:400px;overflow-y:auto;border:1px solid var(--border)}
+
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:200;display:none;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:#fff;border-radius:16px;padding:28px;width:480px;max-width:90vw;max-height:85vh;overflow-y:auto}
+.modal h3{font-size:18px;margin-bottom:16px}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
+
+.time-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.time-cell{height:28px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500}
+.time-header{font-size:10px;font-weight:600;color:var(--text);text-align:center;padding:4px}
+
+.empty-state{text-align:center;padding:40px 20px;color:var(--text);font-size:14px}
+
+.toast{position:fixed;bottom:24px;right:24px;background:var(--heading);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;z-index:300;transform:translateY(100px);opacity:0;transition:all .3s}
+.toast.show{transform:translateY(0);opacity:1}
+
+.followers-input-row{display:flex;gap:12px;align-items:flex-end;margin-bottom:16px}
+.followers-input-row .form-group{flex:1;margin:0}
+
+@media(max-width:900px){
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .grid-2,.grid-3{grid-template-columns:1fr}
+  .container{padding:16px}
+  .app-header{padding:12px 16px}
+}
+@media(max-width:600px){
+  .stats-grid{grid-template-columns:1fr}
+  .post-item{grid-template-columns:1fr;gap:6px}
+}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <h1>Social<span>Analytics</span></h1>
+  <div class="header-actions">
+    <button class="btn btn-outline btn-sm" onclick="exportData()">Export JSON</button>
+    <button class="btn btn-outline btn-sm" onclick="document.getElementById('importInput').click()">Import JSON</button>
+    <input type="file" id="importInput" accept=".json" style="display:none" onchange="importData(event)">
+    <button class="btn btn-danger btn-sm" onclick="resetData()">Reset</button>
+  </div>
+</header>
+
+<div class="container">
+  <div class="stats-grid" id="statsGrid"></div>
+
+  <div class="platform-tabs" id="platformTabs"></div>
+
+  <div id="dashboardView"></div>
+  <div id="platformView" style="display:none"></div>
+</div>
+
+<div class="modal-overlay" id="postModal">
+  <div class="modal">
+    <h3>Add New Post</h3>
+    <div class="form-group"><label>Date</label><input type="date" id="postDate"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Type</label>
+        <select id="postType"><option value="image">Image</option><option value="video">Video</option><option value="carousel">Carousel</option><option value="text">Text</option></select>
+      </div>
+      <div class="form-group"><label>Impressions</label><input type="number" id="postImpressions" min="0" placeholder="0"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Likes</label><input type="number" id="postLikes" min="0" placeholder="0"></div>
+      <div class="form-group"><label>Comments</label><input type="number" id="postComments" min="0" placeholder="0"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Shares</label><input type="number" id="postShares" min="0" placeholder="0"></div>
+      <div class="form-group"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closePostModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="savePost()">Add Post</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const STORAGE_KEY = 'social_analytics';
+const PLATFORMS = [
+  { id: 'dashboard', name: 'Dashboard', color: '#4f46e5' },
+  { id: 'instagram', name: 'Instagram', color: '#e1306c' },
+  { id: 'twitter', name: 'Twitter/X', color: '#1da1f2' },
+  { id: 'tiktok', name: 'TikTok', color: '#010101' },
+  { id: 'linkedin', name: 'LinkedIn', color: '#0077b5' },
+  { id: 'youtube', name: 'YouTube', color: '#ff0000' }
+];
+
+let data = loadData();
+let currentPlatform = 'dashboard';
+
+function defaultData() {
+  return {
+    platforms: {
+      instagram: { followers: [], posts: [] },
+      twitter: { followers: [], posts: [] },
+      tiktok: { followers: [], posts: [] },
+      linkedin: { followers: [], posts: [] },
+      youtube: { followers: [], posts: [] }
+    }
+  };
+}
+
+function loadData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return defaultData();
+}
+
+function saveData() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function exportData() {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'social_analytics_' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Data exported successfully');
+}
+
+function importData(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      const imported = JSON.parse(ev.target.result);
+      if (imported.platforms) {
+        data = imported;
+        saveData();
+        render();
+        showToast('Data imported successfully');
+      } else {
+        showToast('Invalid data format');
+      }
+    } catch(err) {
+      showToast('Failed to parse file');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+function resetData() {
+  if (confirm('Reset all data? This cannot be undone.')) {
+    data = defaultData();
+    seedDemoData();
+    saveData();
+    render();
+    showToast('Data reset with demo data');
+  }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function seedDemoData() {
+  const now = new Date();
+  const types = ['image', 'video', 'carousel', 'text'];
+  const demoPosts = [
+    { p:'instagram', daysAgo:1, type:'image', likes:842, comments:63, shares:28, impressions:12400 },
+    { p:'instagram', daysAgo:3, type:'carousel', likes:1203, comments:94, shares:45, impressions:18700 },
+    { p:'instagram', daysAgo:5, type:'video', likes:2150, comments:187, shares:312, impressions:45200 },
+    { p:'instagram', daysAgo:8, type:'image', likes:567, comments:41, shares:15, impressions:8900 },
+    { p:'twitter', daysAgo:0, type:'text', likes:234, comments:56, shares:89, impressions:15600 },
+    { p:'twitter', daysAgo:2, type:'image', likes:412, comments:78, shares:156, impressions:22300 },
+    { p:'twitter', daysAgo:4, type:'text', likes:89, comments:23, shares:34, impressions:5400 },
+    { p:'twitter', daysAgo:6, type:'video', likes:1567, comments:234, shares:567, impressions:89000 },
+    { p:'tiktok', daysAgo:1, type:'video', likes:15400, comments:890, shares:2340, impressions:234000 },
+    { p:'tiktok', daysAgo:3, type:'video', likes:8900, comments:456, shares:1230, impressions:156000 },
+    { p:'tiktok', daysAgo:5, type:'video', likes:23400, comments:1200, shares:4500, impressions:456000 },
+    { p:'tiktok', daysAgo:9, type:'video', likes:5600, comments:320, shares:780, impressions:89000 },
+    { p:'linkedin', daysAgo:0, type:'text', likes:156, comments:34, shares:23, impressions:4500 },
+    { p:'linkedin', daysAgo:2, type:'image', likes:234, comments:45, shares:56, impressions:7800 },
+    { p:'linkedin', daysAgo:5, type:'carousel', likes:389, comments:67, shares:89, impressions:12300 },
+    { p:'linkedin', daysAgo:7, type:'text', likes:123, comments:28, shares:18, impressions:3400 },
+    { p:'youtube', daysAgo:2, type:'video', likes:3400, comments:245, shares:120, impressions:67000 },
+    { p:'youtube', daysAgo:5, type:'video', likes:5600, comments:412, shares:234, impressions:123000 },
+    { p:'youtube', daysAgo:8, type:'video', likes:1200, comments:89, shares:56, impressions:23000 },
+    { p:'youtube', daysAgo:12, type:'video', likes:8900, comments:567, shares:345, impressions:189000 }
+  ];
+
+  const followerCounts = {
+    instagram: [12400, 12550, 12680, 12730],
+    twitter: [8900, 8950, 9020, 9100],
+    tiktok: [45600, 46200, 47100, 48300],
+    linkedin: [3200, 3250, 3310, 3380],
+    youtube: [15600, 15800, 16100, 16400]
+  };
+
+  for (const pid of Object.keys(data.platforms)) {
+    const fc = followerCounts[pid];
+    data.platforms[pid].followers = fc.map((count, i) => ({
+      date: new Date(now.getTime() - (fc.length - 1 - i) * 7 * 86400000).toISOString().slice(0,10),
+      count
+    }));
+  }
+
+  demoPosts.forEach(dp => {
+    const d = new Date(now.getTime() - dp.daysAgo * 86400000);
+    const hours = [9, 10, 12, 14, 17, 19, 20, 21];
+    d.setHours(hours[Math.floor(Math.random() * hours.length)], Math.floor(Math.random()*60));
+    data.platforms[dp.p].posts.push({
+      id: Date.now() + Math.random(),
+      date: d.toISOString(),
+      type: dp.type,
+      likes: dp.likes,
+      comments: dp.comments,
+      shares: dp.shares,
+      impressions: dp.impressions
+    });
+  });
+}
+
+// Initialize with demo data if empty
+if (!data.platforms || Object.values(data.platforms).every(p => p.posts.length === 0)) {
+  if (!data.platforms) data = defaultData();
+  seedDemoData();
+  saveData();
+}
+
+function getAllPosts() {
+  let all = [];
+  for (const [pid, p] of Object.entries(data.platforms)) {
+    p.posts.forEach(post => all.push({ ...post, platform: pid }));
+  }
+  return all.sort((a, b) => new Date(b.date) - new Date(a.date));
+}
+
+function getLatestFollowers(pid) {
+  const f = data.platforms[pid].followers;
+  return f.length ? f[f.length - 1].count : 0;
+}
+
+function getTotalFollowers() {
+  return Object.keys(data.platforms).reduce((sum, pid) => sum + getLatestFollowers(pid), 0);
+}
+
+function calcEngagement(posts) {
+  if (!posts.length) return 0;
+  const totalEng = posts.reduce((s, p) => s + p.likes + p.comments + p.shares, 0);
+  const totalImp = posts.reduce((s, p) => s + p.impressions, 0);
+  return totalImp ? ((totalEng / totalImp) * 100) : 0;
+}
+
+function getPostsThisWeek() {
+  const now = new Date();
+  const weekAgo = new Date(now.getTime() - 7 * 86400000);
+  return getAllPosts().filter(p => new Date(p.date) >= weekAgo);
+}
+
+function getBestPlatform() {
+  let best = { pid: '', eng: 0 };
+  for (const [pid, p] of Object.entries(data.platforms)) {
+    const eng = calcEngagement(p.posts);
+    if (eng > best.eng) best = { pid, eng };
+  }
+  return best.pid;
+}
+
+function formatNum(n) {
+  if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+  if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+  return n.toString();
+}
+
+function getPlatformName(pid) {
+  const p = PLATFORMS.find(x => x.id === pid);
+  return p ? p.name : pid;
+}
+
+function getPlatformColor(pid) {
+  const p = PLATFORMS.find(x => x.id === pid);
+  return p ? p.color : '#888';
+}
+
+// ===== RENDERING =====
+
+function renderTabs() {
+  const container = document.getElementById('platformTabs');
+  container.innerHTML = PLATFORMS.map(p =>
+    `<button class="platform-tab ${currentPlatform === p.id ? 'active' : ''}" onclick="switchPlatform('${p.id}')">${p.name}</button>`
+  ).join('');
+}
+
+function switchPlatform(pid) {
+  currentPlatform = pid;
+  render();
+}
+
+function renderStats() {
+  const weekPosts = getPostsThisWeek();
+  const bestPid = getBestPlatform();
+  const allPosts = getAllPosts();
+  const engagement = calcEngagement(allPosts);
+
+  const stats = [
+    { label: 'Total Followers', value: formatNum(getTotalFollowers()), sub: Object.keys(data.platforms).length + ' platforms', iconBg: '#eef2ff', icon: '&#x1f465;' },
+    { label: 'Engagement Rate', value: engagement.toFixed(2) + '%', sub: 'Across all posts', iconBg: '#f0fdf4', icon: '&#x1f4c8;' },
+    { label: 'Posts This Week', value: weekPosts.length, sub: 'Last 7 days', iconBg: '#fef3c7', icon: '&#x1f4dd;' },
+    { label: 'Best Platform', value: bestPid ? getPlatformName(bestPid) : 'N/A', sub: bestPid ? calcEngagement(data.platforms[bestPid].posts).toFixed(2) + '% engagement' : '', iconBg: '#fce7f3', icon: '&#x1f31f;' }
+  ];
+
+  document.getElementById('statsGrid').innerHTML = stats.map(s => `
+    <div class="stat-card">
+      <div class="stat-icon" style="background:${s.iconBg}">${s.icon}</div>
+      <div class="stat-label">${s.label}</div>
+      <div class="stat-value">${s.value}</div>
+      <div class="stat-sub">${s.sub}</div>
+    </div>
+  `).join('');
+}
+
+function renderDashboard() {
+  document.getElementById('dashboardView').style.display = 'block';
+  document.getElementById('platformView').style.display = 'none';
+
+  const weekPosts = getPostsThisWeek();
+
+  // Weekly engagement bar chart
+  const days = [];
+  const now = new Date();
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(now.getTime() - i * 86400000);
+    const dateStr = d.toISOString().slice(0, 10);
+    const dayPosts = getAllPosts().filter(p => p.date.slice(0, 10) === dateStr);
+    const eng = dayPosts.reduce((s, p) => s + p.likes + p.comments + p.shares, 0);
+    days.push({ label: d.toLocaleDateString('en', { weekday: 'short' }), value: eng });
+  }
+  const maxDay = Math.max(...days.map(d => d.value), 1);
+
+  // Platform comparison
+  const platData = Object.keys(data.platforms).map(pid => ({
+    pid,
+    name: getPlatformName(pid),
+    color: getPlatformColor(pid),
+    eng: calcEngagement(data.platforms[pid].posts),
+    followers: getLatestFollowers(pid)
+  }));
+  const maxEng = Math.max(...platData.map(p => p.eng), 1);
+
+  // Content type performance
+  const typeMap = {};
+  getAllPosts().forEach(p => {
+    if (!typeMap[p.type]) typeMap[p.type] = { count: 0, engagement: 0, impressions: 0 };
+    typeMap[p.type].count++;
+    typeMap[p.type].engagement += p.likes + p.comments + p.shares;
+    typeMap[p.type].impressions += p.impressions;
+  });
+  const typeColors = { image: '#3b82f6', video: '#ec4899', carousel: '#f59e0b', text: '#4f46e5' };
+  const maxTypeEng = Math.max(...Object.values(typeMap).map(t => t.impressions ? (t.engagement / t.impressions * 100) : 0), 1);
+
+  document.getElementById('dashboardView').innerHTML = `
+    <div class="grid-2">
+      <div class="section">
+        <div class="section-header"><h3>Weekly Engagement</h3></div>
+        <div class="chart-container">
+          <div class="bar-chart">
+            ${days.map(d => `
+              <div class="bar-wrapper">
+                <div class="bar-value">${formatNum(d.value)}</div>
+                <div class="bar" style="height:${Math.max((d.value/maxDay)*150, 4)}px;background:var(--accent)"></div>
+                <div class="bar-label">${d.label}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-header"><h3>Platform Comparison</h3></div>
+        <div class="chart-container">
+          <div class="h-bar-chart">
+            ${platData.map(p => `
+              <div class="h-bar-row">
+                <div class="h-bar-label">${p.name}</div>
+                <div class="h-bar-track">
+                  <div class="h-bar-fill" style="width:${Math.max((p.eng/maxEng)*100, 3)}%;background:${p.color}">
+                    <span>${p.eng.toFixed(1)}%</span>
+                  </div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="grid-2" style="margin-top:0">
+      <div class="section">
+        <div class="section-header"><h3>Content Type Performance</h3></div>
+        <div class="chart-container">
+          <div class="h-bar-chart">
+            ${Object.entries(typeMap).map(([type, d]) => {
+              const rate = d.impressions ? (d.engagement / d.impressions * 100) : 0;
+              return `
+              <div class="h-bar-row">
+                <div class="h-bar-label" style="text-transform:capitalize">${type}</div>
+                <div class="h-bar-track">
+                  <div class="h-bar-fill" style="width:${Math.max((rate/maxTypeEng)*100, 3)}%;background:${typeColors[type] || '#888'}">
+                    <span>${rate.toFixed(1)}% eng</span>
+                  </div>
+                </div>
+              </div>`;
+            }).join('')}
+          </div>
+          <div style="margin-top:12px;font-size:12px;color:var(--text)">
+            ${Object.entries(typeMap).map(([t, d]) => `<span style="margin-right:16px"><strong style="text-transform:capitalize">${t}</strong>: ${d.count} posts</span>`).join('')}
+          </div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-header">
+          <h3>Weekly Report</h3>
+          <button class="btn btn-outline btn-sm" onclick="copyReport()">Copy Report</button>
+        </div>
+        <div class="report-box" id="reportBox">${generateReport()}</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderPlatformView() {
+  document.getElementById('dashboardView').style.display = 'none';
+  document.getElementById('platformView').style.display = 'block';
+
+  const pid = currentPlatform;
+  const plat = data.platforms[pid];
+  const platColor = getPlatformColor(pid);
+  const platName = getPlatformName(pid);
+  const posts = [...plat.posts].sort((a, b) => new Date(b.date) - new Date(a.date));
+  const engagement = calcEngagement(posts);
+  const latestFollowers = getLatestFollowers(pid);
+
+  // Best posting times
+  const hourMap = {};
+  posts.forEach(p => {
+    const h = new Date(p.date).getHours();
+    if (!hourMap[h]) hourMap[h] = { count: 0, eng: 0 };
+    hourMap[h].count++;
+    hourMap[h].eng += p.likes + p.comments + p.shares;
+  });
+  const bestHours = Object.entries(hourMap)
+    .map(([h, d]) => ({ hour: parseInt(h), avgEng: d.eng / d.count }))
+    .sort((a, b) => b.avgEng - a.avgEng)
+    .slice(0, 3);
+
+  // Day of week analysis
+  const dayMap = {};
+  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  posts.forEach(p => {
+    const d = new Date(p.date).getDay();
+    if (!dayMap[d]) dayMap[d] = { count: 0, eng: 0 };
+    dayMap[d].count++;
+    dayMap[d].eng += p.likes + p.comments + p.shares;
+  });
+
+  // Weekly engagement for this platform
+  const now = new Date();
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(now.getTime() - i * 86400000);
+    const dateStr = d.toISOString().slice(0, 10);
+    const dayPosts = posts.filter(p => p.date.slice(0, 10) === dateStr);
+    const eng = dayPosts.reduce((s, p) => s + p.likes + p.comments + p.shares, 0);
+    days.push({ label: d.toLocaleDateString('en', { weekday: 'short' }), value: eng });
+  }
+  const maxDay = Math.max(...days.map(d => d.value), 1);
+
+  // Type breakdown for this platform
+  const typeMap = {};
+  posts.forEach(p => {
+    if (!typeMap[p.type]) typeMap[p.type] = { count: 0, engagement: 0, impressions: 0 };
+    typeMap[p.type].count++;
+    typeMap[p.type].engagement += p.likes + p.comments + p.shares;
+    typeMap[p.type].impressions += p.impressions;
+  });
+  const typeColors = { image: '#3b82f6', video: '#ec4899', carousel: '#f59e0b', text: '#4f46e5' };
+  const maxTypeEng = Math.max(...Object.values(typeMap).map(t => t.impressions ? (t.engagement / t.impressions * 100) : 0), 1);
+
+  // Follower history chart
+  const fHist = plat.followers;
+  const maxF = Math.max(...fHist.map(f => f.count), 1);
+  const minF = Math.min(...fHist.map(f => f.count), 0);
+  const fRange = maxF - minF || 1;
+
+  document.getElementById('platformView').innerHTML = `
+    <div class="grid-3" style="margin-bottom:20px">
+      <div class="stat-card">
+        <div class="stat-label">Followers</div>
+        <div class="stat-value">${formatNum(latestFollowers)}</div>
+        <div class="stat-sub">${fHist.length > 1 ? (fHist[fHist.length-1].count >= fHist[fHist.length-2].count ? '+' : '') + formatNum(fHist[fHist.length-1].count - fHist[fHist.length-2].count) + ' since last update' : 'First entry'}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Engagement Rate</div>
+        <div class="stat-value">${engagement.toFixed(2)}%</div>
+        <div class="stat-sub">${posts.length} total posts</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Best Time to Post</div>
+        <div class="stat-value">${bestHours.length ? formatHour(bestHours[0].hour) : 'N/A'}</div>
+        <div class="stat-sub">${bestHours.length ? formatNum(Math.round(bestHours[0].avgEng)) + ' avg engagement' : 'Add posts to analyze'}</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header"><h3>Update Followers</h3></div>
+      <div class="followers-input-row">
+        <div class="form-group"><label>Date</label><input type="date" id="followerDate" value="${new Date().toISOString().slice(0,10)}"></div>
+        <div class="form-group"><label>Follower Count</label><input type="number" id="followerCount" min="0" placeholder="${latestFollowers || 0}"></div>
+        <button class="btn btn-primary btn-sm" onclick="addFollowerEntry('${pid}')">Update</button>
+      </div>
+      ${fHist.length > 1 ? `
+      <div style="margin-top:8px">
+        <div class="bar-chart" style="height:100px">
+          ${fHist.map((f, i) => `
+            <div class="bar-wrapper">
+              <div class="bar-value">${formatNum(f.count)}</div>
+              <div class="bar" style="height:${Math.max(((f.count - minF)/fRange)*80, 4)}px;background:${platColor}"></div>
+              <div class="bar-label">${f.date.slice(5)}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>` : ''}
+    </div>
+
+    <div class="grid-2">
+      <div class="section">
+        <div class="section-header"><h3>Engagement This Week</h3></div>
+        <div class="chart-container">
+          <div class="bar-chart">
+            ${days.map(d => `
+              <div class="bar-wrapper">
+                <div class="bar-value">${formatNum(d.value)}</div>
+                <div class="bar" style="height:${Math.max((d.value/maxDay)*140, 4)}px;background:${platColor}"></div>
+                <div class="bar-label">${d.label}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-header"><h3>Content Type Breakdown</h3></div>
+        <div class="chart-container">
+          <div class="h-bar-chart">
+            ${Object.entries(typeMap).map(([type, d]) => {
+              const rate = d.impressions ? (d.engagement / d.impressions * 100) : 0;
+              return `
+              <div class="h-bar-row">
+                <div class="h-bar-label" style="text-transform:capitalize">${type}</div>
+                <div class="h-bar-track">
+                  <div class="h-bar-fill" style="width:${Math.max((rate/maxTypeEng)*100, 3)}%;background:${typeColors[type] || '#888'}">
+                    <span>${rate.toFixed(1)}%</span>
+                  </div>
+                </div>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header"><h3>Best Posting Times</h3></div>
+      <div class="grid-2">
+        <div>
+          <h4 style="font-size:13px;margin-bottom:10px;color:var(--text)">By Hour</h4>
+          ${bestHours.length ? bestHours.map((h, i) => `
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+              <span style="width:24px;height:24px;border-radius:50%;background:${platColor};color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600">${i+1}</span>
+              <span style="font-size:14px;font-weight:600;color:var(--heading)">${formatHour(h.hour)}</span>
+              <span style="font-size:12px;color:var(--text)">${formatNum(Math.round(h.avgEng))} avg engagement</span>
+            </div>
+          `).join('') : '<div class="empty-state">Not enough data yet</div>'}
+        </div>
+        <div>
+          <h4 style="font-size:13px;margin-bottom:10px;color:var(--text)">By Day of Week</h4>
+          ${Object.keys(dayMap).length ? dayNames.map((name, i) => {
+            const d = dayMap[i];
+            if (!d) return '';
+            const avgE = d.eng / d.count;
+            const maxDE = Math.max(...Object.values(dayMap).map(x => x.eng / x.count), 1);
+            return `
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+              <span style="width:32px;font-size:12px;color:var(--text)">${name}</span>
+              <div style="flex:1;height:20px;background:#f5f5f3;border-radius:4px;overflow:hidden">
+                <div style="height:100%;width:${(avgE/maxDE)*100}%;background:${platColor};border-radius:4px;opacity:0.7"></div>
+              </div>
+              <span style="font-size:11px;color:var(--text);width:50px;text-align:right">${formatNum(Math.round(avgE))}</span>
+            </div>`;
+          }).join('') : '<div class="empty-state">Not enough data yet</div>'}
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <h3>Posts (${posts.length})</h3>
+        <button class="btn btn-primary btn-sm" onclick="openPostModal('${pid}')">+ Add Post</button>
+      </div>
+      <div class="post-list">
+        ${posts.length ? posts.map(p => `
+          <div class="post-item">
+            <span style="font-size:12px;color:var(--text)">${new Date(p.date).toLocaleDateString('en', { month:'short', day:'numeric', year:'numeric' })}</span>
+            <span class="post-type ${p.type}">${p.type}</span>
+            <div class="post-metrics">
+              <span>&#9829; ${formatNum(p.likes)}</span>
+              <span>&#128172; ${formatNum(p.comments)}</span>
+              <span>&#8634; ${formatNum(p.shares)}</span>
+              <span>&#128065; ${formatNum(p.impressions)}</span>
+            </div>
+            <button class="post-delete" onclick="deletePost('${pid}','${p.id}')" title="Delete">&#10005;</button>
+          </div>
+        `).join('') : '<div class="empty-state">No posts yet. Add your first post to start tracking.</div>'}
+      </div>
+    </div>
+  `;
+}
+
+function formatHour(h) {
+  if (h === 0) return '12 AM';
+  if (h === 12) return '12 PM';
+  return h > 12 ? (h - 12) + ' PM' : h + ' AM';
+}
+
+function openPostModal(pid) {
+  document.getElementById('postModal').classList.add('show');
+  document.getElementById('postDate').value = new Date().toISOString().slice(0, 10);
+  document.getElementById('postModal').dataset.platform = pid;
+  document.getElementById('postLikes').value = '';
+  document.getElementById('postComments').value = '';
+  document.getElementById('postShares').value = '';
+  document.getElementById('postImpressions').value = '';
+}
+
+function closePostModal() {
+  document.getElementById('postModal').classList.remove('show');
+}
+
+function savePost() {
+  const pid = document.getElementById('postModal').dataset.platform;
+  const dateVal = document.getElementById('postDate').value;
+  const type = document.getElementById('postType').value;
+  const likes = parseInt(document.getElementById('postLikes').value) || 0;
+  const comments = parseInt(document.getElementById('postComments').value) || 0;
+  const shares = parseInt(document.getElementById('postShares').value) || 0;
+  const impressions = parseInt(document.getElementById('postImpressions').value) || 0;
+
+  if (!dateVal) { showToast('Please select a date'); return; }
+
+  const d = new Date(dateVal);
+  d.setHours(new Date().getHours(), new Date().getMinutes());
+
+  data.platforms[pid].posts.push({
+    id: Date.now().toString(),
+    date: d.toISOString(),
+    type,
+    likes,
+    comments,
+    shares,
+    impressions
+  });
+
+  saveData();
+  closePostModal();
+  render();
+  showToast('Post added successfully');
+}
+
+function deletePost(pid, postId) {
+  data.platforms[pid].posts = data.platforms[pid].posts.filter(p => p.id.toString() !== postId.toString());
+  saveData();
+  render();
+  showToast('Post deleted');
+}
+
+function addFollowerEntry(pid) {
+  const date = document.getElementById('followerDate').value;
+  const count = parseInt(document.getElementById('followerCount').value);
+  if (!date || isNaN(count) || count < 0) { showToast('Enter a valid date and count'); return; }
+
+  const existing = data.platforms[pid].followers.findIndex(f => f.date === date);
+  if (existing >= 0) {
+    data.platforms[pid].followers[existing].count = count;
+  } else {
+    data.platforms[pid].followers.push({ date, count });
+    data.platforms[pid].followers.sort((a, b) => a.date.localeCompare(b.date));
+  }
+
+  saveData();
+  render();
+  showToast('Followers updated');
+}
+
+function generateReport() {
+  const now = new Date();
+  const weekAgo = new Date(now.getTime() - 7 * 86400000);
+  const weekPosts = getPostsThisWeek();
+  const allPosts = getAllPosts();
+
+  const totalFollowers = getTotalFollowers();
+  const engagement = calcEngagement(allPosts);
+  const weekEng = calcEngagement(weekPosts);
+
+  const totalLikes = weekPosts.reduce((s, p) => s + p.likes, 0);
+  const totalComments = weekPosts.reduce((s, p) => s + p.comments, 0);
+  const totalShares = weekPosts.reduce((s, p) => s + p.shares, 0);
+  const totalImpressions = weekPosts.reduce((s, p) => s + p.impressions, 0);
+
+  // Best post
+  let bestPost = null;
+  let bestEng = 0;
+  weekPosts.forEach(p => {
+    const e = p.likes + p.comments + p.shares;
+    if (e > bestEng) { bestEng = e; bestPost = p; }
+  });
+
+  // Platform breakdown
+  const platBreakdown = Object.keys(data.platforms).map(pid => {
+    const pp = weekPosts.filter(p => p.platform === pid);
+    return { name: getPlatformName(pid), posts: pp.length, eng: calcEngagement(pp), followers: getLatestFollowers(pid) };
+  }).filter(p => p.posts > 0);
+
+  // Content type analysis
+  const typeAnalysis = {};
+  weekPosts.forEach(p => {
+    if (!typeAnalysis[p.type]) typeAnalysis[p.type] = { count: 0, eng: 0 };
+    typeAnalysis[p.type].count++;
+    typeAnalysis[p.type].eng += p.likes + p.comments + p.shares;
+  });
+
+  const weekStr = weekAgo.toLocaleDateString('en', { month: 'short', day: 'numeric' }) + ' - ' + now.toLocaleDateString('en', { month: 'short', day: 'numeric', year: 'numeric' });
+
+  let report = `WEEKLY SOCIAL MEDIA REPORT\n${weekStr}\n${'='.repeat(40)}\n\n`;
+  report += `OVERVIEW\n`;
+  report += `Total Followers: ${formatNum(totalFollowers)}\n`;
+  report += `Posts Published: ${weekPosts.length}\n`;
+  report += `Total Impressions: ${formatNum(totalImpressions)}\n`;
+  report += `Total Engagement: ${formatNum(totalLikes + totalComments + totalShares)}\n`;
+  report += `  Likes: ${formatNum(totalLikes)} | Comments: ${formatNum(totalComments)} | Shares: ${formatNum(totalShares)}\n`;
+  report += `Weekly Engagement Rate: ${weekEng.toFixed(2)}%\n\n`;
+
+  if (platBreakdown.length) {
+    report += `PLATFORM BREAKDOWN\n`;
+    platBreakdown.forEach(p => {
+      report += `  ${p.name}: ${p.posts} posts, ${p.eng.toFixed(2)}% engagement, ${formatNum(p.followers)} followers\n`;
+    });
+    report += '\n';
+  }
+
+  if (Object.keys(typeAnalysis).length) {
+    report += `CONTENT PERFORMANCE\n`;
+    Object.entries(typeAnalysis)
+      .sort((a, b) => b[1].eng - a[1].eng)
+      .forEach(([type, d]) => {
+        report += `  ${type.charAt(0).toUpperCase() + type.slice(1)}: ${d.count} posts, ${formatNum(d.eng)} total engagement\n`;
+      });
+    report += '\n';
+  }
+
+  if (bestPost) {
+    report += `TOP PERFORMING POST\n`;
+    report += `  Platform: ${getPlatformName(bestPost.platform)}\n`;
+    report += `  Type: ${bestPost.type}\n`;
+    report += `  Date: ${new Date(bestPost.date).toLocaleDateString('en', { month: 'short', day: 'numeric' })}\n`;
+    report += `  Likes: ${formatNum(bestPost.likes)} | Comments: ${formatNum(bestPost.comments)} | Shares: ${formatNum(bestPost.shares)}\n`;
+    report += `  Impressions: ${formatNum(bestPost.impressions)}\n\n`;
+  }
+
+  // Recommendations
+  report += `INSIGHTS\n`;
+  const bestType = Object.entries(typeAnalysis).sort((a, b) => b[1].eng / b[1].count - a[1].eng / a[1].count)[0];
+  if (bestType) report += `  - ${bestType[0].charAt(0).toUpperCase() + bestType[0].slice(1)} content generates the highest average engagement\n`;
+  const bestPlat = platBreakdown.sort((a, b) => b.eng - a.eng)[0];
+  if (bestPlat) report += `  - ${bestPlat.name} is the top performing platform at ${bestPlat.eng.toFixed(2)}% engagement\n`;
+
+  const bestHourAll = {};
+  weekPosts.forEach(p => {
+    const h = new Date(p.date).getHours();
+    if (!bestHourAll[h]) bestHourAll[h] = { count: 0, eng: 0 };
+    bestHourAll[h].count++;
+    bestHourAll[h].eng += p.likes + p.comments + p.shares;
+  });
+  const topHour = Object.entries(bestHourAll).sort((a, b) => (b[1].eng/b[1].count) - (a[1].eng/a[1].count))[0];
+  if (topHour) report += `  - Best posting time this week: ${formatHour(parseInt(topHour[0]))}\n`;
+
+  return report;
+}
+
+function copyReport() {
+  const report = document.getElementById('reportBox');
+  if (!report) return;
+  navigator.clipboard.writeText(report.textContent).then(() => {
+    showToast('Report copied to clipboard');
+  }).catch(() => {
+    const range = document.createRange();
+    range.selectNode(report);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+    document.execCommand('copy');
+    window.getSelection().removeAllRanges();
+    showToast('Report copied to clipboard');
+  });
+}
+
+function render() {
+  renderTabs();
+  renderStats();
+  if (currentPlatform === 'dashboard') {
+    renderDashboard();
+  } else {
+    renderPlatformView();
+  }
+}
+
+// Close modal on overlay click
+document.getElementById('postModal').addEventListener('click', function(e) {
+  if (e.target === this) closePostModal();
+});
+
+// Init
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wireframe Kit -- Watermelons Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Sora', sans-serif;
+    background: #f5f5f3;
+    color: #1a1a1a;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---- Header ---- */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(245,245,243,.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid #e0e0de;
+  }
+  .site-header-inner {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .site-logo {
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: -.4px;
+    color: #1a1a1a;
+  }
+  .site-logo span { color: #999; font-weight: 400; }
+  .site-count {
+    font-size: 13px;
+    color: #888;
+    font-weight: 400;
+  }
+
+  /* ---- Filter Nav ---- */
+  .filter-bar {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 16px 40px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .filter-btn {
+    padding: 7px 18px;
+    border-radius: 100px;
+    border: 1px solid #d5d5d3;
+    background: #fff;
+    font-family: 'Sora', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: #555;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .filter-btn:hover { border-color: #1a1a1a; color: #1a1a1a; }
+  .filter-btn.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+
+  /* ---- Grid ---- */
+  .kit-grid {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 32px 40px 80px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  /* ---- Component Card ---- */
+  .comp-card {
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid #e8e8e6;
+    overflow: hidden;
+    transition: box-shadow .25s;
+  }
+  .comp-card:hover { box-shadow: 0 8px 30px rgba(0,0,0,.06); }
+
+  .comp-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 24px;
+    border-bottom: 1px solid #f0f0ee;
+  }
+  .comp-card-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a1a;
+    letter-spacing: -.2px;
+  }
+  .comp-card-tag {
+    font-size: 11px;
+    font-weight: 500;
+    color: #999;
+    background: #f5f5f3;
+    padding: 3px 10px;
+    border-radius: 100px;
+    margin-left: 10px;
+  }
+  .copy-btn {
+    padding: 7px 16px;
+    border-radius: 8px;
+    border: 1px solid #d5d5d3;
+    background: #fff;
+    font-family: 'Sora', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: #555;
+    cursor: pointer;
+    transition: all .2s;
+    white-space: nowrap;
+  }
+  .copy-btn:hover { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+  .copy-btn.copied { background: #2d8a4e; color: #fff; border-color: #2d8a4e; }
+
+  .comp-card-preview {
+    padding: 32px 24px;
+    background: #fafaf9;
+    min-height: 120px;
+  }
+
+  /* ---- Wireframe Base Styles ---- */
+  .wf { font-family: 'Sora', sans-serif; }
+  .wf-bg { background: #eee; }
+  .wf-border { border: 1.5px solid #d0d0d0; }
+  .wf-border-dashed { border: 1.5px dashed #ccc; }
+  .wf-text { color: #999; font-size: 13px; }
+  .wf-text-sm { color: #bbb; font-size: 11px; }
+  .wf-text-heading { color: #666; font-weight: 600; }
+  .wf-line {
+    height: 8px;
+    background: #ddd;
+    border-radius: 4px;
+    margin: 6px 0;
+  }
+  .wf-line-sm {
+    height: 6px;
+    background: #e2e2e2;
+    border-radius: 3px;
+    margin: 4px 0;
+  }
+  .wf-circle {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: #ddd;
+    flex-shrink: 0;
+  }
+  .wf-circle-sm {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: #ddd;
+    flex-shrink: 0;
+  }
+  .wf-box {
+    background: #e8e8e6;
+    border-radius: 8px;
+  }
+  .wf-btn {
+    display: inline-block;
+    padding: 10px 28px;
+    border: 1.5px solid #bbb;
+    border-radius: 8px;
+    color: #888;
+    font-size: 12px;
+    font-weight: 500;
+    text-align: center;
+  }
+  .wf-btn-filled {
+    display: inline-block;
+    padding: 10px 28px;
+    background: #ccc;
+    border-radius: 8px;
+    color: #777;
+    font-size: 12px;
+    font-weight: 500;
+    text-align: center;
+  }
+  .wf-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid #d5d5d3;
+    border-radius: 8px;
+    background: #fafafa;
+    color: #bbb;
+    font-size: 12px;
+    font-family: 'Sora', sans-serif;
+  }
+  .wf-img-placeholder {
+    background: #e5e5e3;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #bbb;
+    font-size: 12px;
+    overflow: hidden;
+  }
+  .wf-icon-placeholder {
+    width: 40px; height: 40px;
+    background: #e0e0de;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .wf-divider {
+    height: 1px;
+    background: #e5e5e3;
+    margin: 16px 0;
+  }
+
+  /* ---- Toast ---- */
+  .toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: #1a1a1a;
+    color: #fff;
+    padding: 12px 28px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 500;
+    opacity: 0;
+    pointer-events: none;
+    transition: all .35s cubic-bezier(.4,0,.2,1);
+    z-index: 9999;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  @media (max-width: 768px) {
+    .site-header-inner, .filter-bar, .kit-grid { padding-left: 20px; padding-right: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="site-header">
+  <div class="site-header-inner">
+    <div>
+      <div class="site-logo">Wireframe Kit <span>by Watermelons Studio</span></div>
+    </div>
+    <div class="site-count" id="componentCount"></div>
+  </div>
+</header>
+
+<!-- Filter Bar -->
+<nav class="filter-bar" id="filterBar">
+  <button class="filter-btn active" data-filter="all">All</button>
+  <button class="filter-btn" data-filter="hero">Hero</button>
+  <button class="filter-btn" data-filter="nav">Navigation</button>
+  <button class="filter-btn" data-filter="features">Features</button>
+  <button class="filter-btn" data-filter="pricing">Pricing</button>
+  <button class="filter-btn" data-filter="testimonials">Testimonials</button>
+  <button class="filter-btn" data-filter="footer">Footer</button>
+  <button class="filter-btn" data-filter="forms">Forms</button>
+  <button class="filter-btn" data-filter="cards">Cards</button>
+  <button class="filter-btn" data-filter="cta">CTA</button>
+</nav>
+
+<!-- Grid -->
+<main class="kit-grid" id="kitGrid"></main>
+
+<!-- Toast -->
+<div class="toast" id="toast">Copied to clipboard</div>
+
+<script>
+/* ================================================================
+   Component Definitions
+   Each item: { id, title, category, tag, html }
+   `html` is the wireframe markup users will copy.
+================================================================ */
+const components = [
+
+/* ----------------------------------------------------------------
+   NAVIGATION BARS
+---------------------------------------------------------------- */
+{
+  id: 'nav-1',
+  title: 'Navbar -- Centered Logo',
+  category: 'nav',
+  tag: 'Navigation',
+  html: `<nav style="display:flex;align-items:center;justify-content:space-between;padding:16px 32px;border:1.5px solid #d0d0d0;border-radius:12px;background:#fafafa;font-family:sans-serif">
+  <div style="display:flex;gap:20px">
+    <span style="width:50px;height:8px;background:#ddd;border-radius:4px;display:block;margin-top:6px"></span>
+    <span style="width:40px;height:8px;background:#ddd;border-radius:4px;display:block;margin-top:6px"></span>
+    <span style="width:45px;height:8px;background:#ddd;border-radius:4px;display:block;margin-top:6px"></span>
+  </div>
+  <div style="width:90px;height:20px;background:#e0e0de;border-radius:6px"></div>
+  <div style="display:flex;gap:12px;align-items:center">
+    <span style="width:32px;height:32px;border-radius:50%;background:#ddd;display:block"></span>
+    <span style="padding:8px 22px;border:1.5px solid #bbb;border-radius:8px;font-size:12px;color:#999">CTA</span>
+  </div>
+</nav>`
+},
+{
+  id: 'nav-2',
+  title: 'Navbar -- Left Logo + Right Links',
+  category: 'nav',
+  tag: 'Navigation',
+  html: `<nav style="display:flex;align-items:center;justify-content:space-between;padding:16px 32px;border:1.5px solid #d0d0d0;border-radius:12px;background:#fafafa;font-family:sans-serif">
+  <div style="width:100px;height:20px;background:#e0e0de;border-radius:6px"></div>
+  <div style="display:flex;gap:24px;align-items:center">
+    <span style="width:45px;height:8px;background:#ddd;border-radius:4px;display:block"></span>
+    <span style="width:50px;height:8px;background:#ddd;border-radius:4px;display:block"></span>
+    <span style="width:40px;height:8px;background:#ddd;border-radius:4px;display:block"></span>
+    <span style="width:50px;height:8px;background:#ddd;border-radius:4px;display:block"></span>
+    <span style="padding:8px 22px;background:#ccc;border-radius:8px;font-size:12px;color:#777">Sign Up</span>
+  </div>
+</nav>`
+},
+{
+  id: 'nav-3',
+  title: 'Navbar -- Transparent Overlay',
+  category: 'nav',
+  tag: 'Navigation',
+  html: `<nav style="display:flex;align-items:center;justify-content:space-between;padding:16px 32px;border-radius:12px;background:rgba(0,0,0,.04);font-family:sans-serif">
+  <div style="display:flex;align-items:center;gap:16px">
+    <div style="width:28px;height:28px;background:#d5d5d3;border-radius:6px"></div>
+    <div style="width:80px;height:12px;background:#ddd;border-radius:4px"></div>
+  </div>
+  <div style="display:flex;gap:20px;align-items:center">
+    <span style="width:40px;height:8px;background:#ddd;border-radius:4px;display:block"></span>
+    <span style="width:45px;height:8px;background:#ddd;border-radius:4px;display:block"></span>
+    <span style="width:40px;height:8px;background:#ddd;border-radius:4px;display:block"></span>
+    <div style="width:1px;height:20px;background:#ddd"></div>
+    <span style="padding:8px 22px;border:1.5px solid #bbb;border-radius:100px;font-size:12px;color:#999">Login</span>
+    <span style="padding:8px 22px;background:#ccc;border-radius:100px;font-size:12px;color:#777">Get Started</span>
+  </div>
+</nav>`
+},
+
+/* ----------------------------------------------------------------
+   HERO SECTIONS
+---------------------------------------------------------------- */
+{
+  id: 'hero-1',
+  title: 'Hero -- Centered with Image',
+  category: 'hero',
+  tag: 'Hero',
+  html: `<section style="text-align:center;padding:60px 40px;border:1.5px solid #d0d0d0;border-radius:12px;background:#fafafa;font-family:sans-serif">
+  <div style="display:inline-block;padding:6px 16px;border:1px solid #ddd;border-radius:100px;font-size:11px;color:#bbb;margin-bottom:20px">Announcement badge</div>
+  <div style="max-width:500px;margin:0 auto 12px">
+    <div style="height:16px;background:#d0d0d0;border-radius:4px;margin-bottom:10px"></div>
+    <div style="height:16px;background:#d0d0d0;border-radius:4px;width:70%;margin:0 auto"></div>
+  </div>
+  <div style="max-width:360px;margin:0 auto 24px">
+    <div style="height:8px;background:#e2e2e2;border-radius:4px;margin-bottom:6px"></div>
+    <div style="height:8px;background:#e2e2e2;border-radius:4px;width:80%;margin:0 auto"></div>
+  </div>
+  <div style="display:flex;gap:12px;justify-content:center;margin-bottom:36px">
+    <span style="padding:12px 32px;background:#ccc;border-radius:10px;font-size:12px;color:#777">Primary CTA</span>
+    <span style="padding:12px 32px;border:1.5px solid #bbb;border-radius:10px;font-size:12px;color:#999">Secondary CTA</span>
+  </div>
+  <div style="width:100%;height:220px;background:#e5e5e3;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:13px">Hero Image / Screenshot</div>
+</section>`
+},
+{
+  id: 'hero-2',
+  title: 'Hero -- Split Layout (Text + Image)',
+  category: 'hero',
+  tag: 'Hero',
+  html: `<section style="display:grid;grid-template-columns:1fr 1fr;gap:40px;padding:60px 40px;border:1.5px solid #d0d0d0;border-radius:12px;background:#fafafa;font-family:sans-serif;align-items:center">
+  <div>
+    <div style="height:14px;background:#d0d0d0;border-radius:4px;margin-bottom:10px;width:90%"></div>
+    <div style="height:14px;background:#d0d0d0;border-radius:4px;margin-bottom:10px;width:75%"></div>
+    <div style="height:14px;background:#d0d0d0;border-radius:4px;margin-bottom:24px;width:50%"></div>
+    <div style="height:8px;background:#e2e2e2;border-radius:4px;margin-bottom:6px;width:95%"></div>
+    <div style="height:8px;background:#e2e2e2;border-radius:4px;margin-bottom:6px;width:85%"></div>
+    <div style="height:8px;background:#e2e2e2;border-radius:4px;margin-bottom:28px;width:60%"></div>
+    <div style="display:flex;gap:12px">
+      <span style="padding:12px 28px;background:#ccc;border-radius:10px;font-size:12px;color:#777">Get Started</span>
+      <span style="padding:12px 28px;border:1.5px solid #bbb;border-radius:10px;font-size:12px;color:#999">Learn More</span>
+    </div>
+  </div>
+  <div style="width:100%;height:280px;background:#e5e5e3;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:13px">Image / Illustration</div>
+</section>`
+},
+{
+  id: 'hero-3',
+  title: 'Hero -- Full-Width Background',
+  category: 'hero',
+  tag: 'Hero',
+  html: `<section style="position:relative;padding:80px 40px;border-radius:12px;background:#e5e5e3;text-align:center;font-family:sans-serif;overflow:hidden">
+  <div style="position:relative;z-index:1;max-width:520px;margin:0 auto">
+    <div style="height:16px;background:#d0d0d0;border-radius:4px;margin-bottom:10px"></div>
+    <div style="height:16px;background:#d0d0d0;border-radius:4px;width:65%;margin:0 auto 20px"></div>
+    <div style="height:8px;background:#ddd;border-radius:4px;margin-bottom:6px;width:80%;margin-left:auto;margin-right:auto"></div>
+    <div style="height:8px;background:#ddd;border-radius:4px;margin-bottom:28px;width:60%;margin-left:auto;margin-right:auto"></div>
+    <div style="display:inline-flex;gap:12px">
+      <span style="padding:14px 36px;background:#ccc;border-radius:10px;font-size:12px;color:#777">Start Free Trial</span>
+    </div>
+  </div>
+  <div style="position:absolute;top:20px;left:20px;width:80px;height:80px;border:1.5px dashed #ccc;border-radius:50%;opacity:.5"></div>
+  <div style="position:absolute;bottom:20px;right:30px;width:60px;height:60px;border:1.5px dashed #ccc;border-radius:10px;opacity:.5"></div>
+</section>`
+},
+
+/* ----------------------------------------------------------------
+   FEATURE GRIDS
+---------------------------------------------------------------- */
+{
+  id: 'features-1',
+  title: 'Features -- Icon Grid (3 columns)',
+  category: 'features',
+  tag: 'Features',
+  html: `<section style="padding:40px;border:1.5px solid #d0d0d0;border-radius:12px;background:#fafafa;font-family:sans-serif">
+  <div style="text-align:center;margin-bottom:32px">
+    <div style="height:12px;background:#d0d0d0;border-radius:4px;width:200px;margin:0 auto 10px"></div>
+    <div style="height:8px;background:#e2e2e2;border-radius:4px;width:300px;margin:0 auto"></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px">
+    ${[1,2,3,4,5,6].map(() => `<div style="padding:24px;border:1.5px solid #e5e5e3;border-radius:10px;background:#fff">
+      <div style="width:40px;height:40px;background:#e0e0de;border-radius:10px;margin-bottom:16px"></div>
+      <div style="height:10px;background:#d5d5d3;border-radius:4px;width:70%;margin-bottom:10px"></div>
+      <div style="height:6px;background:#e8e8e6;border-radius:3px;margin-bottom:5px"></div>
+      <div style="height:6px;background:#e8e8e6;border-radius:3px;width:85%"></div>
+    </div>`).join('')}
+  </div>
+</section>`
+},
+{
+  id: 'features-2',
+  title: 'Features -- Alternating (Image + Text)',
+  category: 'features',
+  tag: 'Features',
+  html: `<section style="padding:40px;border:1.5px solid #d0d0d0;border-radius:12px;background:#fafafa;font-family:sans-serif;display:flex;flex-direction:column;gap:32px">
+  ${[false, true].map(reversed => `<div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:center${reversed ? ';direction:rtl' : ''}">
+    <div style="${reversed ? 'direction:ltr;' : ''}">
+      <div style="height:10px;background:#d5d5d3;border-radius:4px;width:60%;margin-bottom:10px"></div>
+      <div style="height:12px;background:#d0d0d0;border-radius:4px;margin-bottom:8px"></div>
+      <div style="height:12px;background:#d0d0d0;border-radius:4px;width:80%;margin-bottom:16px"></div>
+      <div style="height:7px;background:#e2e2e2;border-radius:4px;margin-bottom:5px"></div>
+      <div style="height:7px;background:#e2e2e2;border-radius:4px;width:90%;margin-bottom:5px"></div>
+      <div style="height:7px;background:#e2e2e2;border-radius:4px;width:70%;margin-bottom:20px"></div>
+      <span style="display:inline-block;padding:10px 24px;border:1.5px solid #bbb;border-radius:8px;font-size:12px;color:#999">Learn More</span>
+    </div>
+    <div style="height:200px;background:#e5e5e3;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:12px${reversed ? ';direction:ltr' : ''}">Feature Image</div>
+  </div>`).join('')}
+</section>`
+},
+
+/* ----------------------------------------------------------------
+   PRICING TABLES
+---------------------------------------------------------------- */
+{
+  id: 'pricing-1',
+  title: 'Pricing -- Three Tier Cards',
+  category: 'pricing',
+  tag: 'Pricing',
+  html: `<section style="padding:40px;border:1.5px solid #d0d0d0;border-radius:12px;background:#fafafa;font-family:sans-serif">
+  <div style="text-align:center;margin-bottom:32px">
+    <div style="height:14px;background:#d0d0d0;border-radius:4px;width:180px;margin:0 auto 10px"></div>
+    <div style="height:8px;background:#e2e2e2;border-radius:4px;width:280px;margin:0 auto"></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">
+    ${['Basic','Pro','Enterprise'].map((name, i) => `<div style="padding:28px;border:${i === 1 ? '2px solid #bbb' : '1.5px solid #e5e5e3'};border-radius:12px;background:#fff;${i === 1 ? 'transform:scale(1.02);box-shadow:0 4px 20px rgba(0,0,0,.05);' : ''}">
+      <div style="font-size:12px;color:#bbb;margin-bottom:4px">${name}</div>
+      <div style="display:flex;align-items:baseline;gap:4px;margin-bottom:6px">
+        <div style="height:22px;width:60px;background:#d0d0d0;border-radius:4px"></div>
+        <span style="font-size:11px;color:#ccc">/mo</span>
+      </div>
+      <div style="height:6px;background:#e8e8e6;border-radius:3px;width:80%;margin-bottom:20px"></div>
+      <div style="height:1px;background:#eee;margin:16px 0"></div>
+      ${[1,2,3,4].map(() => `<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <div style="width:16px;height:16px;border-radius:50%;background:#e5e5e3;flex-shrink:0"></div>
+        <div style="height:6px;background:#e8e8e6;border-radius:3px;flex:1"></div>
+      </div>`).join('')}
+      <div style="margin-top:20px;padding:10px 0;background:${i === 1 ? '#ccc' : 'transparent'};border:1.5px solid #bbb;border-radius:8px;text-align:center;font-size:12px;color:#888">Choose Plan</div>
+    </div>`).join('')}
+  </div>
+</section>`
+},
+{
+  id: 'pricing-2',
+  title: 'Pricing -- Toggle (Monthly / Annual)',
+  category: 'pricing',
+  tag: 'Pricing',
+  html: `<section style="padding:40px;border:1.5px solid #d0d0d0;border-radius:12px;background:#fafafa;font-family:sans-serif">
+  <div style="text-align:center;margin-bottom:28px">
+    <div style="height:14px;background:#d0d0d0;border-radius:4px;width:160px;margin:0 auto 16px"></div>
+    <div style="display:inline-flex;align-items:center;gap:0;border:1.5px solid #ddd;border-radius:100px;overflow:hidden">
+      <span style="padding:8px 20px;background:#e0e0de;font-size:11px;color:#888">Monthly</span>
+      <span style="padding:8px 20px;font-size:11px;color:#bbb">Annual</span>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:640px;margin:0 auto">
+    ${['Starter','Growth'].map((name, i) => `<div style="padding:28px;border:1.5px solid #e5e5e3;border-radius:12px;background:#fff">
+      <div style="font-size:12px;color:#bbb;margin-bottom:4px">${name}</div>
+      <div style="height:20px;width:70px;background:#d0d0d0;border-radius:4px;margin-bottom:16px"></div>
+      ${[1,2,3].map(() => `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <div style="width:14px;height:14px;border:1.5px solid #ddd;border-radius:4px;flex-shrink:0"></div>
+        <div style="height:6px;background:#e8e8e6;border-radius:3px;flex:1"></div>
+      </div>`).join('')}
+      <div style="margin-top:20px;padding:10px 0;background:#ccc;border-radius:8px;text-align:center;font-size:12px;color:#777">Select</div>
+    </div>`).join('')}
+  </div>
+</section>`
+},
+
+/* ----------------------------------------------------------------
+   TESTIMONIALS
+---------------------------------------------------------------- */
+{
+  id: 'testimonials-1',
+  title: 'Testimonials -- Card Grid',
+  category: 'testimonials',
+  tag: 'Testimonials',
+  html: `<section style="padding:40px;border:1.5px solid #d0d0d0;border-radius:12px;background:#fafafa;font-family:sans-serif">
+  <div style="text-align:center;margin-bottom:28px">
+    <div style="height:12px;background:#d0d0d0;border-radius:4px;width:220px;margin:0 auto 10px"></div>
+    <div style="height:8px;background:#e2e2e2;border-radius:4px;width:300px;margin:0 auto"></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">
+    ${[1,2,3].map(() => `<div style="padding:24px;border:1.5px solid #e5e5e3;border-radius:10px;background:#fff">
+      <div style="display:flex;gap:4px;margin-bottom:14px">
+        ${[1,2,3,4,5].map(() => `<div style="width:14px;height:14px;background:#e0e0de;border-radius:3px"></div>`).join('')}
+      </div>
+      <div style="height:6px;background:#e8e8e6;border-radius:3px;margin-bottom:5px"></div>
+      <div style="height:6px;background:#e8e8e6;border-radius:3px;width:90%;margin-bottom:5px"></div>
+      <div style="height:6px;background:#e8e8e6;border-radius:3px;width:70%;margin-bottom:18px"></div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:36px;height:36px;border-radius:50%;background:#ddd"></div>
+        <div>
+          <div style="height:8px;background:#d5d5d3;border-radius:3px;width:70px;margin-bottom:5px"></div>
+          <div style="height:6px;background:#e8e8e6;border-radius:3px;width:50px"></div>
+        </div>
+      </div>
+    </div>`).join('')}
+  </div>
+</section>`
+},
+{
+  id: 'testimonials-2',
+  title: 'Testimonials -- Large Quote',
+  category: 'testimonials',
+  tag: 'Testimonials',
+  html: `<section style="padding:48px 40px;border:1.5px solid #d0d0d0;border-radius:12px;background:#fafafa;font-family:sans-serif;text-align:center">
+  <div style="font-size:40px;color:#ddd;line-height:1;margin-bottom:16px">&ldquo;</div>
+  <div style="max-width:500px;margin:0 auto 24px">
+    <div style="height:8px;background:#e2e2e2;border-radius:4px;margin-bottom:6px"></div>
+    <div style="height:8px;background:#e2e2e2;border-radius:4px;width:90%;margin:0 auto 6px"></div>
+    <div style="height:8px;background:#e2e2e2;border-radius:4px;width:75%;margin:0 auto"></div>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:center;gap:12px">
+    <div style="width:44px;height:44px;border-radius:50%;background:#ddd"></div>
+    <div style="text-align:left">
+      <div style="height:8px;background:#d5d5d3;border-radius:3px;width:80px;margin-bottom:5px"></div>
+      <div style="height:6px;background:#e8e8e6;border-radius:3px;width:100px"></div>
+    </div>
+  </div>
+  <div style="display:flex;justify-content:center;gap:8px;margin-top:24px">
+    ${[0,1,2].map(i => `<div style="width:${i === 0 ? 24 : 8}px;height:8px;background:${i === 0 ? '#ccc' : '#e5e5e3'};border-radius:4px"></div>`).join('')}
+  </div>
+</section>`
+},
+
+/* ----------------------------------------------------------------
+   FOOTER
+---------------------------------------------------------------- */
+{
+  id: 'footer-1',
+  title: 'Footer -- Multi-Column',
+  category: 'footer',
+  tag: 'Footer',
+  html: `<footer style="padding:40px;border:1.5px solid #d0d0d0;border-radius:12px;background:#fafafa;font-family:sans-serif">
+  <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px;margin-bottom:32px">
+    <div>
+      <div style="width:100px;height:18px;background:#d5d5d3;border-radius:4px;margin-bottom:14px"></div>
+      <div style="height:6px;background:#e8e8e6;border-radius:3px;width:80%;margin-bottom:5px"></div>
+      <div style="height:6px;background:#e8e8e6;border-radius:3px;width:65%"></div>
+    </div>
+    ${['Product','Company','Resources'].map(col => `<div>
+      <div style="height:8px;background:#d0d0d0;border-radius:3px;width:60px;margin-bottom:14px"></div>
+      ${[1,2,3,4].map(() => `<div style="height:6px;background:#e8e8e6;border-radius:3px;width:${50 + Math.floor(Math.random()*30)}%;margin-bottom:10px"></div>`).join('')}
+    </div>`).join('')}
+  </div>
+  <div style="height:1px;background:#e5e5e3;margin-bottom:20px"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <div style="height:6px;background:#e8e8e6;border-radius:3px;width:160px"></div>
+    <div style="display:flex;gap:10px">
+      ${[1,2,3,4].map(() => `<div style="width:28px;height:28px;border-radius:50%;background:#e5e5e3"></div>`).join('')}
+    </div>
+  </div>
+</footer>`
+},
+{
+  id: 'footer-2',
+  title: 'Footer -- Simple Centered',
+  category: 'footer',
+  tag: 'Footer',
+  html: `<footer style="padding:40px;border:1.5px solid #d0d0d0;border-radius:12px;background:#fafafa;font-family:sans-serif;text-align:center">
+  <div style="width:80px;height:18px;background:#d5d5d3;border-radius:4px;margin:0 auto 20px"></div>
+  <div style="display:flex;justify-content:center;gap:24px;margin-bottom:20px">
+    ${[1,2,3,4,5].map(() => `<div style="height:7px;width:50px;background:#e2e2e2;border-radius:3px"></div>`).join('')}
+  </div>
+  <div style="height:1px;background:#e5e5e3;margin-bottom:18px"></div>
+  <div style="display:flex;justify-content:center;gap:12px;margin-bottom:16px">
+    ${[1,2,3].map(() => `<div style="width:28px;height:28px;border-radius:50%;background:#e5e5e3"></div>`).join('')}
+  </div>
+  <div style="height:6px;background:#eee;border-radius:3px;width:180px;margin:0 auto"></div>
+</footer>`
+},
+
+/* ----------------------------------------------------------------
+   CONTACT FORM
+---------------------------------------------------------------- */
+{
+  id: 'form-contact',
+  title: 'Contact Form',
+  category: 'forms',
+  tag: 'Forms',
+  html: `<section style="padding:40px;border:1.5px solid #d0d0d0;border-radius:12px;background:#fafafa;font-family:sans-serif;max-width:480px;margin:0 auto">
+  <div style="text-align:center;margin-bottom:28px">
+    <div style="height:14px;background:#d0d0d0;border-radius:4px;width:140px;margin:0 auto 10px"></div>
+    <div style="height:7px;background:#e2e2e2;border-radius:3px;width:240px;margin:0 auto"></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+    <div>
+      <div style="height:6px;background:#ddd;border-radius:3px;width:50px;margin-bottom:6px"></div>
+      <div style="padding:10px 14px;border:1.5px solid #d5d5d3;border-radius:8px;background:#fafafa">
+        <div style="height:6px;background:#e8e8e6;border-radius:3px;width:60%"></div>
+      </div>
+    </div>
+    <div>
+      <div style="height:6px;background:#ddd;border-radius:3px;width:55px;margin-bottom:6px"></div>
+      <div style="padding:10px 14px;border:1.5px solid #d5d5d3;border-radius:8px;background:#fafafa">
+        <div style="height:6px;background:#e8e8e6;border-radius:3px;width:65%"></div>
+      </div>
+    </div>
+  </div>
+  <div style="margin-bottom:14px">
+    <div style="height:6px;background:#ddd;border-radius:3px;width:40px;margin-bottom:6px"></div>
+    <div style="padding:10px 14px;border:1.5px solid #d5d5d3;border-radius:8px;background:#fafafa">
+      <div style="height:6px;background:#e8e8e6;border-radius:3px;width:70%"></div>
+    </div>
+  </div>
+  <div style="margin-bottom:20px">
+    <div style="height:6px;background:#ddd;border-radius:3px;width:55px;margin-bottom:6px"></div>
+    <div style="padding:14px;border:1.5px solid #d5d5d3;border-radius:8px;background:#fafafa;min-height:80px">
+      <div style="height:6px;background:#e8e8e6;border-radius:3px;width:90%;margin-bottom:5px"></div>
+      <div style="height:6px;background:#e8e8e6;border-radius:3px;width:60%"></div>
+    </div>
+  </div>
+  <div style="padding:12px;background:#ccc;border-radius:8px;text-align:center;font-size:12px;color:#777">Send Message</div>
+</section>`
+},
+
+/* ----------------------------------------------------------------
+   LOGIN / SIGNUP FORMS
+---------------------------------------------------------------- */
+{
+  id: 'form-login',
+  title: 'Login Form',
+  category: 'forms',
+  tag: 'Forms',
+  html: `<section style="padding:40px;border:1.5px solid #d0d0d0;border-radius:12px;background:#fafafa;font-family:sans-serif;max-width:380px;margin:0 auto">
+  <div style="text-align:center;margin-bottom:24px">
+    <div style="width:44px;height:44px;background:#e0e0de;border-radius:12px;margin:0 auto 14px"></div>
+    <div style="height:12px;background:#d0d0d0;border-radius:4px;width:100px;margin:0 auto 8px"></div>
+    <div style="height:7px;background:#e2e2e2;border-radius:3px;width:180px;margin:0 auto"></div>
+  </div>
+  <div style="margin-bottom:14px">
+    <div style="height:6px;background:#ddd;border-radius:3px;width:35px;margin-bottom:6px"></div>
+    <div style="padding:10px 14px;border:1.5px solid #d5d5d3;border-radius:8px;background:#fafafa">
+      <div style="height:6px;background:#e8e8e6;border-radius:3px;width:65%"></div>
+    </div>
+  </div>
+  <div style="margin-bottom:8px">
+    <div style="height:6px;background:#ddd;border-radius:3px;width:55px;margin-bottom:6px"></div>
+    <div style="padding:10px 14px;border:1.5px solid #d5d5d3;border-radius:8px;background:#fafafa">
+      <div style="height:6px;background:#e8e8e6;border-radius:3px;width:50%"></div>
+    </div>
+  </div>
+  <div style="text-align:right;margin-bottom:20px">
+    <div style="height:6px;background:#e2e2e2;border-radius:3px;width:90px;display:inline-block"></div>
+  </div>
+  <div style="padding:12px;background:#ccc;border-radius:8px;text-align:center;font-size:12px;color:#777;margin-bottom:16px">Sign In</div>
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+    <div style="flex:1;height:1px;background:#e5e5e3"></div>
+    <div style="font-size:10px;color:#ccc">OR</div>
+    <div style="flex:1;height:1px;background:#e5e5e3"></div>
+  </div>
+  <div style="padding:10px;border:1.5px solid #d5d5d3;border-radius:8px;text-align:center;display:flex;align-items:center;justify-content:center;gap:8px">
+    <div style="width:18px;height:18px;background:#e0e0de;border-radius:4px"></div>
+    <div style="height:6px;background:#e2e2e2;border-radius:3px;width:100px"></div>
+  </div>
+</section>`
+},
+{
+  id: 'form-signup',
+  title: 'Sign Up Form',
+  category: 'forms',
+  tag: 'Forms',
+  html: `<section style="padding:40px;border:1.5px solid #d0d0d0;border-radius:12px;background:#fafafa;font-family:sans-serif;max-width:400px;margin:0 auto">
+  <div style="text-align:center;margin-bottom:24px">
+    <div style="height:14px;background:#d0d0d0;border-radius:4px;width:160px;margin:0 auto 8px"></div>
+    <div style="height:7px;background:#e2e2e2;border-radius:3px;width:220px;margin:0 auto"></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+    <div>
+      <div style="height:6px;background:#ddd;border-radius:3px;width:55px;margin-bottom:6px"></div>
+      <div style="padding:10px 14px;border:1.5px solid #d5d5d3;border-radius:8px;background:#fafafa"><div style="height:6px;background:#e8e8e6;border-radius:3px;width:60%"></div></div>
+    </div>
+    <div>
+      <div style="height:6px;background:#ddd;border-radius:3px;width:50px;margin-bottom:6px"></div>
+      <div style="padding:10px 14px;border:1.5px solid #d5d5d3;border-radius:8px;background:#fafafa"><div style="height:6px;background:#e8e8e6;border-radius:3px;width:55%"></div></div>
+    </div>
+  </div>
+  <div style="margin-bottom:14px">
+    <div style="height:6px;background:#ddd;border-radius:3px;width:35px;margin-bottom:6px"></div>
+    <div style="padding:10px 14px;border:1.5px solid #d5d5d3;border-radius:8px;background:#fafafa"><div style="height:6px;background:#e8e8e6;border-radius:3px;width:70%"></div></div>
+  </div>
+  <div style="margin-bottom:14px">
+    <div style="height:6px;background:#ddd;border-radius:3px;width:55px;margin-bottom:6px"></div>
+    <div style="padding:10px 14px;border:1.5px solid #d5d5d3;border-radius:8px;background:#fafafa"><div style="height:6px;background:#e8e8e6;border-radius:3px;width:45%"></div></div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:20px">
+    <div style="width:16px;height:16px;border:1.5px solid #d5d5d3;border-radius:4px;flex-shrink:0"></div>
+    <div style="height:6px;background:#e2e2e2;border-radius:3px;width:170px"></div>
+  </div>
+  <div style="padding:12px;background:#ccc;border-radius:8px;text-align:center;font-size:12px;color:#777;margin-bottom:14px">Create Account</div>
+  <div style="text-align:center">
+    <div style="height:6px;background:#e8e8e6;border-radius:3px;width:160px;display:inline-block"></div>
+  </div>
+</section>`
+},
+
+/* ----------------------------------------------------------------
+   CARDS GRID
+---------------------------------------------------------------- */
+{
+  id: 'cards-1',
+  title: 'Cards -- Blog / Content Grid',
+  category: 'cards',
+  tag: 'Cards',
+  html: `<section style="padding:40px;border:1.5px solid #d0d0d0;border-radius:12px;background:#fafafa;font-family:sans-serif">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px">
+    <div style="height:14px;background:#d0d0d0;border-radius:4px;width:140px"></div>
+    <div style="height:7px;background:#e2e2e2;border-radius:3px;width:60px"></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">
+    ${[1,2,3].map(() => `<div style="border:1.5px solid #e5e5e3;border-radius:12px;background:#fff;overflow:hidden">
+      <div style="height:140px;background:#e5e5e3;display:flex;align-items:center;justify-content:center;color:#ccc;font-size:12px">Thumbnail</div>
+      <div style="padding:20px">
+        <div style="display:flex;gap:8px;margin-bottom:12px">
+          <div style="padding:3px 10px;background:#f0f0ee;border-radius:100px;height:6px;width:40px"></div>
+          <div style="height:6px;background:#e8e8e6;border-radius:3px;width:50px"></div>
+        </div>
+        <div style="height:10px;background:#d5d5d3;border-radius:4px;margin-bottom:8px"></div>
+        <div style="height:10px;background:#d5d5d3;border-radius:4px;width:70%;margin-bottom:12px"></div>
+        <div style="height:6px;background:#e8e8e6;border-radius:3px;margin-bottom:5px"></div>
+        <div style="height:6px;background:#e8e8e6;border-radius:3px;width:85%;margin-bottom:16px"></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:28px;height:28px;border-radius:50%;background:#ddd"></div>
+          <div style="height:6px;background:#e2e2e2;border-radius:3px;width:60px"></div>
+        </div>
+      </div>
+    </div>`).join('')}
+  </div>
+</section>`
+},
+{
+  id: 'cards-2',
+  title: 'Cards -- Product / App Grid',
+  category: 'cards',
+  tag: 'Cards',
+  html: `<section style="padding:40px;border:1.5px solid #d0d0d0;border-radius:12px;background:#fafafa;font-family:sans-serif">
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
+    ${[1,2,3,4].map(() => `<div style="border:1.5px solid #e5e5e3;border-radius:12px;background:#fff;padding:20px;text-align:center">
+      <div style="width:56px;height:56px;background:#e5e5e3;border-radius:14px;margin:0 auto 14px"></div>
+      <div style="height:9px;background:#d5d5d3;border-radius:4px;width:70%;margin:0 auto 8px"></div>
+      <div style="height:6px;background:#e8e8e6;border-radius:3px;width:90%;margin:0 auto 5px"></div>
+      <div style="height:6px;background:#e8e8e6;border-radius:3px;width:75%;margin:0 auto 14px"></div>
+      <div style="display:flex;justify-content:center;gap:4px">
+        ${[1,2,3,4,5].map(() => `<div style="width:10px;height:10px;background:#e8e8e6;border-radius:2px"></div>`).join('')}
+      </div>
+    </div>`).join('')}
+  </div>
+</section>`
+},
+{
+  id: 'cards-3',
+  title: 'Cards -- Team / People Grid',
+  category: 'cards',
+  tag: 'Cards',
+  html: `<section style="padding:40px;border:1.5px solid #d0d0d0;border-radius:12px;background:#fafafa;font-family:sans-serif">
+  <div style="text-align:center;margin-bottom:28px">
+    <div style="height:12px;background:#d0d0d0;border-radius:4px;width:140px;margin:0 auto 8px"></div>
+    <div style="height:7px;background:#e2e2e2;border-radius:3px;width:250px;margin:0 auto"></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px">
+    ${[1,2,3,4].map(() => `<div style="text-align:center;padding:24px 16px;border:1.5px solid #e5e5e3;border-radius:12px;background:#fff">
+      <div style="width:64px;height:64px;border-radius:50%;background:#e5e5e3;margin:0 auto 14px"></div>
+      <div style="height:9px;background:#d5d5d3;border-radius:4px;width:65%;margin:0 auto 6px"></div>
+      <div style="height:6px;background:#e8e8e6;border-radius:3px;width:50%;margin:0 auto 14px"></div>
+      <div style="display:flex;justify-content:center;gap:8px">
+        ${[1,2,3].map(() => `<div style="width:24px;height:24px;border-radius:50%;background:#eee"></div>`).join('')}
+      </div>
+    </div>`).join('')}
+  </div>
+</section>`
+},
+
+/* ----------------------------------------------------------------
+   CTA SECTIONS
+---------------------------------------------------------------- */
+{
+  id: 'cta-1',
+  title: 'CTA -- Banner with Background',
+  category: 'cta',
+  tag: 'CTA',
+  html: `<section style="padding:48px 40px;border-radius:12px;background:#e5e5e3;font-family:sans-serif;text-align:center">
+  <div style="max-width:460px;margin:0 auto">
+    <div style="height:14px;background:#d0d0d0;border-radius:4px;margin-bottom:10px;width:80%;margin-left:auto;margin-right:auto"></div>
+    <div style="height:14px;background:#d0d0d0;border-radius:4px;margin-bottom:20px;width:55%;margin-left:auto;margin-right:auto"></div>
+    <div style="height:7px;background:#ddd;border-radius:3px;margin-bottom:5px;width:70%;margin-left:auto;margin-right:auto"></div>
+    <div style="height:7px;background:#ddd;border-radius:3px;margin-bottom:28px;width:50%;margin-left:auto;margin-right:auto"></div>
+    <div style="display:inline-flex;gap:12px">
+      <span style="padding:14px 32px;background:#ccc;border-radius:10px;font-size:12px;color:#777">Get Started Free</span>
+      <span style="padding:14px 32px;border:1.5px solid #bbb;border-radius:10px;font-size:12px;color:#999">Book a Demo</span>
+    </div>
+  </div>
+</section>`
+},
+{
+  id: 'cta-2',
+  title: 'CTA -- Inline with Email Input',
+  category: 'cta',
+  tag: 'CTA',
+  html: `<section style="padding:40px;border:1.5px solid #d0d0d0;border-radius:12px;background:#fafafa;font-family:sans-serif;display:flex;align-items:center;justify-content:space-between;gap:40px;flex-wrap:wrap">
+  <div style="flex:1;min-width:240px">
+    <div style="height:14px;background:#d0d0d0;border-radius:4px;width:80%;margin-bottom:10px"></div>
+    <div style="height:7px;background:#e2e2e2;border-radius:3px;width:90%;margin-bottom:5px"></div>
+    <div style="height:7px;background:#e2e2e2;border-radius:3px;width:60%"></div>
+  </div>
+  <div style="display:flex;gap:10px;flex-shrink:0">
+    <div style="padding:12px 20px;border:1.5px solid #d5d5d3;border-radius:8px;background:#fafafa;width:220px">
+      <div style="height:6px;background:#e8e8e6;border-radius:3px;width:70%"></div>
+    </div>
+    <div style="padding:12px 24px;background:#ccc;border-radius:8px;font-size:12px;color:#777;display:flex;align-items:center">Subscribe</div>
+  </div>
+</section>`
+},
+{
+  id: 'cta-3',
+  title: 'CTA -- Split with Image',
+  category: 'cta',
+  tag: 'CTA',
+  html: `<section style="display:grid;grid-template-columns:1fr 1fr;border:1.5px solid #d0d0d0;border-radius:12px;background:#fafafa;font-family:sans-serif;overflow:hidden">
+  <div style="padding:48px 40px;display:flex;flex-direction:column;justify-content:center">
+    <div style="height:14px;background:#d0d0d0;border-radius:4px;width:80%;margin-bottom:10px"></div>
+    <div style="height:14px;background:#d0d0d0;border-radius:4px;width:55%;margin-bottom:20px"></div>
+    <div style="height:7px;background:#e2e2e2;border-radius:3px;width:90%;margin-bottom:5px"></div>
+    <div style="height:7px;background:#e2e2e2;border-radius:3px;width:70%;margin-bottom:28px"></div>
+    <div>
+      <span style="display:inline-block;padding:14px 32px;background:#ccc;border-radius:10px;font-size:12px;color:#777">Get Started</span>
+    </div>
+  </div>
+  <div style="background:#e5e5e3;min-height:240px;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:13px">Image / Visual</div>
+</section>`
+},
+
+/* ----------------------------------------------------------------
+   ADDITIONAL COMPONENTS
+---------------------------------------------------------------- */
+{
+  id: 'stats-1',
+  title: 'Stats -- Metrics Row',
+  category: 'features',
+  tag: 'Features',
+  html: `<section style="padding:40px;border:1.5px solid #d0d0d0;border-radius:12px;background:#fafafa;font-family:sans-serif">
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;text-align:center">
+    ${['10K+','99.9%','150+','24/7'].map(stat => `<div style="padding:24px;border:1.5px solid #e5e5e3;border-radius:10px;background:#fff">
+      <div style="height:20px;background:#d0d0d0;border-radius:4px;width:60%;margin:0 auto 10px"></div>
+      <div style="height:7px;background:#e8e8e6;border-radius:3px;width:70%;margin:0 auto"></div>
+    </div>`).join('')}
+  </div>
+</section>`
+},
+{
+  id: 'faq-1',
+  title: 'FAQ -- Accordion List',
+  category: 'features',
+  tag: 'Features',
+  html: `<section style="padding:40px;border:1.5px solid #d0d0d0;border-radius:12px;background:#fafafa;font-family:sans-serif;max-width:600px;margin:0 auto">
+  <div style="text-align:center;margin-bottom:28px">
+    <div style="height:14px;background:#d0d0d0;border-radius:4px;width:200px;margin:0 auto 10px"></div>
+    <div style="height:7px;background:#e2e2e2;border-radius:3px;width:280px;margin:0 auto"></div>
+  </div>
+  ${[1,2,3,4,5].map((_, i) => `<div style="border:1.5px solid #e5e5e3;border-radius:10px;background:#fff;padding:18px 20px;margin-bottom:10px">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div style="height:8px;background:#d5d5d3;border-radius:3px;width:${40 + i * 8}%"></div>
+      <div style="width:20px;height:20px;border-radius:50%;background:#eee;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:#ccc">${i === 0 ? '-' : '+'}</div>
+    </div>
+    ${i === 0 ? `<div style="margin-top:14px"><div style="height:6px;background:#e8e8e6;border-radius:3px;margin-bottom:5px"></div><div style="height:6px;background:#e8e8e6;border-radius:3px;width:80%"></div></div>` : ''}
+  </div>`).join('')}
+</section>`
+},
+{
+  id: 'logo-bar',
+  title: 'Logo Bar -- Trusted By',
+  category: 'features',
+  tag: 'Features',
+  html: `<section style="padding:32px 40px;border:1.5px solid #d0d0d0;border-radius:12px;background:#fafafa;font-family:sans-serif;text-align:center">
+  <div style="height:7px;background:#e2e2e2;border-radius:3px;width:160px;margin:0 auto 24px"></div>
+  <div style="display:flex;justify-content:center;align-items:center;gap:40px;flex-wrap:wrap">
+    ${[80,100,70,90,75,85].map(w => `<div style="width:${w}px;height:24px;background:#e5e5e3;border-radius:6px;opacity:.6"></div>`).join('')}
+  </div>
+</section>`
+},
+{
+  id: 'newsletter',
+  title: 'Newsletter Signup',
+  category: 'forms',
+  tag: 'Forms',
+  html: `<section style="padding:40px;border:1.5px solid #d0d0d0;border-radius:12px;background:#fafafa;font-family:sans-serif;text-align:center;max-width:480px;margin:0 auto">
+  <div style="width:44px;height:44px;background:#e0e0de;border-radius:12px;margin:0 auto 16px"></div>
+  <div style="height:14px;background:#d0d0d0;border-radius:4px;width:200px;margin:0 auto 10px"></div>
+  <div style="height:7px;background:#e2e2e2;border-radius:3px;width:280px;margin:0 auto 24px"></div>
+  <div style="display:flex;gap:10px;margin-bottom:12px">
+    <div style="flex:1;padding:12px 16px;border:1.5px solid #d5d5d3;border-radius:8px;background:#fafafa;text-align:left">
+      <div style="height:6px;background:#e8e8e6;border-radius:3px;width:55%"></div>
+    </div>
+    <div style="padding:12px 24px;background:#ccc;border-radius:8px;font-size:12px;color:#777;display:flex;align-items:center;white-space:nowrap">Join Now</div>
+  </div>
+  <div style="height:5px;background:#eee;border-radius:3px;width:180px;margin:0 auto"></div>
+</section>`
+},
+
+];
+
+/* ================================================================
+   Render & Interactions
+================================================================ */
+const grid = document.getElementById('kitGrid');
+const toast = document.getElementById('toast');
+const countEl = document.getElementById('componentCount');
+let toastTimer;
+
+function renderCards(filter) {
+  const filtered = filter === 'all' ? components : components.filter(c => c.category === filter);
+  countEl.textContent = filtered.length + ' components';
+
+  grid.innerHTML = filtered.map(comp => `
+    <article class="comp-card" data-category="${comp.category}">
+      <div class="comp-card-header">
+        <div style="display:flex;align-items:center">
+          <span class="comp-card-title">${comp.title}</span>
+          <span class="comp-card-tag">${comp.tag}</span>
+        </div>
+        <button class="copy-btn" data-id="${comp.id}">Copy HTML</button>
+      </div>
+      <div class="comp-card-preview">${comp.html}</div>
+    </article>
+  `).join('');
+}
+
+// Initial render
+renderCards('all');
+
+// Filter
+document.getElementById('filterBar').addEventListener('click', e => {
+  if (!e.target.classList.contains('filter-btn')) return;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  e.target.classList.add('active');
+  renderCards(e.target.dataset.filter);
+});
+
+// Copy
+grid.addEventListener('click', e => {
+  const btn = e.target.closest('.copy-btn');
+  if (!btn) return;
+  const comp = components.find(c => c.id === btn.dataset.id);
+  if (!comp) return;
+
+  // Clean up the HTML for copying (trim lines, normalise whitespace)
+  const clean = comp.html.replace(/\n\s+/g, '\n').trim();
+
+  navigator.clipboard.writeText(clean).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      toast.classList.remove('show');
+      btn.textContent = 'Copy HTML';
+      btn.classList.remove('copied');
+    }, 1800);
+  });
+});
+</script>
+</body>
+</html>

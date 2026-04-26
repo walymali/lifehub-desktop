@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Startup Pitch Deck</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Sora',system-ui,sans-serif;background:#f5f5f3;color:#555}
+.controls{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:100;background:#fff;padding:8px 16px;border-radius:99px;box-shadow:0 4px 20px rgba(0,0,0,0.1);border:1px solid rgba(0,0,0,0.06);align-items:center}
+.controls button{width:36px;height:36px;border-radius:50%;border:1px solid rgba(0,0,0,0.1);background:#fff;color:#1a1a1a;font-size:0.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+.controls button:hover{background:#1a1a1a;color:#fff}
+.controls .slide-num{font-size:0.75rem;color:#999;min-width:60px;text-align:center;font-weight:500}
+.controls .print-btn{padding:6px 16px;width:auto;border-radius:99px;font-size:0.7rem;font-weight:600;font-family:inherit}
+.deck{max-width:960px;margin:0 auto;padding:40px 24px 100px}
+.slide{background:#fff;border-radius:20px;border:1px solid rgba(0,0,0,0.06);padding:60px;margin-bottom:20px;min-height:540px;display:none;box-shadow:0 2px 10px rgba(0,0,0,0.04)}
+.slide.active{display:flex;flex-direction:column;justify-content:center}
+.slide.print-show{display:flex!important;page-break-after:always;margin-bottom:40px}
+/* Slide Types */
+.slide-title{font-size:2.8rem;font-weight:800;color:#1a1a1a;letter-spacing:-0.04em;line-height:1.1;margin-bottom:16px}
+.slide-subtitle{font-size:1.1rem;color:#888;line-height:1.7;max-width:500px}
+.slide-label{font-size:0.65rem;font-weight:600;color:#999;text-transform:uppercase;letter-spacing:0.15em;margin-bottom:16px}
+.slide-h2{font-size:2rem;font-weight:700;color:#1a1a1a;letter-spacing:-0.03em;margin-bottom:20px}
+.slide-text{font-size:0.95rem;color:#666;line-height:1.8}
+.slide-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px}
+.slide-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:20px}
+.slide-card{background:#f5f5f3;border-radius:14px;padding:24px}
+.slide-card h3{font-size:0.9rem;font-weight:600;color:#1a1a1a;margin-bottom:6px}
+.slide-card p{font-size:0.8rem;color:#888;line-height:1.6}
+.slide-card .big{font-size:2rem;font-weight:800;color:#1a1a1a;margin-bottom:4px}
+.stat-row{display:flex;gap:32px;margin-top:24px}
+.stat-item{text-align:center}
+.stat-item .num{font-size:2.5rem;font-weight:800;color:#1a1a1a}
+.stat-item .lbl{font-size:0.72rem;color:#999;margin-top:2px}
+.timeline{margin-top:20px}
+.timeline-item{display:flex;gap:16px;padding:12px 0;border-bottom:1px solid rgba(0,0,0,0.04)}
+.timeline-item:last-child{border-bottom:none}
+.timeline-dot{width:10px;height:10px;border-radius:50%;background:#1a1a1a;flex-shrink:0;margin-top:6px}
+.timeline-item h4{font-size:0.85rem;font-weight:600;color:#1a1a1a}
+.timeline-item p{font-size:0.78rem;color:#888}
+.pricing-table{width:100%;border-collapse:collapse;margin-top:20px}
+.pricing-table th{text-align:left;font-size:0.68rem;color:#999;text-transform:uppercase;letter-spacing:0.08em;padding:10px 0;border-bottom:2px solid #eee}
+.pricing-table td{padding:12px 0;font-size:0.85rem;color:#555;border-bottom:1px solid #f0f0f0}
+.pricing-table td:last-child{text-align:right;font-weight:600;color:#1a1a1a}
+.team-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:20px}
+.team-member{text-align:center}
+.team-avatar{width:64px;height:64px;border-radius:50%;background:#f5f5f3;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:700;color:#999}
+.team-member h4{font-size:0.8rem;font-weight:600;color:#1a1a1a}
+.team-member p{font-size:0.68rem;color:#999}
+.cta-big{font-size:3rem;font-weight:800;color:#1a1a1a;letter-spacing:-0.04em;line-height:1.1;text-align:center}
+.cta-sub{text-align:center;font-size:1rem;color:#888;margin-top:12px}
+.edit-hint{font-size:0.7rem;color:#ccc;text-align:center;margin-top:8px}
+@media print{.controls{display:none!important}.deck{padding:0}.slide{display:flex!important;box-shadow:none!important;border:none!important;border-radius:0!important;page-break-after:always;min-height:100vh}}
+@media(max-width:768px){.slide{padding:32px}.slide-title{font-size:2rem}.slide-grid,.slide-grid-3{grid-template-columns:1fr}.team-grid{grid-template-columns:1fr 1fr}.stat-row{flex-direction:column;gap:16px}}
+</style>
+</head>
+<body>
+
+<div class="controls">
+  <button onclick="prevSlide()">&#8592;</button>
+  <span class="slide-num" id="slide-num">1 / 12</span>
+  <button onclick="nextSlide()">&#8594;</button>
+  <button class="print-btn" onclick="window.print()">PDF</button>
+</div>
+
+<div class="deck" id="deck">
+
+<div class="slide active">
+  <div class="slide-label">Pitch Deck 2026</div>
+  <div class="slide-title">[Your Startup]</div>
+  <div class="slide-subtitle">[One-line description of what you do and why it matters. Make it compelling.]</div>
+  <div style="margin-top:32px;font-size:0.8rem;color:#ccc">[Your Name] &bull; [Your Title] &bull; [Date]</div>
+</div>
+
+<div class="slide">
+  <div class="slide-label">The Problem</div>
+  <div class="slide-h2">[X million] people struggle with [problem].</div>
+  <div class="slide-text">[Describe the problem in 2-3 sentences. Make it relatable. Use a real-world scenario that investors can visualize.]</div>
+  <div class="slide-grid" style="margin-top:32px">
+    <div class="slide-card"><div class="big">[X]%</div><h3>[Stat about the problem]</h3><p>[Context for the statistic]</p></div>
+    <div class="slide-card"><div class="big">$[X]B</div><h3>[Cost of the problem]</h3><p>[How much money is wasted/lost]</p></div>
+  </div>
+</div>
+
+<div class="slide">
+  <div class="slide-label">The Solution</div>
+  <div class="slide-h2">[Product Name]: [One-line solution]</div>
+  <div class="slide-text">[Explain your solution in simple terms. How does it solve the problem? What makes it unique?]</div>
+  <div class="slide-grid-3" style="margin-top:32px">
+    <div class="slide-card"><h3>[Feature 1]</h3><p>[How it helps]</p></div>
+    <div class="slide-card"><h3>[Feature 2]</h3><p>[How it helps]</p></div>
+    <div class="slide-card"><h3>[Feature 3]</h3><p>[How it helps]</p></div>
+  </div>
+</div>
+
+<div class="slide">
+  <div class="slide-label">How It Works</div>
+  <div class="slide-h2">Simple as 1-2-3.</div>
+  <div class="timeline">
+    <div class="timeline-item"><div class="timeline-dot"></div><div><h4>Step 1: [Action]</h4><p>[What the user does first]</p></div></div>
+    <div class="timeline-item"><div class="timeline-dot"></div><div><h4>Step 2: [Action]</h4><p>[What happens next]</p></div></div>
+    <div class="timeline-item"><div class="timeline-dot"></div><div><h4>Step 3: [Action]</h4><p>[The outcome they get]</p></div></div>
+  </div>
+</div>
+
+<div class="slide">
+  <div class="slide-label">Market Opportunity</div>
+  <div class="slide-h2">A $[X]B market growing [X]% YoY.</div>
+  <div class="slide-grid-3">
+    <div class="slide-card"><div class="big">$[X]B</div><h3>TAM</h3><p>Total Addressable Market</p></div>
+    <div class="slide-card"><div class="big">$[X]B</div><h3>SAM</h3><p>Serviceable Addressable Market</p></div>
+    <div class="slide-card"><div class="big">$[X]M</div><h3>SOM</h3><p>Serviceable Obtainable Market</p></div>
+  </div>
+</div>
+
+<div class="slide">
+  <div class="slide-label">Traction</div>
+  <div class="slide-h2">Growing fast.</div>
+  <div class="stat-row">
+    <div class="stat-item"><div class="num">[X]K+</div><div class="lbl">Users</div></div>
+    <div class="stat-item"><div class="num">[X]%</div><div class="lbl">MoM Growth</div></div>
+    <div class="stat-item"><div class="num">$[X]K</div><div class="lbl">MRR</div></div>
+    <div class="stat-item"><div class="num">[X]%</div><div class="lbl">Retention</div></div>
+  </div>
+</div>
+
+<div class="slide">
+  <div class="slide-label">Business Model</div>
+  <div class="slide-h2">How we make money.</div>
+  <table class="pricing-table">
+    <thead><tr><th>Plan</th><th>Features</th><th>Price</th></tr></thead>
+    <tbody>
+      <tr><td>Free</td><td>[Basic features]</td><td>$0</td></tr>
+      <tr><td>Pro</td><td>[Pro features]</td><td>$[X]/mo</td></tr>
+      <tr><td>Enterprise</td><td>[All features + support]</td><td>$[X]/mo</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="slide">
+  <div class="slide-label">Competition</div>
+  <div class="slide-h2">Why we win.</div>
+  <table class="pricing-table">
+    <thead><tr><th>Feature</th><th>[Competitor 1]</th><th>[Competitor 2]</th><th>[Your Product]</th></tr></thead>
+    <tbody>
+      <tr><td>[Feature 1]</td><td>Partial</td><td>No</td><td><strong>Yes</strong></td></tr>
+      <tr><td>[Feature 2]</td><td>No</td><td>Yes</td><td><strong>Yes</strong></td></tr>
+      <tr><td>[Feature 3]</td><td>No</td><td>No</td><td><strong>Yes</strong></td></tr>
+      <tr><td>Price</td><td>$[X]/mo</td><td>$[X]/mo</td><td><strong>$[X]/mo</strong></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="slide">
+  <div class="slide-label">The Team</div>
+  <div class="slide-h2">Built by experts.</div>
+  <div class="team-grid">
+    <div class="team-member"><div class="team-avatar">JD</div><h4>[Name]</h4><p>CEO - Ex [Company]</p></div>
+    <div class="team-member"><div class="team-avatar">SK</div><h4>[Name]</h4><p>CTO - Ex [Company]</p></div>
+    <div class="team-member"><div class="team-avatar">LM</div><h4>[Name]</h4><p>CPO - Ex [Company]</p></div>
+    <div class="team-member"><div class="team-avatar">AR</div><h4>[Name]</h4><p>CMO - Ex [Company]</p></div>
+  </div>
+</div>
+
+<div class="slide">
+  <div class="slide-label">Roadmap</div>
+  <div class="slide-h2">Where we're going.</div>
+  <div class="timeline">
+    <div class="timeline-item"><div class="timeline-dot"></div><div><h4>Q1 2026 - [Milestone]</h4><p>[What you'll achieve]</p></div></div>
+    <div class="timeline-item"><div class="timeline-dot"></div><div><h4>Q2 2026 - [Milestone]</h4><p>[What you'll achieve]</p></div></div>
+    <div class="timeline-item"><div class="timeline-dot"></div><div><h4>Q3 2026 - [Milestone]</h4><p>[What you'll achieve]</p></div></div>
+    <div class="timeline-item"><div class="timeline-dot"></div><div><h4>Q4 2026 - [Milestone]</h4><p>[What you'll achieve]</p></div></div>
+  </div>
+</div>
+
+<div class="slide">
+  <div class="slide-label">The Ask</div>
+  <div class="slide-h2">Raising $[X]M Seed Round.</div>
+  <div class="slide-text" style="margin-bottom:24px">Use of funds:</div>
+  <div class="slide-grid">
+    <div class="slide-card"><div class="big">40%</div><h3>Product & Engineering</h3></div>
+    <div class="slide-card"><div class="big">30%</div><h3>Sales & Marketing</h3></div>
+    <div class="slide-card"><div class="big">20%</div><h3>Hiring</h3></div>
+    <div class="slide-card"><div class="big">10%</div><h3>Operations</h3></div>
+  </div>
+</div>
+
+<div class="slide" style="justify-content:center;align-items:center">
+  <div class="cta-big">Let's build the<br>future together.</div>
+  <div class="cta-sub">[your@email.com] &bull; [yourwebsite.com]</div>
+</div>
+
+</div>
+
+<script>
+let current=0;
+const slides=document.querySelectorAll('.slide');
+function show(n){slides.forEach(s=>s.classList.remove('active'));slides[n].classList.add('active');document.getElementById('slide-num').textContent=`${n+1} / ${slides.length}`;}
+function nextSlide(){if(current<slides.length-1){current++;show(current);}}
+function prevSlide(){if(current>0){current--;show(current);}}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' ')nextSlide();if(e.key==='ArrowLeft')prevSlide();});
+</script>
+</body>
+</html>

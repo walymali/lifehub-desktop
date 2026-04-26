@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Social Media Kit - Bio Templates, Hashtags & Calendar</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Sora',system-ui,sans-serif;background:#f5f5f3;color:#555;line-height:1.7}
+.hero{text-align:center;padding:80px 24px 60px;background:#fff;border-bottom:1px solid rgba(0,0,0,0.06)}
+.hero h1{font-size:3rem;font-weight:700;color:#1a1a1a;letter-spacing:-0.04em;margin-bottom:12px}
+.hero h1 span{color:#e74c3c}
+.hero p{font-size:1rem;color:#888;max-width:500px;margin:0 auto 24px}
+.tabs{display:flex;justify-content:center;gap:4px;background:#f0f0ee;border-radius:14px;padding:4px;max-width:500px;margin:0 auto}
+.tab-btn{padding:10px 20px;border:none;border-radius:11px;background:transparent;color:#999;font-size:0.78rem;font-weight:500;cursor:pointer;font-family:inherit;transition:all 0.2s}
+.tab-btn.active{background:#1a1a1a;color:#fff}
+.tab-content{display:none;max-width:900px;margin:0 auto;padding:40px 24px}
+.tab-content.active{display:block}
+/* Bio Templates */
+.bio-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.bio-card{background:#fff;border:1px solid rgba(0,0,0,0.06);border-radius:14px;padding:20px;transition:all 0.2s;cursor:pointer;position:relative}
+.bio-card:hover{border-color:rgba(0,0,0,0.12);box-shadow:0 4px 16px rgba(0,0,0,0.04)}
+.bio-card .cat{font-size:0.6rem;text-transform:uppercase;letter-spacing:0.1em;color:#999;margin-bottom:8px;font-weight:600}
+.bio-card p{font-size:0.85rem;color:#333;line-height:1.6}
+.bio-card .copy-btn{position:absolute;top:12px;right:12px;padding:4px 10px;background:#f5f5f3;border:1px solid rgba(0,0,0,0.06);border-radius:6px;font-size:0.65rem;color:#999;cursor:pointer;font-family:inherit;opacity:0;transition:opacity 0.2s}
+.bio-card:hover .copy-btn{opacity:1}
+.bio-card .copy-btn:hover{background:#1a1a1a;color:#fff}
+/* Hashtag Sets */
+.hash-card{background:#fff;border:1px solid rgba(0,0,0,0.06);border-radius:14px;padding:20px;margin-bottom:12px}
+.hash-card h3{font-size:0.85rem;font-weight:600;color:#1a1a1a;margin-bottom:8px}
+.hash-tags{display:flex;flex-wrap:wrap;gap:6px}
+.hash-tag{padding:4px 12px;background:#f5f5f3;border-radius:99px;font-size:0.72rem;color:#555;cursor:pointer;transition:all 0.2s}
+.hash-tag:hover{background:#1a1a1a;color:#fff}
+.hash-copy{margin-top:10px;padding:6px 14px;background:transparent;border:1px solid rgba(0,0,0,0.1);border-radius:8px;font-size:0.68rem;color:#999;cursor:pointer;font-family:inherit}
+.hash-copy:hover{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+/* Calendar */
+.cal-week{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-top:16px}
+.cal-day{background:#fff;border:1px solid rgba(0,0,0,0.06);border-radius:12px;padding:14px;min-height:120px}
+.cal-day-name{font-size:0.65rem;font-weight:600;color:#999;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px}
+.cal-type{font-size:0.6rem;padding:3px 8px;border-radius:99px;font-weight:500;margin-bottom:4px;display:inline-block}
+.cal-type.edu{background:#dbeafe;color:#2563eb}
+.cal-type.ent{background:#fef3c7;color:#d97706}
+.cal-type.promo{background:#fce7f3;color:#db2777}
+.cal-type.comm{background:#d1fae5;color:#059669}
+.cal-idea{font-size:0.75rem;color:#555;margin-top:4px}
+.footer{text-align:center;padding:48px 24px;font-size:0.78rem;color:#ccc}
+@media(max-width:768px){.bio-grid{grid-template-columns:1fr}.cal-week{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="hero">
+  <h1>Social Media <span>Kit</span></h1>
+  <p>50+ bio templates, curated hashtag sets, and a ready-to-use content calendar for every platform.</p>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('bios',this)">Bio Templates</button>
+    <button class="tab-btn" onclick="showTab('hashtags',this)">Hashtag Sets</button>
+    <button class="tab-btn" onclick="showTab('calendar',this)">Content Calendar</button>
+  </div>
+</div>
+
+<div class="tab-content active" id="tab-bios">
+<div class="bio-grid" id="bio-grid"></div>
+</div>
+
+<div class="tab-content" id="tab-hashtags">
+<div id="hash-grid"></div>
+</div>
+
+<div class="tab-content" id="tab-calendar">
+<p style="text-align:center;color:#999;font-size:0.85rem;margin-bottom:8px">7-Day Content Calendar Template</p>
+<div class="cal-week" id="cal-week"></div>
+</div>
+
+<div class="footer">Social Media Kit &copy; 2026</div>
+
+<script>
+function showTab(id,btn){document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.getElementById('tab-'+id).classList.add('active');btn.classList.add('active');}
+function copyText(text,btn){navigator.clipboard.writeText(text).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',1500)});}
+
+const bios=[
+  {cat:'Creator',text:'Building [niche] content that matters. [X]K+ community of [audience]. DM for collabs. New [content type] every [day].'},
+  {cat:'Creator',text:'Helping [audience] achieve [goal] through [method]. Creator of [product/course]. Featured in [publication].'},
+  {cat:'Creator',text:'[Niche] creator | [X]K+ followers learned [skill] with me | Free [lead magnet] in link | New videos weekly'},
+  {cat:'Freelancer',text:'[Job title] helping [clients] with [service]. [X]+ projects delivered. Currently booking [month]. Let\'s work together.'},
+  {cat:'Freelancer',text:'I design [thing] for [audience]. Previously at [company]. Open for freelance. Portfolio in link.'},
+  {cat:'Freelancer',text:'[Skill] specialist | [X] years experience | Worked with [notable clients] | DM for availability'},
+  {cat:'Business',text:'We help [audience] [achieve goal]. [X]+ happy customers. [Unique selling point]. Shop now.'},
+  {cat:'Business',text:'[Product] that [benefit]. Made with [quality]. Loved by [X]K+ customers. Free shipping on orders $[X]+'},
+  {cat:'Business',text:'The [adjective] way to [solve problem]. Trusted by [X]+ [audience]. Try free for [X] days.'},
+  {cat:'Personal',text:'[City]-based [role]. Passionate about [interests]. Building [project]. Let\'s connect.'},
+  {cat:'Personal',text:'[Job] by day, [hobby] by night. Sharing my journey in [niche]. Coffee addict. Dog parent.'},
+  {cat:'Personal',text:'Living life one [thing] at a time. [Interest 1] + [Interest 2] + [Interest 3]. Currently working on [project].'},
+  {cat:'Startup',text:'Building the future of [industry]. [Product] helps [audience] [benefit]. Backed by [investors]. Join [X]+ users.'},
+  {cat:'Startup',text:'[One-line pitch]. We\'re hiring [roles]. Series [X] | [X]M raised | [X]K users'},
+  {cat:'Coach',text:'Helping [audience] go from [point A] to [point B]. [X]+ clients transformed. Book a free call. [Credential].'},
+  {cat:'Coach',text:'[Niche] coach & mentor. Turned my [struggle] into my superpower. Now helping you do the same. Free guide in link.'},
+  {cat:'E-commerce',text:'Handmade [products] with love. Each piece tells a story. Ship worldwide. Use code [CODE] for [X]% off.'},
+  {cat:'E-commerce',text:'Curated [product type] for [audience]. New drops every [day]. Join [X]K+ happy customers.'},
+  {cat:'SaaS',text:'[Product name] - [one-line value prop]. [X]K+ teams trust us. Start free, no credit card needed.'},
+  {cat:'SaaS',text:'Stop [pain point]. Start [benefit]. [Product] makes [task] effortless. Try it free.'},
+  {cat:'Agency',text:'We build [thing] that [result]. [X]+ clients across [X] countries. Let\'s talk about your next project.'},
+  {cat:'Agency',text:'[Service] agency for ambitious brands. Strategy + Design + Development. Featured in [publications].'},
+  {cat:'Real Estate',text:'[City] real estate expert. [X]+ homes sold. Your dream home is one call away. Free market report in link.'},
+  {cat:'Restaurant',text:'[Cuisine] made with passion. Farm-to-table dining since [year]. Reservations open. [City] location.'},
+  {cat:'Fitness',text:'Certified [certification] trainer. Helped [X]+ clients transform their bodies. Free workout plan in link. Let\'s get started.'},
+];
+
+const hashtags=[
+  {name:'Instagram Growth',tags:['#instagramgrowth','#socialmediatips','#contentcreator','#growyourinstagram','#instagramtips','#digitalmarketing','#socialmediamarketing','#instagramstrategy','#contentmarketing','#growthhacking','#instagramreels','#viralcontent','#engagementtips','#algorithimhack','#followforfollowback']},
+  {name:'Business & Entrepreneur',tags:['#entrepreneur','#smallbusiness','#businessowner','#startup','#hustle','#motivation','#success','#businesstips','#entrepreneurlife','#sidehustle','#passiveincome','#onlinebusiness','#workfromhome','#ceo','#grind']},
+  {name:'Photography',tags:['#photography','#photooftheday','#naturephotography','#portraitphotography','#streetphotography','#photographylovers','#canonphotography','#sonyalpha','#goldenhour','#visualsoflife','#moodygramsportrait','#artofvisuals','#createcommune','#shotzdelight','#fatalframes']},
+  {name:'Food & Restaurant',tags:['#foodie','#foodphotography','#instafood','#homecooking','#healthyfood','#foodblogger','#yummy','#delicious','#foodstagram','#cooking','#recipe','#cheflife','#foodlover','#brunch','#dessert']},
+  {name:'Fitness & Health',tags:['#fitness','#gym','#workout','#fitnessmotivation','#bodybuilding','#healthylifestyle','#personaltrainer','#fitfam','#exercise','#strength','#nutrition','#weightloss','#yoga','#crossfit','#running']},
+  {name:'Fashion & Style',tags:['#fashion','#style','#ootd','#fashionblogger','#streetstyle','#fashionista','#outfitoftheday','#lookoftheday','#whatiwore','#styleinspiration','#fashionable','#trendy','#styleinspo','#fashiondiaries','#luxuryfashion']},
+  {name:'Tech & SaaS',tags:['#tech','#startup','#saas','#programming','#coding','#developer','#webdevelopment','#ai','#machinelearning','#productdesign','#uxdesign','#buildinpublic','#indiehackers','#nocode','#automation']},
+  {name:'Travel',tags:['#travel','#wanderlust','#travelgram','#travelphotography','#explore','#adventure','#instatravel','#vacation','#traveltheworld','#beautifuldestinations','#travelblogger','#passportready','#bucketlist','#roadtrip','#solotravel']},
+];
+
+const calendar=[
+  {day:'Monday',type:'edu',typeName:'Educational',idea:'Share a tip, tutorial, or "How to" related to your niche'},
+  {day:'Tuesday',type:'ent',typeName:'Entertainment',idea:'Behind-the-scenes, meme, or trending audio/format'},
+  {day:'Wednesday',type:'comm',typeName:'Community',idea:'Ask a question, run a poll, or share a user story'},
+  {day:'Thursday',type:'edu',typeName:'Educational',idea:'Carousel post with 5-7 actionable tips or a myth-busting thread'},
+  {day:'Friday',type:'promo',typeName:'Promotional',idea:'Showcase product/service, share a testimonial, or announce an offer'},
+  {day:'Saturday',type:'ent',typeName:'Entertainment',idea:'Personal story, lifestyle content, or a fun reel/TikTok'},
+  {day:'Sunday',type:'comm',typeName:'Community',idea:'Weekly roundup, shoutouts, or "This week I learned" reflection'},
+];
+
+// Render
+document.getElementById('bio-grid').innerHTML=bios.map((b,i)=>`<div class="bio-card"><div class="cat">${b.cat}</div><p>${b.text}</p><button class="copy-btn" onclick="event.stopPropagation();copyText(\`${b.text.replace(/`/g,"'")}\`,this)">Copy</button></div>`).join('');
+document.getElementById('hash-grid').innerHTML=hashtags.map(h=>`<div class="hash-card"><h3>${h.name}</h3><div class="hash-tags">${h.tags.map(t=>`<span class="hash-tag" onclick="copyText('${t}',this)">${t}</span>`).join('')}</div><button class="hash-copy" onclick="copyText('${h.tags.join(' ')}',this)">Copy All</button></div>`).join('');
+document.getElementById('cal-week').innerHTML=calendar.map(c=>`<div class="cal-day"><div class="cal-day-name">${c.day}</div><span class="cal-type ${c.type}">${c.typeName}</span><p class="cal-idea">${c.idea}</p></div>`).join('');
+</script>
+</body>
+</html>

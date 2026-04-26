@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LifeBoard - Personal Dashboard</title>
+<meta name="theme-color" content="#f5f5f3">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="LifeBoard">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%236366f1' rx='20' width='100' height='100'/><text x='50' y='65' text-anchor='middle' fill='white' font-size='50' font-weight='bold'>L</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#f5f5f3;--surface:#fff;--card:#fff;--border:rgba(0,0,0,0.07);--accent:#1a1a1a;--accent-g:rgba(0,0,0,0.04);--green:#16a34a;--amber:#d97706;--rose:#dc2626;--cyan:#0891b2;--text:#666;--text2:#999;--heading:#1a1a1a;--radius:16px}
+body{font-family:'Sora',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+body.rtl{font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;direction:rtl}
+
+.app{max-width:1300px;margin:0 auto;padding:24px 28px}
+
+/* Top Bar */
+.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.top-bar h1{font-size:1.3rem;font-weight:700;color:var(--heading);letter-spacing:-0.02em}
+.top-bar h1 span{color:var(--accent)}
+.top-bar h1::before{content:'';display:inline-block;width:8px;height:8px;background:var(--accent);border-radius:50%;margin-right:8px;vertical-align:middle}
+body.rtl .top-bar h1::before{margin-right:0;margin-left:8px}
+.top-right{display:flex;gap:6px;align-items:center}
+.lang-btn{padding:5px 12px;border:1px solid var(--border);border-radius:99px;background:transparent;color:var(--text2);font-size:0.68rem;cursor:pointer;font-family:inherit;transition:all 0.2s}
+.lang-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.greeting{font-size:0.8rem;color:var(--text2);margin-bottom:16px}
+.greeting strong{color:var(--heading)}
+
+/* Tab Nav */
+.tab-nav{display:flex;gap:3px;margin-bottom:20px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:4px;overflow-x:auto;scrollbar-width:none}
+.tab-nav::-webkit-scrollbar{display:none}
+.tab-btn{padding:9px 18px;border:none;border-radius:11px;background:transparent;color:var(--text2);font-size:0.73rem;font-weight:500;cursor:pointer;font-family:inherit;transition:all 0.25s;white-space:nowrap;position:relative}
+.tab-btn.active{background:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.15)}
+.tab-btn:hover:not(.active){background:rgba(255,255,255,0.05);color:var(--text)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* Stats Row */
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px 20px;transition:all 0.3s;position:relative;overflow:hidden}
+.stat-card:hover{border-color:rgba(255,255,255,0.12);transform:translateY(-2px)}
+.stat-card .num{font-size:1.8rem;font-weight:700;color:var(--heading);line-height:1;letter-spacing:-0.02em}
+.stat-card .label{font-size:0.6rem;color:var(--text2);margin-top:4px;text-transform:uppercase;letter-spacing:0.1em}
+.stat-card.accent .num{color:var(--accent)}
+.stat-card.green .num{color:var(--green)}
+.stat-card.amber .num{color:var(--amber)}
+.stat-card.cyan .num{color:var(--cyan)}
+
+/* Panel */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;transition:all 0.3s;box-shadow:0 1px 4px rgba(0,0,0,0.03)}
+.panel:hover{border-color:rgba(0,0,0,0.12);box-shadow:0 4px 16px rgba(0,0,0,0.06)}
+.panel-header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--border)}
+.panel-header h2{font-size:0.82rem;font-weight:600;color:var(--heading);display:flex;align-items:center;gap:8px}
+.panel-header .count{font-size:0.58rem;background:var(--heading);color:#fff;padding:2px 8px;border-radius:99px;font-weight:600}
+.panel-body{padding:10px 18px;max-height:340px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(0,0,0,0.1) transparent}
+.panel-body::-webkit-scrollbar{width:4px}
+.panel-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px}
+.add-row{display:flex;gap:6px;padding:10px 18px;border-top:1px solid var(--border)}
+.add-row input,.add-row select{flex:1;padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:9px;color:var(--heading);font-family:inherit;font-size:0.8rem}
+.add-row input:focus{outline:none;border-color:var(--heading)}
+.add-row input::placeholder{color:var(--text2)}
+.add-btn{padding:9px 18px;background:var(--heading);color:#fff;border:none;border-radius:10px;font-weight:600;font-size:0.78rem;cursor:pointer;font-family:inherit;transition:all 0.25s;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,0.1)}
+.add-btn:hover{background:#333;transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,0.15)}
+
+/* Task */
+.task-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(0,0,0,0.02)}
+.task-item:last-child{border-bottom:none}
+.task-check{width:18px;height:18px;border-radius:5px;border:2px solid rgba(0,0,0,0.2);background:transparent;cursor:pointer;transition:all 0.2s;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:transparent;font-size:0.6rem}
+.task-check.done{background:var(--green);border-color:var(--green);color:#fff}
+.task-text{flex:1;font-size:0.82rem;color:var(--heading)}
+.task-text.done{text-decoration:line-through;color:var(--text2)}
+.task-delete{background:none;border:none;color:var(--text2);cursor:pointer;font-size:0.8rem;padding:2px;opacity:0;transition:opacity 0.2s}
+.task-item:hover .task-delete{opacity:1}
+.task-delete:hover{color:var(--rose)}
+.task-priority{font-size:0.55rem;padding:2px 7px;border-radius:99px;font-weight:600;flex-shrink:0}
+.task-priority.high{background:rgba(244,63,94,0.1);color:var(--rose)}
+.task-priority.med{background:rgba(245,158,11,0.1);color:var(--amber)}
+.task-priority.low{background:rgba(99,102,241,0.1);color:var(--accent)}
+
+/* Habit */
+.habit-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(0,0,0,0.02)}
+.habit-item:last-child{border-bottom:none}
+.habit-name{flex:1;font-size:0.82rem;color:var(--heading)}
+.habit-days{display:flex;gap:3px}
+.habit-day{width:24px;height:24px;border-radius:5px;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:0.5rem;color:var(--text2);cursor:pointer;transition:all 0.2s;font-weight:600}
+.habit-day.checked{background:var(--green);border-color:var(--green);color:#fff}
+.habit-streak{font-size:0.62rem;color:var(--amber);font-weight:600;min-width:26px;text-align:center}
+.habit-delete{background:none;border:none;color:var(--text2);cursor:pointer;font-size:0.8rem;opacity:0;transition:opacity 0.2s}
+.habit-item:hover .habit-delete{opacity:1}
+
+/* Goal */
+.goal-item{padding:12px 0;border-bottom:1px solid rgba(0,0,0,0.02)}
+.goal-item:last-child{border-bottom:none}
+.goal-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.goal-name{font-size:0.82rem;color:var(--heading);font-weight:500}
+.goal-pct{font-size:0.72rem;font-weight:600;color:var(--accent)}
+.goal-bar{height:5px;background:rgba(0,0,0,0.06);border-radius:99px;overflow:hidden}
+.goal-fill{height:100%;border-radius:99px;background:var(--accent);transition:width 0.5s}
+.goal-actions{display:flex;gap:5px;margin-top:6px}
+.goal-actions button{padding:3px 9px;border-radius:5px;border:none;font-size:0.65rem;cursor:pointer;font-family:inherit;transition:all 0.2s}
+.goal-minus{background:rgba(255,255,255,0.05);color:var(--text)}
+.goal-plus{background:var(--accent-g);color:var(--accent)}
+.goal-del{background:none!important;color:var(--text2)!important;opacity:0;transition:opacity 0.2s!important}
+.goal-item:hover .goal-del{opacity:1}
+
+/* Note */
+.note-item{background:rgba(0,0,0,0.02);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px}
+.note-item textarea{width:100%;background:transparent;border:none;color:var(--heading);font-family:inherit;font-size:0.8rem;resize:none;min-height:40px;line-height:1.6}
+.note-item textarea:focus{outline:none}
+.note-meta{display:flex;justify-content:space-between;align-items:center;margin-top:6px}
+.note-date{font-size:0.58rem;color:var(--text2)}
+.note-delete{background:none;border:none;color:var(--text2);cursor:pointer;font-size:0.7rem;opacity:0;transition:opacity 0.2s}
+.note-item:hover .note-delete{opacity:1}
+
+/* ── Pomodoro Timer ── */
+.pomo-wrap{text-align:center;padding:32px 20px}
+.pomo-time{font-size:5rem;font-weight:700;color:var(--heading);letter-spacing:-0.04em;line-height:1;margin-bottom:8px;font-variant-numeric:tabular-nums}
+.pomo-label{font-size:0.75rem;color:var(--text2);margin-bottom:24px;text-transform:uppercase;letter-spacing:0.1em}
+.pomo-btns{display:flex;gap:8px;justify-content:center;margin-bottom:20px}
+.pomo-btn{padding:10px 24px;border-radius:99px;border:none;font-weight:600;font-size:0.8rem;cursor:pointer;font-family:inherit;transition:all 0.2s}
+.pomo-start{background:var(--accent);color:#fff}
+.pomo-start:hover{filter:brightness(1.15)}
+.pomo-reset{background:rgba(0,0,0,0.06);color:var(--text);border:1px solid var(--border)}
+.pomo-reset:hover{background:rgba(255,255,255,0.1)}
+.pomo-presets{display:flex;gap:6px;justify-content:center}
+.pomo-preset{padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:0.7rem;cursor:pointer;font-family:inherit;transition:all 0.2s}
+.pomo-preset.active{background:var(--accent-g);color:var(--accent);border-color:rgba(99,102,241,0.3)}
+.pomo-sessions{margin-top:20px;font-size:0.75rem;color:var(--text2)}
+.pomo-sessions strong{color:var(--green)}
+
+/* ── Expense Tracker ── */
+.expense-summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px}
+.expense-box{text-align:center;padding:14px;background:rgba(0,0,0,0.02);border:1px solid var(--border);border-radius:10px}
+.expense-box .val{font-size:1.2rem;font-weight:700;line-height:1}
+.expense-box .val.income{color:var(--green)}
+.expense-box .val.expense{color:var(--rose)}
+.expense-box .val.balance{color:var(--accent)}
+.expense-box .lbl{font-size:0.6rem;color:var(--text2);margin-top:3px;text-transform:uppercase;letter-spacing:0.05em}
+.exp-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(0,0,0,0.02)}
+.exp-item:last-child{border-bottom:none}
+.exp-cat{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.exp-name{flex:1;font-size:0.82rem;color:var(--heading)}
+.exp-amount{font-size:0.82rem;font-weight:600}
+.exp-amount.pos{color:var(--green)}
+.exp-amount.neg{color:var(--rose)}
+.exp-date{font-size:0.6rem;color:var(--text2)}
+.exp-delete{background:none;border:none;color:var(--text2);cursor:pointer;font-size:0.8rem;opacity:0;transition:opacity 0.2s}
+.exp-item:hover .exp-delete{opacity:1}
+.add-exp-row{display:flex;gap:6px;padding:10px 18px;border-top:1px solid var(--border);flex-wrap:wrap}
+.add-exp-row input,.add-exp-row select{padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--heading);font-family:inherit;font-size:0.78rem;flex:1;min-width:80px}
+
+/* ── Bookmarks ── */
+.bm-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(0,0,0,0.02)}
+.bm-item:last-child{border-bottom:none}
+.bm-icon{width:28px;height:28px;border-radius:8px;background:var(--accent-g);display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:var(--accent);font-weight:700;flex-shrink:0}
+.bm-info{flex:1}
+.bm-info a{font-size:0.82rem;color:var(--heading);display:block;text-decoration:none}
+.bm-info a:hover{color:var(--accent)}
+.bm-info small{font-size:0.6rem;color:var(--text2)}
+.bm-delete{background:none;border:none;color:var(--text2);cursor:pointer;font-size:0.8rem;opacity:0;transition:opacity 0.2s}
+.bm-item:hover .bm-delete{opacity:1}
+
+/* ── Journal / Memory ── */
+.journal-date-nav{display:flex;align-items:center;justify-content:center;gap:16px;padding:16px;margin-bottom:14px}
+.journal-date-nav button{width:32px;height:32px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text);cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+.journal-date-nav button:hover{background:rgba(0,0,0,0.06)}
+.journal-date-nav .current-date{font-size:0.95rem;font-weight:600;color:var(--heading);min-width:180px;text-align:center}
+.journal-entry{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:14px}
+.mood-selector{display:flex;gap:8px;margin-bottom:16px;justify-content:center}
+.mood-btn{width:40px;height:40px;border-radius:12px;border:2px solid var(--border);background:transparent;font-size:1.3rem;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center}
+.mood-btn:hover{border-color:rgba(255,255,255,0.2);transform:scale(1.1)}
+.mood-btn.selected{border-color:var(--accent);background:var(--accent-g);transform:scale(1.15)}
+.journal-textarea{width:100%;min-height:160px;background:rgba(0,0,0,0.02);border:1px solid var(--border);border-radius:12px;padding:16px;color:rgba(255,255,255,0.8);font-family:inherit;font-size:0.88rem;line-height:1.8;resize:vertical}
+.journal-textarea:focus{outline:none;border-color:var(--accent)}
+.journal-textarea::placeholder{color:var(--text2)}
+.journal-meta{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+.journal-save{padding:8px 20px;background:var(--accent);color:#fff;border:none;border-radius:9px;font-weight:600;font-size:0.78rem;cursor:pointer;font-family:inherit;transition:all 0.2s}
+.journal-save:hover{filter:brightness(1.15)}
+.journal-saved{font-size:0.72rem;color:var(--green);opacity:0;transition:opacity 0.3s}
+.journal-saved.show{opacity:1}
+
+/* Past Entries */
+.past-entries-title{font-size:0.75rem;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.08em;margin:20px 0 12px;padding-top:16px;border-top:1px solid var(--border)}
+.past-entry{background:rgba(0,0,0,0.02);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;cursor:pointer;transition:all 0.2s}
+.past-entry:hover{border-color:rgba(255,255,255,0.12);background:var(--bg)}
+.past-entry-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.past-entry-date{font-size:0.78rem;font-weight:600;color:var(--heading)}
+.past-entry-mood{font-size:1.1rem}
+.past-entry-text{font-size:0.78rem;color:var(--text);line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.past-entry-delete{background:none;border:none;color:var(--text2);cursor:pointer;font-size:0.7rem;opacity:0;transition:opacity 0.2s;margin-top:6px}
+.past-entry:hover .past-entry-delete{opacity:1}
+.past-entry-delete:hover{color:var(--rose)}
+
+.journal-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.journal-stat{text-align:center;padding:14px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius)}
+.journal-stat .val{font-size:1.4rem;font-weight:700;color:var(--heading)}
+.journal-stat .lbl{font-size:0.6rem;color:var(--text2);margin-top:2px;text-transform:uppercase;letter-spacing:0.05em}
+
+/* ── Water Tracker ── */
+.water-wrap{text-align:center;padding:24px}
+.water-visual{display:flex;gap:8px;justify-content:center;margin:16px 0;flex-wrap:wrap}
+.water-glass{width:40px;height:52px;border-radius:0 0 10px 10px;border:2px solid var(--border);background:transparent;cursor:pointer;transition:all 0.3s;position:relative;overflow:hidden}
+.water-glass.filled{border-color:var(--cyan)}
+.water-glass.filled::after{content:'';position:absolute;bottom:0;left:0;right:0;height:100%;background:linear-gradient(0deg,rgba(6,182,212,0.3),rgba(6,182,212,0.1));animation:fillUp 0.4s ease}
+@keyframes fillUp{from{height:0}to{height:100%}}
+.water-glass-icon{font-size:1.2rem;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:1}
+.water-count{font-size:2.5rem;font-weight:700;color:var(--heading);margin-top:8px}
+.water-count span{font-size:1rem;color:var(--text2);font-weight:400}
+.water-label{font-size:0.72rem;color:var(--text2);margin-top:2px}
+.water-reset{margin-top:12px;padding:6px 16px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--text2);font-size:0.7rem;cursor:pointer;font-family:inherit}
+
+/* ── Password Vault ── */
+.pw-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(0,0,0,0.02)}
+.pw-item:last-child{border-bottom:none}
+.pw-icon{width:32px;height:32px;border-radius:8px;background:rgba(99,102,241,0.1);display:flex;align-items:center;justify-content:center;font-size:0.8rem;flex-shrink:0}
+.pw-info{flex:1;overflow:hidden}
+.pw-info .pw-site{font-size:0.82rem;color:var(--heading);font-weight:500}
+.pw-info .pw-user{font-size:0.68rem;color:var(--text2)}
+.pw-pass{font-family:monospace;font-size:0.78rem;color:var(--text2);letter-spacing:0.1em;cursor:pointer;padding:4px 8px;background:rgba(0,0,0,0.02);border-radius:6px;transition:all 0.2s}
+.pw-pass:hover{background:rgba(0,0,0,0.06);color:var(--heading)}
+.pw-pass.revealed{color:var(--green);letter-spacing:0}
+.pw-delete{background:none;border:none;color:var(--text2);cursor:pointer;font-size:0.8rem;opacity:0;transition:opacity 0.2s}
+.pw-item:hover .pw-delete{opacity:1}
+.add-pw-row{display:flex;gap:6px;padding:10px 18px;border-top:1px solid var(--border);flex-wrap:wrap}
+.add-pw-row input{padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--heading);font-family:inherit;font-size:0.78rem;flex:1;min-width:80px}
+
+/* ── Quote of the Day ── */
+.quote-card{text-align:center;padding:28px 24px;margin-bottom:14px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius)}
+.quote-text{font-size:1rem;color:var(--text);font-style:italic;line-height:1.7;margin-bottom:10px;max-width:600px;margin-inline:auto}
+.quote-author{font-size:0.72rem;color:var(--accent);font-weight:600}
+
+/* ── Weekly Report ── */
+.report-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.report-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.report-card h3{font-size:0.78rem;font-weight:600;color:var(--heading);margin-bottom:12px}
+.report-row{display:flex;justify-content:space-between;padding:6px 0;font-size:0.8rem;border-bottom:1px solid rgba(0,0,0,0.02)}
+.report-row:last-child{border-bottom:none}
+.report-row .rlabel{color:var(--text)}
+.report-row .rval{font-weight:600;color:var(--heading)}
+.report-row .rval.good{color:var(--green)}
+.report-row .rval.warn{color:var(--amber)}
+
+
+/* Empty */
+.empty{text-align:center;padding:28px 16px;color:var(--text2);font-size:0.78rem}
+
+/* Data actions */
+.data-actions{display:flex;gap:8px;justify-content:center;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
+.data-btn{padding:8px 18px;border-radius:9px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:0.72rem;cursor:pointer;font-family:inherit;transition:all 0.2s}
+.data-btn:hover{background:rgba(255,255,255,0.05);color:var(--text)}
+.data-btn.danger:hover{background:rgba(244,63,94,0.1);color:var(--rose);border-color:rgba(244,63,94,0.2)}
+
+.app-footer{text-align:center;padding:24px 0;font-size:0.65rem;color:rgba(255,255,255,0.12)}
+
+@media(max-width:768px){.stats{grid-template-columns:repeat(3,1fr)}.grid-2,.grid-3{grid-template-columns:1fr}.expense-summary{grid-template-columns:1fr 1fr 1fr}}
+@media(max-width:480px){.stats{grid-template-columns:1fr 1fr}.top-bar{flex-direction:column;gap:8px;align-items:flex-start}.pomo-time{font-size:3.5rem}}
+@media print{body{background:#fff;color:#333}.panel,.stat-card{border-color:#ddd;background:#f9f9f9}}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="top-bar">
+    <h1>Life<span>Board</span></h1>
+    <div class="top-right">
+      <button class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('ar')">عربي</button>
+    </div>
+  </div>
+  <div class="greeting" id="greeting"></div>
+
+  <!-- Tab Navigation -->
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('dashboard',this)">Dashboard</button>
+    <button class="tab-btn" onclick="switchTab('pomodoro',this)">Pomodoro</button>
+    <button class="tab-btn" onclick="switchTab('expenses',this)">Expenses</button>
+    <button class="tab-btn" onclick="switchTab('water',this)">Water</button>
+    <button class="tab-btn" onclick="switchTab('bookmarks',this)">Bookmarks</button>
+    <button class="tab-btn" onclick="switchTab('journal',this)">Journal</button>
+    <button class="tab-btn" onclick="switchTab('passwords',this)">Passwords</button>
+    <button class="tab-btn" onclick="switchTab('report',this)">Report</button>
+    <button class="tab-btn" onclick="switchTab('settings',this)">Settings</button>
+  </div>
+
+  <!-- ═══ TAB: Dashboard ═══ -->
+  <div class="tab-content active" id="tab-dashboard">
+    <div class="quote-card" id="daily-quote"></div>
+    <div class="stats" id="stats-row"></div>
+    <div class="grid-2">
+      <div class="panel"><div class="panel-header"><h2 id="h-tasks">Tasks</h2><span class="count" id="task-count">0</span></div><div class="panel-body" id="tasks-list"></div><div class="add-row"><input type="text" id="task-input" placeholder="Add a task..." onkeydown="if(event.key==='Enter')addTask()"><select id="task-pri" style="padding:8px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:0.7rem;max-width:70px"><option value="low">Low</option><option value="med" selected>Med</option><option value="high">High</option></select><button class="add-btn" onclick="addTask()">Add</button></div></div>
+      <div class="panel"><div class="panel-header"><h2 id="h-habits">Habits</h2><span class="count" id="habit-count">0</span></div><div class="panel-body" id="habits-list"></div><div class="add-row"><input type="text" id="habit-input" placeholder="Add a habit..." onkeydown="if(event.key==='Enter')addHabit()"><button class="add-btn" onclick="addHabit()">Add</button></div></div>
+      <div class="panel"><div class="panel-header"><h2 id="h-goals">Goals</h2><span class="count" id="goal-count">0</span></div><div class="panel-body" id="goals-list"></div><div class="add-row"><input type="text" id="goal-input" placeholder="Add a goal..." onkeydown="if(event.key==='Enter')addGoal()"><button class="add-btn" onclick="addGoal()">Add</button></div></div>
+      <div class="panel"><div class="panel-header"><h2 id="h-notes">Quick Notes</h2><span class="count" id="note-count">0</span></div><div class="panel-body" id="notes-list"></div><div class="add-row"><input type="text" id="note-input" placeholder="Write a note..." onkeydown="if(event.key==='Enter')addNote()"><button class="add-btn" onclick="addNote()">Add</button></div></div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB: Pomodoro ═══ -->
+  <div class="tab-content" id="tab-pomodoro">
+    <div class="grid-2">
+      <div class="panel">
+        <div class="pomo-wrap">
+          <div class="pomo-time" id="pomo-display">25:00</div>
+          <div class="pomo-label" id="pomo-mode">Focus Time</div>
+          <div class="pomo-btns">
+            <button class="pomo-btn pomo-start" id="pomo-toggle" onclick="pomoToggle()">Start</button>
+            <button class="pomo-btn pomo-reset" onclick="pomoReset()">Reset</button>
+          </div>
+          <div class="pomo-presets">
+            <button class="pomo-preset active" onclick="pomoSet(25,this)">25 min</button>
+            <button class="pomo-preset" onclick="pomoSet(15,this)">15 min</button>
+            <button class="pomo-preset" onclick="pomoSet(50,this)">50 min</button>
+            <button class="pomo-preset" onclick="pomoSet(5,this)">5 min break</button>
+          </div>
+          <div class="pomo-sessions">Sessions today: <strong id="pomo-count">0</strong></div>
+        </div>
+      </div>
+      <div class="panel"><div class="panel-header"><h2>Today's Tasks</h2><span class="count" id="task-count2">0</span></div><div class="panel-body" id="pomo-tasks"></div></div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB: Expenses ═══ -->
+  <div class="tab-content" id="tab-expenses">
+    <div class="expense-summary" id="exp-summary"></div>
+    <div class="grid-2">
+      <div class="panel"><div class="panel-header"><h2>Transactions</h2><span class="count" id="exp-count">0</span></div><div class="panel-body" id="exp-list"></div>
+        <div class="add-exp-row">
+          <input type="text" id="exp-name" placeholder="Description..." style="flex:2">
+          <input type="number" id="exp-amount" placeholder="Amount" style="flex:1">
+          <select id="exp-type" style="flex:1;padding:8px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:0.75rem"><option value="expense">Expense</option><option value="income">Income</option></select>
+          <button class="add-btn" onclick="addExpense()">Add</button>
+        </div>
+      </div>
+      <div class="panel"><div class="panel-header"><h2>By Category</h2></div><div class="panel-body" id="exp-cats"></div></div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB: Water Tracker ═══ -->
+  <div class="tab-content" id="tab-water">
+    <div class="grid-2">
+      <div class="panel">
+        <div class="water-wrap">
+          <div style="font-size:0.72rem;color:var(--text2);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px" id="water-title">Daily Water Intake</div>
+          <div class="water-visual" id="water-glasses"></div>
+          <div class="water-count" id="water-num">0 <span>/ 8</span></div>
+          <div class="water-label" id="water-lbl">glasses today</div>
+          <button class="water-reset" onclick="resetWater()" id="water-reset-btn">Reset</button>
+        </div>
+      </div>
+      <div class="panel"><div class="panel-header"><h2 id="h-water-log">This Week</h2></div><div class="panel-body" id="water-week"></div></div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB: Bookmarks ═══ -->
+  <div class="tab-content" id="tab-bookmarks">
+    <div class="grid-2">
+      <div class="panel"><div class="panel-header"><h2>Saved Links</h2><span class="count" id="bm-count">0</span></div><div class="panel-body" id="bm-list"></div>
+        <div class="add-row">
+          <input type="text" id="bm-title" placeholder="Title..." style="flex:1" onkeydown="if(event.key==='Enter')document.getElementById('bm-url').focus()">
+          <input type="url" id="bm-url" placeholder="https://..." style="flex:2" onkeydown="if(event.key==='Enter')addBookmark()">
+          <button class="add-btn" onclick="addBookmark()">Add</button>
+        </div>
+      </div>
+      <div class="panel"><div class="panel-header"><h2>Quick Access</h2></div><div class="panel-body"><div class="empty">Your most visited bookmarks will appear here</div></div></div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB: Journal ═══ -->
+  <div class="tab-content" id="tab-journal">
+    <div class="journal-stats" id="journal-stats"></div>
+    <div class="journal-date-nav">
+      <button onclick="journalNav(-1)">&larr;</button>
+      <span class="current-date" id="journal-current-date"></span>
+      <button onclick="journalNav(1)">&rarr;</button>
+    </div>
+    <div class="journal-entry">
+      <div style="text-align:center;margin-bottom:8px;font-size:0.72rem;color:var(--text2)" id="mood-label">How are you feeling today?</div>
+      <div class="mood-selector">
+        <button class="mood-btn" data-mood="amazing" onclick="selectMood('amazing',this)">&#129321;</button>
+        <button class="mood-btn" data-mood="good" onclick="selectMood('good',this)">&#128522;</button>
+        <button class="mood-btn" data-mood="okay" onclick="selectMood('okay',this)">&#128528;</button>
+        <button class="mood-btn" data-mood="bad" onclick="selectMood('bad',this)">&#128533;</button>
+        <button class="mood-btn" data-mood="terrible" onclick="selectMood('terrible',this)">&#128557;</button>
+      </div>
+      <textarea class="journal-textarea" id="journal-text" placeholder="Write about your day... What happened? What did you learn? What are you grateful for?"></textarea>
+      <div class="journal-meta">
+        <span class="journal-saved" id="journal-saved">Saved!</span>
+        <button class="journal-save" onclick="saveJournal()">Save Entry</button>
+      </div>
+    </div>
+
+    <div class="past-entries-title" id="past-title">Recent Entries</div>
+    <div id="past-entries"></div>
+  </div>
+
+  <!-- ═══ TAB: Passwords ═══ -->
+  <div class="tab-content" id="tab-passwords">
+    <div class="grid-2">
+      <div class="panel"><div class="panel-header"><h2>Password Vault</h2><span class="count" id="pw-count">0</span></div><div class="panel-body" id="pw-list"></div>
+        <div class="add-pw-row">
+          <input type="text" id="pw-site" placeholder="Site name...">
+          <input type="text" id="pw-user" placeholder="Username...">
+          <input type="password" id="pw-pass" placeholder="Password...">
+          <button class="add-btn" onclick="addPassword()">Add</button>
+        </div>
+      </div>
+      <div class="panel"><div class="panel-header"><h2>Generator</h2></div><div class="panel-body" style="padding:20px;text-align:center">
+        <div style="background:rgba(0,0,0,0.02);border:1px solid var(--border);border-radius:10px;padding:14px;font-family:monospace;font-size:1rem;color:var(--heading);letter-spacing:0.05em;margin-bottom:14px;word-break:break-all" id="gen-pass"></div>
+        <div style="display:flex;gap:6px;justify-content:center;margin-bottom:14px">
+          <button class="add-btn" onclick="generatePassword()" style="font-size:0.72rem">Generate</button>
+          <button class="data-btn" onclick="copyGenerated()" style="font-size:0.72rem" id="copy-btn">Copy</button>
+        </div>
+        <div style="display:flex;gap:12px;justify-content:center;font-size:0.7rem;color:var(--text2)">
+          <label><input type="range" id="pw-length" min="8" max="32" value="16" style="width:80px" oninput="generatePassword()"> <span id="pw-len-val">16</span> chars</label>
+        </div>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB: Weekly Report ═══ -->
+  <div class="tab-content" id="tab-report">
+    <div class="report-grid" id="weekly-report"></div>
+  </div>
+
+  <!-- ═══ TAB: Settings ═══ -->
+  <div class="tab-content" id="tab-settings">
+    <div class="grid-3">
+      <div class="panel"><div class="panel-header"><h2>Export / Import</h2></div><div class="panel-body" style="text-align:center;padding:24px">
+        <p style="font-size:0.8rem;margin-bottom:16px">Backup your data or restore from a previous backup.</p>
+        <div class="data-actions" style="border:none;margin:0;padding:0"><button class="data-btn" onclick="exportData()">Export JSON</button><button class="data-btn" onclick="document.getElementById('import-file').click()">Import JSON</button><input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(this)"></div>
+      </div></div>
+      <div class="panel"><div class="panel-header"><h2>Theme Color</h2></div><div class="panel-body" style="padding:24px">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+          <div style="width:32px;height:32px;border-radius:8px;background:#6366f1;cursor:pointer;border:2px solid transparent" onclick="changeAccent('#6366f1',this)"></div>
+          <div style="width:32px;height:32px;border-radius:8px;background:#10b981;cursor:pointer;border:2px solid transparent" onclick="changeAccent('#10b981',this)"></div>
+          <div style="width:32px;height:32px;border-radius:8px;background:#f59e0b;cursor:pointer;border:2px solid transparent" onclick="changeAccent('#f59e0b',this)"></div>
+          <div style="width:32px;height:32px;border-radius:8px;background:#f43f5e;cursor:pointer;border:2px solid transparent" onclick="changeAccent('#f43f5e',this)"></div>
+          <div style="width:32px;height:32px;border-radius:8px;background:#06b6d4;cursor:pointer;border:2px solid transparent" onclick="changeAccent('#06b6d4',this)"></div>
+          <label style="width:32px;height:32px;border-radius:8px;background:conic-gradient(red,yellow,lime,aqua,blue,magenta,red);cursor:pointer;display:block;position:relative;overflow:hidden"><input type="color" value="#6366f1" style="position:absolute;inset:0;opacity:0;cursor:pointer" oninput="changeAccent(this.value,this.parentElement)"></label>
+        </div>
+      </div></div>
+      <div class="panel"><div class="panel-header"><h2 id="set-reset-title">Reset Data</h2></div><div class="panel-body" style="text-align:center;padding:24px">
+        <p style="font-size:0.8rem;margin-bottom:16px;color:var(--text2)" id="set-reset-desc">This will delete all your data permanently.</p>
+        <button class="data-btn danger" id="set-reset-btn" onclick="if(confirm(lang==='ar'?'حذف كل البيانات؟ لا يمكن التراجع!':'Delete ALL data? This cannot be undone.')){localStorage.removeItem(STORE);location.reload();}">Reset Everything</button>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="app-footer" id="app-footer">Your data is saved locally in your browser. No account needed.</div>
+</div>
+
+<script>
+const STORE='lifeboard_v2';
+let lang='en',pomoTimer=null,pomoSeconds=25*60,pomoRunning=false,pomoSessions=0;
+let data=JSON.parse(localStorage.getItem(STORE))||{tasks:[],habits:[],goals:[],notes:[],expenses:[],bookmarks:[]};
+['tasks','habits','goals','notes','expenses','bookmarks','passwords'].forEach(k=>{if(!data[k])data[k]=[];});
+if(!data.journal)data.journal={};
+if(!data.water)data.water={};
+
+const dn={en:['M','T','W','T','F','S','S'],ar:['ن','ث','ر','خ','ج','س','ح']};
+function save(){localStorage.setItem(STORE,JSON.stringify(data));}
+
+// ── Tabs ──
+function switchTab(id,btn){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── Language ──
+function setLang(l){
+  lang=l;document.body.classList.toggle('rtl',l==='ar');
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  // Translate tab names
+  const tabs=document.querySelectorAll('.tab-btn');
+  const tabNames=l==='ar'?['لوحة التحكم','بومودورو','المصروفات','المياه','المفضلة','اليومية','كلمات السر','التقرير','الإعدادات']:['Dashboard','Pomodoro','Expenses','Water','Bookmarks','Journal','Passwords','Report','Settings'];
+  tabs.forEach((t,i)=>{if(tabNames[i])t.textContent=tabNames[i];});
+  // Translate panel headers
+  const ids={
+    'h-tasks':l==='ar'?'المهام':'Tasks','h-habits':l==='ar'?'العادات':'Habits',
+    'h-goals':l==='ar'?'الأهداف':'Goals','h-notes':l==='ar'?'ملاحظات سريعة':'Quick Notes',
+    'h-water-log':l==='ar'?'هذا الأسبوع':'This Week',
+    'water-title':l==='ar'?'شرب المياه اليومي':'Daily Water Intake',
+    'water-lbl':l==='ar'?'كوب اليوم':'glasses today',
+    'water-reset-btn':l==='ar'?'إعادة':'Reset',
+    'mood-label':l==='ar'?'كيف حالك اليوم؟':'How are you feeling?',
+    'past-title':l==='ar'?'الذكريات السابقة':'Recent Entries'
+  };
+  Object.entries(ids).forEach(([id,text])=>{const el=document.getElementById(id);if(el)el.textContent=text;});
+  // Translate placeholders
+  const ph={
+    'task-input':l==='ar'?'أضف مهمة...':'Add a task...',
+    'habit-input':l==='ar'?'أضف عادة...':'Add a habit...',
+    'goal-input':l==='ar'?'أضف هدف...':'Add a goal...',
+    'note-input':l==='ar'?'اكتب ملاحظة...':'Write a note...',
+    'exp-name':l==='ar'?'الوصف...':'Description...',
+    'exp-amount':l==='ar'?'المبلغ':'Amount',
+    'pw-site':l==='ar'?'اسم الموقع...':'Site name...',
+    'pw-user':l==='ar'?'اسم المستخدم...':'Username...',
+    'pw-pass':l==='ar'?'كلمة السر...':'Password...',
+    'bm-title':l==='ar'?'العنوان...':'Title...',
+    'bm-url':l==='ar'?'الرابط...':'https://...',
+    'journal-text':l==='ar'?'اكتب عن يومك... ماذا حدث؟ ماذا تعلمت؟ ما الذي تشكر عليه؟':'Write about your day...'
+  };
+  Object.entries(ph).forEach(([id,text])=>{const el=document.getElementById(id);if(el)el.placeholder=text;});
+  // Translate buttons
+  document.querySelectorAll('.add-btn').forEach(b=>b.textContent=l==='ar'?'إضافة':'Add');
+  document.querySelector('.journal-save').textContent=l==='ar'?'حفظ':'Save Entry';
+  document.querySelector('.pomo-start').textContent=l==='ar'?'ابدأ':'Start';
+  document.querySelector('.pomo-reset').textContent=l==='ar'?'إعادة':'Reset';
+  // Translate pomo presets
+  const presets=document.querySelectorAll('.pomo-preset');
+  const presetNames=l==='ar'?['25 دقيقة','15 دقيقة','50 دقيقة','5 دقائق استراحة']:['25 min','15 min','50 min','5 min break'];
+  presets.forEach((p,i)=>{if(presetNames[i])p.textContent=presetNames[i];});
+  document.getElementById('pomo-mode').textContent=l==='ar'?'وقت التركيز':'Focus Time';
+  // Settings translations
+  document.getElementById('set-reset-title').textContent=l==='ar'?'مسح البيانات':'Reset Data';
+  document.getElementById('set-reset-desc').textContent=l==='ar'?'سيتم حذف جميع بياناتك نهائياً.':'This will delete all your data permanently.';
+  document.getElementById('set-reset-btn').textContent=l==='ar'?'مسح الكل':'Reset Everything';
+  document.getElementById('app-footer').textContent=l==='ar'?'بياناتك محفوظة محلياً في المتصفح. لا حاجة لحساب.':'Your data is saved locally in your browser. No account needed.';
+  // Expense type select
+  const expType=document.getElementById('exp-type');
+  if(expType){expType.options[0].text=l==='ar'?'مصروف':'Expense';expType.options[1].text=l==='ar'?'دخل':'Income';}
+  renderAll();
+}
+
+function updateGreeting(){const h=new Date().getHours();const p=h<12?(lang==='ar'?'صباح الخير':'Good morning'):h<18?(lang==='ar'?'مساء الخير':'Good afternoon'):(lang==='ar'?'مساء الخير':'Good evening');document.getElementById('greeting').innerHTML=`<strong>${p}!</strong> ${lang==='ar'?'إليك لوحة حياتك اليوم.':'Here\'s your life dashboard.'}`;}
+
+// ── Stats ──
+function renderStats(){
+  const done=data.tasks.filter(t=>t.done).length,total=data.tasks.length;
+  const avgGoal=data.goals.length?Math.round(data.goals.reduce((s,g)=>s+g.progress,0)/data.goals.length):0;
+  const totalExp=data.expenses.filter(e=>e.type==='expense').reduce((s,e)=>s+e.amount,0);
+  document.getElementById('stats-row').innerHTML=`
+    <div class="stat-card accent"><div class="num">${total}</div><div class="label">${lang==='ar'?'المهام':'Tasks'}</div></div>
+    <div class="stat-card green"><div class="num">${done}</div><div class="label">${lang==='ar'?'مكتمل':'Done'}</div></div>
+    <div class="stat-card"><div class="num">${data.habits.length}</div><div class="label">${lang==='ar'?'العادات':'Habits'}</div></div>
+    <div class="stat-card amber"><div class="num">${avgGoal}%</div><div class="label">${lang==='ar'?'الأهداف':'Goals'}</div></div>
+    <div class="stat-card cyan"><div class="num">${pomoSessions}</div><div class="label">${lang==='ar'?'جلسات':'Sessions'}</div></div>`;
+}
+
+// ── Tasks ──
+function renderTasks(){
+  const list=document.getElementById('tasks-list');const list2=document.getElementById('pomo-tasks');
+  document.getElementById('task-count').textContent=data.tasks.length;document.getElementById('task-count2').textContent=data.tasks.filter(t=>!t.done).length;
+  if(!data.tasks.length){list.innerHTML=`<div class="empty">${lang==='ar'?'لا توجد مهام':'No tasks yet'}</div>`;list2.innerHTML=list.innerHTML;return;}
+  const html=data.tasks.map((t,i)=>`<div class="task-item"><button class="task-check ${t.done?'done':''}" onclick="toggleTask(${i})">${t.done?'&#10003;':''}</button><span class="task-text ${t.done?'done':''}">${t.text}</span><span class="task-priority ${t.pri}">${t.pri}</span><button class="task-delete" onclick="deleteTask(${i})">&#10005;</button></div>`).join('');
+  list.innerHTML=html;list2.innerHTML=data.tasks.filter(t=>!t.done).map((t,i)=>`<div class="task-item"><span class="task-text">${t.text}</span><span class="task-priority ${t.pri}">${t.pri}</span></div>`).join('')||`<div class="empty">All done!</div>`;
+}
+function addTask(){const input=document.getElementById('task-input');if(!input.value.trim())return;data.tasks.unshift({text:input.value.trim(),done:false,pri:document.getElementById('task-pri').value});input.value='';save();renderTasks();renderStats();}
+function toggleTask(i){data.tasks[i].done=!data.tasks[i].done;save();renderTasks();renderStats();}
+function deleteTask(i){data.tasks.splice(i,1);save();renderTasks();renderStats();}
+
+// ── Habits ──
+function renderHabits(){
+  document.getElementById('habit-count').textContent=data.habits.length;
+  if(!data.habits.length){document.getElementById('habits-list').innerHTML=`<div class="empty">${lang==='ar'?'لا توجد عادات':'No habits yet'}</div>`;return;}
+  document.getElementById('habits-list').innerHTML=data.habits.map((h,i)=>{if(!h.days)h.days={};const s=Object.values(h.days).filter(Boolean).length;return`<div class="habit-item"><span class="habit-name">${h.name}</span><div class="habit-days">${[0,1,2,3,4,5,6].map(d=>`<button class="habit-day ${h.days[d]?'checked':''}" onclick="toggleHabit(${i},${d})">${dn[lang][d]}</button>`).join('')}</div><span class="habit-streak">${s}/7</span><button class="habit-delete" onclick="deleteHabit(${i})">&#10005;</button></div>`;}).join('');
+}
+function addHabit(){const input=document.getElementById('habit-input');if(!input.value.trim())return;data.habits.push({name:input.value.trim(),days:{}});input.value='';save();renderHabits();}
+function toggleHabit(i,d){if(!data.habits[i].days)data.habits[i].days={};data.habits[i].days[d]=!data.habits[i].days[d];save();renderHabits();}
+function deleteHabit(i){data.habits.splice(i,1);save();renderHabits();}
+
+// ── Goals ──
+function renderGoals(){
+  document.getElementById('goal-count').textContent=data.goals.length;
+  if(!data.goals.length){document.getElementById('goals-list').innerHTML=`<div class="empty">${lang==='ar'?'لا توجد أهداف':'No goals yet'}</div>`;return;}
+  document.getElementById('goals-list').innerHTML=data.goals.map((g,i)=>`<div class="goal-item"><div class="goal-top"><span class="goal-name">${g.name}</span><span class="goal-pct">${g.progress}%</span></div><div class="goal-bar"><div class="goal-fill" style="width:${g.progress}%;background:${g.progress>=100?'var(--green)':'var(--accent)'}"></div></div><div class="goal-actions"><button class="goal-minus" onclick="adjustGoal(${i},-10)">-10%</button><button class="goal-plus" onclick="adjustGoal(${i},10)">+10%</button><button class="goal-plus" onclick="adjustGoal(${i},25)">+25%</button><button class="goal-del" onclick="deleteGoal(${i})">&#10005;</button></div></div>`).join('');
+}
+function addGoal(){const input=document.getElementById('goal-input');if(!input.value.trim())return;data.goals.push({name:input.value.trim(),progress:0});input.value='';save();renderGoals();renderStats();}
+function adjustGoal(i,v){data.goals[i].progress=Math.max(0,Math.min(100,data.goals[i].progress+v));save();renderGoals();renderStats();}
+function deleteGoal(i){data.goals.splice(i,1);save();renderGoals();renderStats();}
+
+// ── Notes ──
+function renderNotes(){
+  document.getElementById('note-count').textContent=data.notes.length;
+  if(!data.notes.length){document.getElementById('notes-list').innerHTML=`<div class="empty">${lang==='ar'?'لا توجد ملاحظات':'No notes yet'}</div>`;return;}
+  document.getElementById('notes-list').innerHTML=data.notes.map((n,i)=>`<div class="note-item"><textarea oninput="updateNote(${i},this.value)">${n.text}</textarea><div class="note-meta"><span class="note-date">${n.date}</span><button class="note-delete" onclick="deleteNote(${i})">&#10005;</button></div></div>`).join('');
+}
+function addNote(){const input=document.getElementById('note-input');if(!input.value.trim())return;data.notes.unshift({text:input.value.trim(),date:new Date().toLocaleDateString(lang==='ar'?'ar-EG':'en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})});input.value='';save();renderNotes();}
+function updateNote(i,v){data.notes[i].text=v;save();}
+function deleteNote(i){data.notes.splice(i,1);save();renderNotes();}
+
+// ── Pomodoro ──
+// Alarm sound using Web Audio API
+function playAlarm(){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const notes=[523.25,659.25,783.99,1046.5]; // C5,E5,G5,C6
+    notes.forEach((freq,i)=>{
+      [0,0.6,1.2].forEach(rep=>{
+        const osc=ctx.createOscillator();const gain=ctx.createGain();
+        osc.connect(gain);gain.connect(ctx.destination);
+        osc.type='sine';osc.frequency.value=freq;
+        const t=ctx.currentTime+rep+i*0.15;
+        gain.gain.setValueAtTime(0,t);gain.gain.linearRampToValueAtTime(0.3,t+0.02);gain.gain.linearRampToValueAtTime(0,t+0.3);
+        osc.start(t);osc.stop(t+0.35);
+      });
+    });
+    // Also try notification
+    if('Notification' in window&&Notification.permission==='granted'){
+      new Notification(lang==='ar'?'انتهى الوقت!':'Time\'s Up!',{body:lang==='ar'?'خذ استراحة.':'Take a break.',icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">⏰</text></svg>'});
+    }else if('Notification' in window&&Notification.permission!=='denied'){
+      Notification.requestPermission();
+    }
+  }catch(e){console.log('Audio not supported');}
+}
+
+function pomoToggle(){
+  if(pomoRunning){clearInterval(pomoTimer);pomoRunning=false;document.getElementById('pomo-toggle').textContent=lang==='ar'?'استمرار':'Resume';}
+  else{
+    // Request notification permission on first start
+    if('Notification' in window&&Notification.permission==='default')Notification.requestPermission();
+    pomoRunning=true;document.getElementById('pomo-toggle').textContent=lang==='ar'?'إيقاف':'Pause';
+    pomoTimer=setInterval(()=>{
+      pomoSeconds--;
+      // Play tick sound at last 5 seconds
+      if(pomoSeconds<=5&&pomoSeconds>0){try{const ctx=new AudioContext();const o=ctx.createOscillator();const g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=800;g.gain.value=0.1;o.start();o.stop(ctx.currentTime+0.05);}catch(e){}}
+      if(pomoSeconds<=0){
+        clearInterval(pomoTimer);pomoRunning=false;pomoSessions++;
+        document.getElementById('pomo-count').textContent=pomoSessions;
+        document.getElementById('pomo-toggle').textContent=lang==='ar'?'ابدأ':'Start';
+        pomoSeconds=25*60;
+        playAlarm();
+        setTimeout(()=>alert(lang==='ar'?'انتهى الوقت! خذ استراحة.':'Time\'s up! Take a break.'),500);
+      }
+      pomoUpdateDisplay();
+    },1000);
+  }
+}
+function pomoReset(){clearInterval(pomoTimer);pomoRunning=false;pomoSeconds=25*60;document.getElementById('pomo-toggle').textContent=lang==='ar'?'ابدأ':'Start';pomoUpdateDisplay();}
+function pomoSet(min,btn){clearInterval(pomoTimer);pomoRunning=false;pomoSeconds=min*60;document.getElementById('pomo-toggle').textContent=lang==='ar'?'ابدأ':'Start';document.querySelectorAll('.pomo-preset').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.getElementById('pomo-mode').textContent=min<=5?(lang==='ar'?'استراحة':'Break Time'):(lang==='ar'?'وقت التركيز':'Focus Time');pomoUpdateDisplay();}
+function pomoUpdateDisplay(){const m=Math.floor(pomoSeconds/60),s=pomoSeconds%60;document.getElementById('pomo-display').textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;}
+
+// ── Expenses ──
+function renderExpenses(){
+  const inc=data.expenses.filter(e=>e.type==='income').reduce((s,e)=>s+e.amount,0);
+  const exp=data.expenses.filter(e=>e.type==='expense').reduce((s,e)=>s+e.amount,0);
+  document.getElementById('exp-summary').innerHTML=`<div class="expense-box"><div class="val income">$${inc.toFixed(0)}</div><div class="lbl">${lang==='ar'?'الدخل':'Income'}</div></div><div class="expense-box"><div class="val expense">$${exp.toFixed(0)}</div><div class="lbl">${lang==='ar'?'المصروفات':'Expenses'}</div></div><div class="expense-box"><div class="val balance">$${(inc-exp).toFixed(0)}</div><div class="lbl">${lang==='ar'?'الرصيد':'Balance'}</div></div>`;
+  document.getElementById('exp-count').textContent=data.expenses.length;
+  if(!data.expenses.length){document.getElementById('exp-list').innerHTML=`<div class="empty">No transactions yet</div>`;document.getElementById('exp-cats').innerHTML=`<div class="empty">Add expenses to see categories</div>`;return;}
+  document.getElementById('exp-list').innerHTML=data.expenses.map((e,i)=>`<div class="exp-item"><div class="exp-cat" style="background:${e.type==='income'?'var(--green)':'var(--rose)'}"></div><span class="exp-name">${e.name}</span><span class="exp-amount ${e.type==='income'?'pos':'neg'}">${e.type==='income'?'+':'-'}$${e.amount.toFixed(0)}</span><button class="exp-delete" onclick="deleteExpense(${i})">&#10005;</button></div>`).join('');
+  // Categories
+  const cats={};data.expenses.filter(e=>e.type==='expense').forEach(e=>{cats[e.name]=(cats[e.name]||0)+e.amount;});
+  const sorted=Object.entries(cats).sort((a,b)=>b[1]-a[1]);
+  document.getElementById('exp-cats').innerHTML=sorted.map(([name,amount])=>{const pct=Math.round(amount/exp*100);return`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(0,0,0,0.02)"><span style="flex:1;font-size:0.82rem;color:var(--heading)">${name}</span><div style="flex:1;height:5px;background:rgba(0,0,0,0.06);border-radius:99px;overflow:hidden"><div style="width:${pct}%;height:100%;background:var(--rose);border-radius:99px"></div></div><span style="font-size:0.75rem;font-weight:600;color:var(--rose);min-width:50px;text-align:right">$${amount.toFixed(0)}</span></div>`;}).join('')||'<div class="empty">No categories</div>';
+}
+function addExpense(){const name=document.getElementById('exp-name'),amount=document.getElementById('exp-amount'),type=document.getElementById('exp-type');if(!name.value.trim()||!amount.value)return;data.expenses.unshift({name:name.value.trim(),amount:parseFloat(amount.value),type:type.value});name.value='';amount.value='';save();renderExpenses();renderStats();}
+function deleteExpense(i){data.expenses.splice(i,1);save();renderExpenses();renderStats();}
+
+// ── Bookmarks ──
+function renderBookmarks(){
+  document.getElementById('bm-count').textContent=data.bookmarks.length;
+  if(!data.bookmarks.length){document.getElementById('bm-list').innerHTML=`<div class="empty">No bookmarks yet</div>`;return;}
+  document.getElementById('bm-list').innerHTML=data.bookmarks.map((b,i)=>`<div class="bm-item"><div class="bm-icon">${b.title.charAt(0).toUpperCase()}</div><div class="bm-info"><a href="${b.url}" target="_blank">${b.title}</a><small>${b.url}</small></div><button class="bm-delete" onclick="deleteBookmark(${i})">&#10005;</button></div>`).join('');
+}
+function addBookmark(){const title=document.getElementById('bm-title'),url=document.getElementById('bm-url');if(!title.value.trim()||!url.value.trim())return;data.bookmarks.push({title:title.value.trim(),url:url.value.trim()});title.value='';url.value='';save();renderBookmarks();}
+function deleteBookmark(i){data.bookmarks.splice(i,1);save();renderBookmarks();}
+
+// ── Settings ──
+function changeAccent(color,el){document.documentElement.style.setProperty('--accent',color);document.documentElement.style.setProperty('--accent-g',color+'20');document.querySelectorAll('[onclick*="changeAccent"]').forEach(b=>b.style.borderColor='transparent');if(el)el.style.borderColor='#fff';}
+function exportData(){const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='lifeboard-backup.json';a.click();}
+function importData(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(e){try{data=JSON.parse(e.target.result);save();renderAll();alert('Data imported successfully!');}catch(err){alert('Invalid file');}};reader.readAsText(file);}
+
+// ── Journal ──
+let journalDate=new Date();
+if(!data.journal)data.journal={};
+let currentMood='';
+
+function journalKey(d){return d.toISOString().split('T')[0];}
+function journalNav(dir){journalDate.setDate(journalDate.getDate()+dir);renderJournal();}
+function selectMood(mood,btn){currentMood=mood;document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');}
+
+function saveJournal(){
+  const key=journalKey(journalDate);
+  const text=document.getElementById('journal-text').value.trim();
+  if(!text&&!currentMood)return;
+  if(!data.journal)data.journal={};
+  data.journal[key]={text:text,mood:currentMood,date:key,timestamp:Date.now()};
+  save();
+  const el=document.getElementById('journal-saved');
+  el.textContent=lang==='ar'?'تم الحفظ!':'Saved!';
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2000);
+  renderJournal();
+}
+
+function deleteJournalEntry(key){
+  if(!confirm(lang==='ar'?'حذف هذه الذكرى؟':'Delete this entry?'))return;
+  delete data.journal[key];
+  save();renderJournal();
+}
+
+const moodEmojis={amazing:'&#129321;',good:'&#128522;',okay:'&#128528;',bad:'&#128533;',terrible:'&#128557;'};
+const moodLabels={en:{amazing:'Amazing',good:'Good',okay:'Okay',bad:'Bad',terrible:'Terrible'},ar:{amazing:'ممتاز',good:'جيد',okay:'عادي',bad:'سيء',terrible:'فظيع'}};
+
+function renderJournal(){
+  if(!data.journal)data.journal={};
+  const key=journalKey(journalDate);
+  const entry=data.journal[key];
+  const today=new Date();
+  const isToday=key===journalKey(today);
+
+  // Date display
+  const dateStr=journalDate.toLocaleDateString(lang==='ar'?'ar-EG':'en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('journal-current-date').textContent=isToday?(lang==='ar'?'اليوم - ':'Today - ')+dateStr:dateStr;
+
+  // Load entry
+  document.getElementById('journal-text').value=entry?entry.text:'';
+  currentMood=entry?entry.mood:'';
+  document.querySelectorAll('.mood-btn').forEach(b=>{b.classList.toggle('selected',b.dataset.mood===currentMood);});
+
+  // Labels
+  document.getElementById('mood-label').textContent=lang==='ar'?'كيف حالك اليوم؟':'How are you feeling?';
+  document.getElementById('journal-text').placeholder=lang==='ar'?'اكتب عن يومك... ماذا حدث؟ ماذا تعلمت؟ ما الذي تشكر عليه؟':'Write about your day... What happened? What did you learn? What are you grateful for?';
+  document.getElementById('past-title').textContent=lang==='ar'?'الذكريات السابقة':'Recent Entries';
+
+  // Stats
+  const entries=Object.values(data.journal);
+  const totalEntries=entries.length;
+  const streak=calcStreak();
+  const topMood=calcTopMood(entries);
+  document.getElementById('journal-stats').innerHTML=`
+    <div class="journal-stat"><div class="val">${totalEntries}</div><div class="lbl">${lang==='ar'?'إجمالي الذكريات':'Total Entries'}</div></div>
+    <div class="journal-stat"><div class="val">${streak}</div><div class="lbl">${lang==='ar'?'أيام متتالية':'Day Streak'}</div></div>
+    <div class="journal-stat"><div class="val">${topMood}</div><div class="lbl">${lang==='ar'?'المزاج الأكثر':'Top Mood'}</div></div>`;
+
+  // Past entries
+  const pastKeys=Object.keys(data.journal).sort().reverse().filter(k=>k!==key).slice(0,10);
+  document.getElementById('past-entries').innerHTML=pastKeys.length?pastKeys.map(k=>{
+    const e=data.journal[k];
+    const d=new Date(k+'T00:00:00').toLocaleDateString(lang==='ar'?'ar-EG':'en-US',{month:'short',day:'numeric',year:'numeric'});
+    return`<div class="past-entry" onclick="journalDate=new Date('${k}T00:00:00');renderJournal();">
+      <div class="past-entry-header"><span class="past-entry-date">${d}</span><span class="past-entry-mood">${e.mood?moodEmojis[e.mood]:''}</span></div>
+      <div class="past-entry-text">${e.text||''}</div>
+      <button class="past-entry-delete" onclick="event.stopPropagation();deleteJournalEntry('${k}')">Delete</button>
+    </div>`;
+  }).join(''):`<div class="empty">${lang==='ar'?'لا توجد ذكريات سابقة':'No past entries yet. Start writing!'}</div>`;
+}
+
+function calcStreak(){
+  let streak=0,d=new Date();
+  while(data.journal[journalKey(d)]){streak++;d.setDate(d.getDate()-1);}
+  return streak;
+}
+function calcTopMood(entries){
+  if(!entries.length)return'-';
+  const counts={};entries.forEach(e=>{if(e.mood)counts[e.mood]=(counts[e.mood]||0)+1;});
+  const top=Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];
+  return top?moodEmojis[top[0]]:'-';
+}
+
+// ── Quote of the Day ──
+const quotes=[
+  {text:"The only way to do great work is to love what you do.",author:"Steve Jobs"},
+  {text:"Success is not final, failure is not fatal: it is the courage to continue that counts.",author:"Winston Churchill"},
+  {text:"Your time is limited, don't waste it living someone else's life.",author:"Steve Jobs"},
+  {text:"The future belongs to those who believe in the beauty of their dreams.",author:"Eleanor Roosevelt"},
+  {text:"It does not matter how slowly you go as long as you do not stop.",author:"Confucius"},
+  {text:"Believe you can and you're halfway there.",author:"Theodore Roosevelt"},
+  {text:"The best time to plant a tree was 20 years ago. The second best time is now.",author:"Chinese Proverb"},
+  {text:"Don't watch the clock; do what it does. Keep going.",author:"Sam Levenson"},
+  {text:"Everything you've ever wanted is on the other side of fear.",author:"George Addair"},
+  {text:"The secret of getting ahead is getting started.",author:"Mark Twain"},
+  {text:"It always seems impossible until it's done.",author:"Nelson Mandela"},
+  {text:"What you get by achieving your goals is not as important as what you become by achieving your goals.",author:"Zig Ziglar"},
+  {text:"The only limit to our realization of tomorrow is our doubts of today.",author:"Franklin D. Roosevelt"},
+  {text:"Hard work beats talent when talent doesn't work hard.",author:"Tim Notke"},
+  {text:"Don't be afraid to give up the good to go for the great.",author:"John D. Rockefeller"}
+];
+function renderQuote(){const idx=Math.floor(Date.now()/86400000)%quotes.length;const q=quotes[idx];document.getElementById('daily-quote').innerHTML=`<div class="quote-text">"${q.text}"</div><div class="quote-author">- ${q.author}</div>`;}
+
+// ── Water Tracker ──
+if(!data.water)data.water={};
+function waterKey(){return new Date().toISOString().split('T')[0];}
+function renderWater(){
+  const key=waterKey();if(!data.water[key])data.water[key]=0;
+  const count=data.water[key];
+  document.getElementById('water-num').innerHTML=`${count} <span>/ 8</span>`;
+  document.getElementById('water-glasses').innerHTML=[...Array(8)].map((_,i)=>`<div class="water-glass ${i<count?'filled':''}" onclick="toggleWater(${i})"><span class="water-glass-icon">${i<count?'💧':''}</span></div>`).join('');
+  // Weekly view
+  const days=[];for(let d=6;d>=0;d--){const dt=new Date();dt.setDate(dt.getDate()-d);const k=dt.toISOString().split('T')[0];const v=data.water[k]||0;const dayName=dt.toLocaleDateString(lang==='ar'?'ar-EG':'en-US',{weekday:'short'});days.push({day:dayName,count:v});}
+  document.getElementById('water-week').innerHTML=days.map(d=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(0,0,0,0.02)"><span style="flex:1;font-size:0.82rem;color:var(--text)">${d.day}</span><div style="flex:2;height:5px;background:rgba(0,0,0,0.06);border-radius:99px;overflow:hidden"><div style="width:${d.count/8*100}%;height:100%;background:var(--cyan);border-radius:99px"></div></div><span style="font-size:0.72rem;font-weight:600;color:${d.count>=8?'var(--green)':'var(--text2)'}">${d.count}/8</span></div>`).join('');
+}
+function toggleWater(i){const key=waterKey();if(!data.water[key])data.water[key]=0;data.water[key]=data.water[key]===i+1?i:i+1;save();renderWater();}
+function resetWater(){data.water[waterKey()]=0;save();renderWater();}
+
+// ── Password Vault ──
+if(!data.passwords)data.passwords=[];
+function renderPasswords(){
+  document.getElementById('pw-count').textContent=data.passwords.length;
+  if(!data.passwords.length){document.getElementById('pw-list').innerHTML='<div class="empty">No saved passwords</div>';return;}
+  document.getElementById('pw-list').innerHTML=data.passwords.map((p,i)=>`<div class="pw-item"><div class="pw-icon">🔐</div><div class="pw-info"><div class="pw-site">${p.site}</div><div class="pw-user">${p.user}</div></div><span class="pw-pass" onclick="revealPw(this,'${btoa(p.pass)}')" title="Click to reveal">••••••••</span><button class="pw-delete" onclick="deletePassword(${i})">✕</button></div>`).join('');
+}
+function addPassword(){const site=document.getElementById('pw-site'),user=document.getElementById('pw-user'),pass=document.getElementById('pw-pass');if(!site.value.trim()||!pass.value)return;data.passwords.push({site:site.value.trim(),user:user.value.trim(),pass:pass.value});site.value='';user.value='';pass.value='';save();renderPasswords();}
+function deletePassword(i){data.passwords.splice(i,1);save();renderPasswords();}
+function revealPw(el,encoded){if(el.classList.contains('revealed')){el.textContent='••••••••';el.classList.remove('revealed');}else{el.textContent=atob(encoded);el.classList.add('revealed');setTimeout(()=>{el.textContent='••••••••';el.classList.remove('revealed');},3000);}}
+function generatePassword(){const len=parseInt(document.getElementById('pw-length').value);document.getElementById('pw-len-val').textContent=len;const chars='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';let p='';for(let i=0;i<len;i++)p+=chars.charAt(Math.floor(Math.random()*chars.length));document.getElementById('gen-pass').textContent=p;}
+function copyGenerated(){const text=document.getElementById('gen-pass').textContent;navigator.clipboard.writeText(text).then(()=>{document.getElementById('copy-btn').textContent='Copied!';setTimeout(()=>document.getElementById('copy-btn').textContent='Copy',1500);});}
+
+// ── Weekly Report ──
+function renderReport(){
+  const tasks=data.tasks||[],habits=data.habits||[],goals=data.goals||[],expenses=data.expenses||[],journal=data.journal||{};
+  const tasksDone=tasks.filter(t=>t.done).length;
+  const habitsAvg=habits.length?Math.round(habits.reduce((s,h)=>s+Object.values(h.days||{}).filter(Boolean).length,0)/habits.length*100/7):0;
+  const goalsAvg=goals.length?Math.round(goals.reduce((s,g)=>s+g.progress,0)/goals.length):0;
+  const totalIncome=expenses.filter(e=>e.type==='income').reduce((s,e)=>s+e.amount,0);
+  const totalExpense=expenses.filter(e=>e.type==='expense').reduce((s,e)=>s+e.amount,0);
+  const journalEntries=Object.keys(journal).length;
+  const waterToday=data.water?data.water[waterKey()]||0:0;
+
+  document.getElementById('weekly-report').innerHTML=`
+    <div class="report-card"><h3>📋 ${lang==='ar'?'المهام':'Tasks'}</h3>
+      <div class="report-row"><span class="rlabel">${lang==='ar'?'إجمالي':'Total'}</span><span class="rval">${tasks.length}</span></div>
+      <div class="report-row"><span class="rlabel">${lang==='ar'?'مكتمل':'Completed'}</span><span class="rval good">${tasksDone}</span></div>
+      <div class="report-row"><span class="rlabel">${lang==='ar'?'متبقي':'Remaining'}</span><span class="rval warn">${tasks.length-tasksDone}</span></div>
+      <div class="report-row"><span class="rlabel">${lang==='ar'?'نسبة الإنجاز':'Completion'}</span><span class="rval ${tasks.length&&tasksDone/tasks.length>=0.7?'good':'warn'}">${tasks.length?Math.round(tasksDone/tasks.length*100):0}%</span></div>
+    </div>
+    <div class="report-card"><h3>🔄 ${lang==='ar'?'العادات':'Habits'}</h3>
+      <div class="report-row"><span class="rlabel">${lang==='ar'?'عدد العادات':'Total Habits'}</span><span class="rval">${habits.length}</span></div>
+      <div class="report-row"><span class="rlabel">${lang==='ar'?'متوسط الالتزام':'Avg Adherence'}</span><span class="rval ${habitsAvg>=70?'good':'warn'}">${habitsAvg}%</span></div>
+    </div>
+    <div class="report-card"><h3>🎯 ${lang==='ar'?'الأهداف':'Goals'}</h3>
+      <div class="report-row"><span class="rlabel">${lang==='ar'?'عدد الأهداف':'Total Goals'}</span><span class="rval">${goals.length}</span></div>
+      <div class="report-row"><span class="rlabel">${lang==='ar'?'متوسط التقدم':'Avg Progress'}</span><span class="rval ${goalsAvg>=60?'good':'warn'}">${goalsAvg}%</span></div>
+      <div class="report-row"><span class="rlabel">${lang==='ar'?'مكتمل 100%':'Completed'}</span><span class="rval good">${goals.filter(g=>g.progress>=100).length}</span></div>
+    </div>
+    <div class="report-card"><h3>💰 ${lang==='ar'?'المالية':'Finances'}</h3>
+      <div class="report-row"><span class="rlabel">${lang==='ar'?'الدخل':'Income'}</span><span class="rval good">$${totalIncome.toFixed(0)}</span></div>
+      <div class="report-row"><span class="rlabel">${lang==='ar'?'المصروفات':'Expenses'}</span><span class="rval warn">$${totalExpense.toFixed(0)}</span></div>
+      <div class="report-row"><span class="rlabel">${lang==='ar'?'الرصيد':'Balance'}</span><span class="rval ${totalIncome-totalExpense>=0?'good':'warn'}">$${(totalIncome-totalExpense).toFixed(0)}</span></div>
+    </div>
+    <div class="report-card"><h3>📔 ${lang==='ar'?'اليومية':'Journal'}</h3>
+      <div class="report-row"><span class="rlabel">${lang==='ar'?'عدد الذكريات':'Entries'}</span><span class="rval">${journalEntries}</span></div>
+      <div class="report-row"><span class="rlabel">${lang==='ar'?'أيام متتالية':'Streak'}</span><span class="rval good">${calcStreak()} ${lang==='ar'?'يوم':'days'}</span></div>
+    </div>
+    <div class="report-card"><h3>💧 ${lang==='ar'?'المياه':'Water'}</h3>
+      <div class="report-row"><span class="rlabel">${lang==='ar'?'اليوم':'Today'}</span><span class="rval ${waterToday>=8?'good':'warn'}">${waterToday}/8</span></div>
+      <div class="report-row"><span class="rlabel">${lang==='ar'?'كلمات السر':'Passwords'}</span><span class="rval">${(data.passwords||[]).length} ${lang==='ar'?'محفوظة':'saved'}</span></div>
+    </div>`;
+}
+
+
+// ── Render ──
+function renderAll(){updateGreeting();renderQuote();renderStats();renderTasks();renderHabits();renderGoals();renderNotes();renderExpenses();renderBookmarks();renderJournal();renderWater();renderPasswords();generatePassword();renderReport();}
+
+// ── Demo Data ──
+if(!data.tasks.length&&!data.habits.length){
+  data.tasks=[{text:'Design new landing page',done:false,pri:'high'},{text:'Review client feedback',done:false,pri:'med'},{text:'Update portfolio',done:true,pri:'low'},{text:'Send newsletter',done:false,pri:'med'},{text:'Research pricing',done:true,pri:'low'}];
+  data.habits=[{name:'Exercise 30 min',days:{1:true,2:true,3:true,5:true}},{name:'Read 20 pages',days:{0:true,1:true,3:true,4:true,5:true}},{name:'Meditate',days:{0:true,2:true,4:true}},{name:'Drink 8 glasses water',days:{0:true,1:true,2:true,3:true,4:true,5:true,6:true}}];
+  data.goals=[{name:'Launch online course',progress:65},{name:'Save $10,000',progress:40},{name:'Read 24 books',progress:80}];
+  data.notes=[{text:'Meeting with client at 3pm - prepare mockups',date:'Apr 8, 2:30 PM'}];
+  data.expenses=[{name:'Hosting',amount:29,type:'expense'},{name:'Freelance project',amount:1500,type:'income'},{name:'Software',amount:49,type:'expense'},{name:'Coffee',amount:15,type:'expense'},{name:'Course sale',amount:200,type:'income'}];
+  data.bookmarks=[{title:'Gumroad Dashboard',url:'https://gumroad.com'},{title:'Canva',url:'https://canva.com'},{title:'Figma',url:'https://figma.com'}];
+  const yd=new Date();yd.setDate(yd.getDate()-1);const yd2=new Date();yd2.setDate(yd2.getDate()-2);
+  data.journal={};
+  data.journal[yd.toISOString().split('T')[0]]={text:'Had an amazing productive day! Finished the landing page project and got great feedback from the client. Feeling grateful for the opportunity.',mood:'amazing',date:yd.toISOString().split('T')[0]};
+  data.journal[yd2.toISOString().split('T')[0]]={text:'Spent the day learning new CSS techniques. Progress was slow but steady. Need to focus more tomorrow.',mood:'good',date:yd2.toISOString().split('T')[0]};
+  save();
+}
+
+renderAll();
+
+// ── PWA Service Worker ──
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
+</script>
+</body>
+</html>

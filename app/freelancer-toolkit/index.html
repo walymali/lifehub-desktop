@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Freelancer Toolkit - Proposal, Contract & Brief Templates</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Sora',system-ui,sans-serif;background:#f5f5f3;color:#555;line-height:1.7}
+.hero{text-align:center;padding:80px 24px 60px;background:#fff;border-bottom:1px solid rgba(0,0,0,0.06)}
+.hero h1{font-size:3rem;font-weight:700;color:#1a1a1a;letter-spacing:-0.04em;margin-bottom:12px}
+.hero h1 span{color:#e74c3c}
+.hero p{font-size:1rem;color:#888;max-width:520px;margin:0 auto}
+.container{max-width:900px;margin:0 auto;padding:48px 24px}
+.template-card{background:#fff;border:1px solid rgba(0,0,0,0.06);border-radius:16px;margin-bottom:16px;overflow:hidden;transition:all 0.2s}
+.template-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.05)}
+.template-header{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;cursor:pointer}
+.template-header h2{font-size:1rem;font-weight:600;color:#1a1a1a;display:flex;align-items:center;gap:10px}
+.template-header .num{width:28px;height:28px;background:#1a1a1a;color:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;flex-shrink:0}
+.template-header .badge{font-size:0.6rem;padding:3px 10px;border-radius:99px;background:#f5f5f3;color:#999}
+.template-header .arrow{color:#ccc;transition:transform 0.3s;font-size:0.8rem}
+.template-card.open .arrow{transform:rotate(180deg)}
+.template-body{max-height:0;overflow:hidden;transition:max-height 0.4s}
+.template-card.open .template-body{max-height:3000px}
+.template-content{padding:0 24px 24px;border-top:1px solid rgba(0,0,0,0.04)}
+.template-content pre{background:#f5f5f3;border:1px solid rgba(0,0,0,0.06);border-radius:12px;padding:20px;font-family:'Sora',sans-serif;font-size:0.82rem;color:#333;line-height:1.8;white-space:pre-wrap;overflow-x:auto;margin-top:16px}
+.template-content .copy-all{margin-top:12px;padding:10px 20px;background:#1a1a1a;color:#fff;border:none;border-radius:10px;font-size:0.78rem;font-weight:600;cursor:pointer;font-family:inherit}
+.template-content .copy-all:hover{background:#333}
+.template-content .desc{font-size:0.82rem;color:#888;margin-top:16px;margin-bottom:4px}
+.footer{text-align:center;padding:48px 24px;font-size:0.78rem;color:#ccc}
+@media(max-width:600px){.hero h1{font-size:2rem}}
+</style>
+</head>
+<body>
+<div class="hero">
+  <h1>Freelancer <span>Toolkit</span></h1>
+  <p>Ready-to-use templates for proposals, contracts, project briefs, and client onboarding. Just fill in the blanks.</p>
+</div>
+<div class="container">
+
+<div class="template-card" onclick="this.classList.toggle('open')">
+<div class="template-header"><h2><span class="num">01</span>Project Proposal</h2><div><span class="badge">Most Used</span> <span class="arrow">&#9660;</span></div></div>
+<div class="template-body"><div class="template-content">
+<p class="desc">Send this to potential clients to outline your approach, timeline, and pricing.</p>
+<pre>
+PROJECT PROPOSAL
+================
+
+Prepared for: [Client Name]
+Prepared by: [Your Name / Business]
+Date: [Date]
+
+---
+
+1. PROJECT OVERVIEW
+[Brief description of what the client needs and why they reached out to you.]
+
+2. SCOPE OF WORK
+We will deliver the following:
+- [Deliverable 1: e.g., Website redesign - 5 pages]
+- [Deliverable 2: e.g., Mobile-responsive design]
+- [Deliverable 3: e.g., SEO optimization]
+- [Deliverable 4: e.g., Content migration]
+
+Out of scope:
+- [Item not included]
+- [Item not included]
+
+3. TIMELINE
+| Phase          | Duration    | Deliverable              |
+|----------------|-------------|--------------------------|
+| Discovery      | Week 1      | Research & strategy doc  |
+| Design         | Week 2-3    | Mockups & revisions      |
+| Development    | Week 4-5    | Coded pages              |
+| Testing/Launch | Week 6      | QA, launch, handover     |
+
+4. INVESTMENT
+| Item                    | Cost        |
+|-------------------------|-------------|
+| [Service 1]             | $[amount]   |
+| [Service 2]             | $[amount]   |
+| [Service 3]             | $[amount]   |
+|-------------------------|-------------|
+| Total                   | $[total]    |
+
+Payment terms: 50% upfront, 50% on completion.
+
+5. WHY US
+- [Unique qualification 1]
+- [Years of experience]
+- [Relevant past project]
+
+6. NEXT STEPS
+1. Sign this proposal
+2. Pay 50% deposit
+3. Kick-off call scheduled within 48 hours
+
+Accepted by: _______________  Date: ___________
+</pre>
+<button class="copy-all" onclick="event.stopPropagation();copyTemplate(this)">Copy Template</button>
+</div></div>
+</div>
+
+<div class="template-card" onclick="this.classList.toggle('open')">
+<div class="template-header"><h2><span class="num">02</span>Freelance Contract</h2><div><span class="badge">Essential</span> <span class="arrow">&#9660;</span></div></div>
+<div class="template-body"><div class="template-content">
+<p class="desc">Protect yourself and your client with a clear agreement.</p>
+<pre>
+FREELANCE SERVICE AGREEMENT
+============================
+
+This agreement is between:
+
+Client: [Client Name], [Company], [Address]
+Freelancer: [Your Name], [Business Name], [Address]
+
+Effective Date: [Date]
+
+---
+
+1. SERVICES
+The Freelancer agrees to provide the following services:
+- [Service description]
+- [Deliverables list]
+
+2. TIMELINE
+- Start date: [Date]
+- End date: [Date]
+- Milestones: [List key milestones]
+
+3. COMPENSATION
+- Total fee: $[Amount]
+- Payment schedule:
+  - 50% ($[amount]) due upon signing
+  - 50% ($[amount]) due upon completion
+- Late payment fee: 5% per month on overdue balance
+
+4. REVISIONS
+- [Number] rounds of revisions included
+- Additional revisions billed at $[rate]/hour
+
+5. INTELLECTUAL PROPERTY
+- All work product transfers to Client upon full payment
+- Freelancer retains the right to display work in portfolio
+
+6. CONFIDENTIALITY
+Both parties agree to keep project details confidential.
+
+7. TERMINATION
+- Either party may terminate with [X] days written notice
+- Client pays for all work completed up to termination date
+
+8. LIABILITY
+Freelancer's total liability shall not exceed the total fee paid.
+
+Signatures:
+
+Client: _______________  Date: ___________
+Freelancer: _______________  Date: ___________
+</pre>
+<button class="copy-all" onclick="event.stopPropagation();copyTemplate(this)">Copy Template</button>
+</div></div>
+</div>
+
+<div class="template-card" onclick="this.classList.toggle('open')">
+<div class="template-header"><h2><span class="num">03</span>Project Brief</h2><div><span class="arrow">&#9660;</span></div></div>
+<div class="template-body"><div class="template-content">
+<p class="desc">Send to clients before starting to gather all requirements in one place.</p>
+<pre>
+PROJECT BRIEF
+=============
+
+Project Name: [Name]
+Client: [Client Name]
+Date: [Date]
+Prepared by: [Your Name]
+
+---
+
+1. BACKGROUND
+[What does the client's business do? Who are their customers?]
+
+2. OBJECTIVES
+What should this project achieve?
+- [Objective 1: e.g., Increase online sales by 20%]
+- [Objective 2: e.g., Improve brand perception]
+- [Objective 3: e.g., Launch in new market]
+
+3. TARGET AUDIENCE
+- Demographics: [Age, location, income]
+- Psychographics: [Values, interests, pain points]
+- Current behavior: [How do they currently solve this problem?]
+
+4. COMPETITORS
+| Competitor    | Strengths         | Weaknesses         |
+|---------------|-------------------|--------------------|
+| [Name 1]      | [What they do well]| [Where they fall short] |
+| [Name 2]      | [Strength]        | [Weakness]         |
+| [Name 3]      | [Strength]        | [Weakness]         |
+
+5. SCOPE & DELIVERABLES
+- [Deliverable 1]
+- [Deliverable 2]
+- [Deliverable 3]
+
+6. BRAND GUIDELINES
+- Colors: [Primary, Secondary]
+- Fonts: [Heading font, Body font]
+- Tone of voice: [Professional / Casual / Playful]
+- Existing assets: [Logo, photos, copy]
+
+7. TIMELINE & BUDGET
+- Desired launch date: [Date]
+- Budget range: $[min] - $[max]
+
+8. SUCCESS METRICS
+How will we measure success?
+- [KPI 1: e.g., Conversion rate > 3%]
+- [KPI 2: e.g., Page load time < 2s]
+</pre>
+<button class="copy-all" onclick="event.stopPropagation();copyTemplate(this)">Copy Template</button>
+</div></div>
+</div>
+
+<div class="template-card" onclick="this.classList.toggle('open')">
+<div class="template-header"><h2><span class="num">04</span>Client Onboarding Questionnaire</h2><div><span class="arrow">&#9660;</span></div></div>
+<div class="template-body"><div class="template-content">
+<p class="desc">Send this to new clients to gather everything you need before starting.</p>
+<pre>
+CLIENT ONBOARDING QUESTIONNAIRE
+================================
+
+Welcome! Please fill out this form so we can get started.
+
+BASIC INFO
+- Business name:
+- Website (if any):
+- Industry:
+- Main contact name:
+- Email:
+- Phone:
+
+ABOUT YOUR BUSINESS
+- What does your business do in one sentence?
+- Who is your ideal customer?
+- What makes you different from competitors?
+- What are your top 3 business goals this year?
+
+PROJECT DETAILS
+- What do you need help with?
+- What's the most important outcome of this project?
+- Do you have a deadline?
+- What's your budget range?
+
+BRAND & DESIGN
+- Do you have brand guidelines? (Y/N)
+- Share your logo and brand colors:
+- What websites/brands do you admire? (share 3 links)
+- Any specific things you DON'T want?
+
+CONTENT
+- Will you provide the copy/text? (Y/N)
+- Will you provide images/photos? (Y/N)
+- Do you need help with content creation?
+
+ACCESS & ACCOUNTS
+- Website hosting provider:
+- Domain registrar:
+- Social media accounts (list all):
+- Analytics access? (Y/N)
+
+COMMUNICATION
+- Preferred communication method: (Email / Slack / WhatsApp)
+- Best time to reach you:
+- How often do you want updates? (Daily / Weekly)
+</pre>
+<button class="copy-all" onclick="event.stopPropagation();copyTemplate(this)">Copy Template</button>
+</div></div>
+</div>
+
+<div class="template-card" onclick="this.classList.toggle('open')">
+<div class="template-header"><h2><span class="num">05</span>Meeting Notes Template</h2><div><span class="arrow">&#9660;</span></div></div>
+<div class="template-body"><div class="template-content">
+<pre>
+MEETING NOTES
+=============
+
+Date: [Date]
+Attendees: [Names]
+Project: [Project Name]
+
+---
+
+AGENDA
+1. [Topic 1]
+2. [Topic 2]
+3. [Topic 3]
+
+KEY DECISIONS
+- [Decision 1]
+- [Decision 2]
+
+ACTION ITEMS
+| Task                  | Owner       | Deadline    |
+|-----------------------|-------------|-------------|
+| [Task 1]              | [Name]      | [Date]      |
+| [Task 2]              | [Name]      | [Date]      |
+| [Task 3]              | [Name]      | [Date]      |
+
+NOTES
+[Additional context or discussion points]
+
+NEXT MEETING
+Date: [Date] | Time: [Time]
+</pre>
+<button class="copy-all" onclick="event.stopPropagation();copyTemplate(this)">Copy Template</button>
+</div></div>
+</div>
+
+<div class="template-card" onclick="this.classList.toggle('open')">
+<div class="template-header"><h2><span class="num">06</span>Project Closure & Handover</h2><div><span class="arrow">&#9660;</span></div></div>
+<div class="template-body"><div class="template-content">
+<pre>
+PROJECT CLOSURE & HANDOVER
+==========================
+
+Project: [Name]
+Client: [Client Name]
+Completion Date: [Date]
+
+---
+
+DELIVERABLES COMPLETED
+[x] [Deliverable 1]
+[x] [Deliverable 2]
+[x] [Deliverable 3]
+
+ACCESS & CREDENTIALS TRANSFERRED
+- Hosting: [Provider] - login sent to [email]
+- Domain: [Registrar] - transferred to client
+- Analytics: [Access granted]
+- Source files: [Shared via Google Drive / link]
+
+DOCUMENTATION PROVIDED
+- User guide / how-to document
+- Style guide / brand assets
+- Technical documentation
+
+MAINTENANCE & SUPPORT
+- [X] days of free bug fixes included (until [date])
+- Ongoing support available at $[rate]/hour
+- Recommended next steps:
+  1. [Suggestion 1]
+  2. [Suggestion 2]
+
+FEEDBACK
+We'd love your feedback! Please leave a testimonial at [link].
+
+Thank you for working with us!
+</pre>
+<button class="copy-all" onclick="event.stopPropagation();copyTemplate(this)">Copy Template</button>
+</div></div>
+</div>
+
+</div>
+<div class="footer">Freelancer Toolkit &copy; 2026</div>
+
+<script>
+function copyTemplate(btn){const pre=btn.previousElementSibling;navigator.clipboard.writeText(pre.textContent.trim()).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy Template',1500)});}
+</script>
+</body>
+</html>

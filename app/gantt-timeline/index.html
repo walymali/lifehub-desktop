@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Timeline</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f5f5f3;--card:#fff;--heading:#1a1a1a;--text:#555;
+  --border:#e8e8e6;--accent:#4a6cf7;--success:#34c759;
+  --warning:#ff9500;--danger:#ff3b30;--muted:#999;
+  --radius:10px;--shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+}
+html{font-size:14px}
+body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow:hidden}
+
+/* ---- Layout ---- */
+.app{display:grid;grid-template-rows:auto auto 1fr;height:100vh}
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 28px;background:var(--card);border-bottom:1px solid var(--border);
+}
+.topbar h1{font-size:1.25rem;font-weight:700;color:var(--heading);letter-spacing:-.3px}
+.topbar-actions{display:flex;gap:8px;align-items:center}
+
+.stats-bar{
+  display:flex;gap:16px;padding:12px 28px;background:var(--card);
+  border-bottom:1px solid var(--border);flex-wrap:wrap;
+}
+.stat{
+  display:flex;align-items:center;gap:8px;padding:6px 14px;
+  background:var(--bg);border-radius:8px;font-size:.8rem;
+}
+.stat .num{font-weight:700;color:var(--heading);font-size:1rem}
+.stat.completed .num{color:var(--success)}
+.stat.progress .num{color:var(--accent)}
+.stat.overdue .num{color:var(--danger)}
+
+.main{display:grid;grid-template-columns:340px 1fr;overflow:hidden}
+
+/* ---- Sidebar ---- */
+.sidebar{
+  display:flex;flex-direction:column;border-right:1px solid var(--border);
+  background:var(--card);overflow:hidden;
+}
+.sidebar-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 20px;border-bottom:1px solid var(--border);
+}
+.sidebar-head h2{font-size:.95rem;font-weight:600;color:var(--heading)}
+
+.filter-bar{display:flex;gap:6px;padding:10px 20px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.filter-btn{
+  padding:4px 12px;border:1px solid var(--border);border-radius:20px;
+  background:transparent;font-family:inherit;font-size:.72rem;cursor:pointer;
+  color:var(--text);transition:.15s;
+}
+.filter-btn.active{background:var(--heading);color:#fff;border-color:var(--heading)}
+
+.task-list{flex:1;overflow-y:auto;padding:10px 12px}
+.task-card{
+  padding:12px 14px;border-radius:var(--radius);border:1px solid var(--border);
+  margin-bottom:8px;cursor:pointer;transition:.15s;position:relative;
+}
+.task-card:hover{border-color:#ccc;box-shadow:var(--shadow)}
+.task-card.selected{border-color:var(--accent);box-shadow:0 0 0 2px rgba(74,108,247,.15)}
+.task-card-color{
+  position:absolute;left:0;top:0;bottom:0;width:4px;
+  border-radius:var(--radius) 0 0 var(--radius);
+}
+.task-card-name{font-weight:600;color:var(--heading);font-size:.82rem;margin-left:6px}
+.task-card-meta{display:flex;gap:10px;margin-top:6px;margin-left:6px;font-size:.7rem;color:var(--muted)}
+.task-card-meta span{display:flex;align-items:center;gap:3px}
+.task-card-progress{
+  margin-top:8px;margin-left:6px;height:4px;background:#eee;border-radius:4px;overflow:hidden;
+}
+.task-card-progress-fill{height:100%;border-radius:4px;transition:width .2s}
+.task-card-actions{
+  position:absolute;top:10px;right:10px;display:flex;gap:4px;opacity:0;transition:.15s;
+}
+.task-card:hover .task-card-actions{opacity:1}
+.task-card-actions button{
+  width:24px;height:24px;border:none;border-radius:6px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:.7rem;
+  background:var(--bg);color:var(--text);transition:.15s;
+}
+.task-card-actions button:hover{background:#e0e0de}
+.task-card-actions button.del:hover{background:#ffe5e5;color:var(--danger)}
+
+.status-dot{width:7px;height:7px;border-radius:50%;display:inline-block;flex-shrink:0}
+.status-dot.not-started{background:#ccc}
+.status-dot.in-progress{background:var(--accent)}
+.status-dot.completed{background:var(--success)}
+
+/* ---- Gantt Area ---- */
+.gantt-wrapper{overflow:auto;position:relative;background:var(--bg)}
+.gantt-container{position:relative;min-height:100%}
+
+.gantt-header{
+  position:sticky;top:0;z-index:10;display:flex;flex-direction:column;
+  border-bottom:1px solid var(--border);background:var(--card);
+}
+.gantt-months{display:flex;border-bottom:1px solid var(--border)}
+.gantt-month{
+  text-align:center;font-size:.72rem;font-weight:600;color:var(--heading);
+  padding:6px 0;border-right:1px solid var(--border);
+}
+.gantt-days{display:flex}
+.gantt-day{
+  text-align:center;font-size:.6rem;color:var(--muted);padding:4px 0;
+  border-right:1px solid #f0f0ee;
+}
+.gantt-day.weekend{background:#fafaf8}
+.gantt-day.today{background:rgba(74,108,247,.08);font-weight:600;color:var(--accent)}
+
+.gantt-body{position:relative}
+.gantt-row{
+  display:flex;align-items:center;height:44px;border-bottom:1px solid #f0f0ee;
+  position:relative;
+}
+.gantt-row-bg{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;pointer-events:none}
+.gantt-row-bg-cell{border-right:1px solid #f5f5f3;height:100%}
+.gantt-row-bg-cell.weekend{background:#fafaf8}
+
+.gantt-bar{
+  position:absolute;height:28px;border-radius:6px;cursor:pointer;
+  display:flex;align-items:center;padding:0 10px;font-size:.68rem;font-weight:500;
+  color:#fff;overflow:hidden;transition:box-shadow .15s;min-width:24px;
+}
+.gantt-bar:hover{box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.gantt-bar-label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none;text-shadow:0 1px 2px rgba(0,0,0,.2)}
+.gantt-bar-progress{
+  position:absolute;left:0;top:0;bottom:0;opacity:.25;background:#000;
+  border-radius:6px 0 0 6px;pointer-events:none;
+}
+.gantt-bar-handle{
+  position:absolute;right:-1px;top:0;bottom:0;width:10px;cursor:col-resize;
+  display:flex;align-items:center;justify-content:center;
+}
+.gantt-bar-handle::after{
+  content:'';width:3px;height:14px;border-radius:2px;
+  background:rgba(255,255,255,.5);
+}
+
+.today-line{
+  position:absolute;top:0;bottom:0;width:2px;background:var(--danger);
+  z-index:5;pointer-events:none;
+}
+.today-line::before{
+  content:'Today';position:absolute;top:-22px;left:50%;transform:translateX(-50%);
+  font-size:.58rem;font-weight:600;color:var(--danger);white-space:nowrap;
+  background:var(--card);padding:2px 6px;border-radius:4px;
+}
+
+/* ---- Buttons ---- */
+.btn{
+  padding:7px 16px;border-radius:8px;border:1px solid var(--border);
+  background:var(--card);font-family:inherit;font-size:.78rem;cursor:pointer;
+  color:var(--text);transition:.15s;font-weight:500;display:inline-flex;align-items:center;gap:5px;
+}
+.btn:hover{background:var(--bg);border-color:#ccc}
+.btn-primary{background:var(--heading);color:#fff;border-color:var(--heading)}
+.btn-primary:hover{background:#333}
+.btn-sm{padding:5px 12px;font-size:.72rem}
+
+/* ---- Modal ---- */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:100;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:.2s;
+}
+.modal-overlay.open{opacity:1;pointer-events:auto}
+.modal{
+  background:var(--card);border-radius:14px;padding:28px;width:440px;
+  max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.15);
+  transform:translateY(10px);transition:.2s;
+}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal h3{font-size:1.05rem;font-weight:700;color:var(--heading);margin-bottom:20px}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:.72rem;font-weight:600;color:var(--heading);margin-bottom:5px}
+.form-group input,.form-group select{
+  width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;
+  font-family:inherit;font-size:.82rem;color:var(--heading);background:var(--card);
+  outline:none;transition:.15s;
+}
+.form-group input:focus,.form-group select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(74,108,247,.1)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-colors{display:flex;gap:6px;flex-wrap:wrap}
+.form-color{
+  width:28px;height:28px;border-radius:50%;cursor:pointer;
+  border:3px solid transparent;transition:.15s;
+}
+.form-color.active{border-color:var(--heading);transform:scale(1.1)}
+.form-group input[type=range]{padding:0;margin-top:4px}
+.progress-val{font-size:.72rem;color:var(--muted);float:right;margin-top:-18px}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:22px}
+
+/* ---- Toast ---- */
+.toast{
+  position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:10px;
+  background:var(--heading);color:#fff;font-family:inherit;font-size:.8rem;
+  box-shadow:0 8px 24px rgba(0,0,0,.15);z-index:200;
+  transform:translateY(80px);opacity:0;transition:.3s;
+}
+.toast.show{transform:translateY(0);opacity:1}
+
+/* scrollbar */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#ddd;border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#bbb}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- Top Bar -->
+  <div class="topbar">
+    <h1>Project Timeline</h1>
+    <div class="topbar-actions">
+      <button class="btn btn-sm" onclick="exportJSON()" title="Export">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        Export
+      </button>
+      <label class="btn btn-sm" style="margin:0;cursor:pointer" title="Import">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+        Import
+        <input type="file" accept=".json" style="display:none" onchange="importJSON(event)">
+      </label>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-bar" id="statsBar"></div>
+
+  <!-- Main -->
+  <div class="main">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-head">
+        <h2>Tasks</h2>
+        <button class="btn btn-primary btn-sm" onclick="openModal()">+ Add Task</button>
+      </div>
+      <div class="filter-bar" id="filterBar"></div>
+      <div class="task-list" id="taskList"></div>
+    </div>
+
+    <!-- Gantt -->
+    <div class="gantt-wrapper" id="ganttWrapper">
+      <div class="gantt-container" id="ganttContainer"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <h3 id="modalTitle">Add Task</h3>
+    <form id="taskForm" onsubmit="saveTask(event)">
+      <input type="hidden" id="taskId">
+      <div class="form-group">
+        <label>Task Name</label>
+        <input type="text" id="taskName" required placeholder="Enter task name">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Start Date</label>
+          <input type="date" id="taskStart" required>
+        </div>
+        <div class="form-group">
+          <label>End Date</label>
+          <input type="date" id="taskEnd" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Assignee</label>
+          <input type="text" id="taskAssignee" placeholder="Name">
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select id="taskStatus">
+            <option value="not-started">Not Started</option>
+            <option value="in-progress">In Progress</option>
+            <option value="completed">Completed</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Color</label>
+        <div class="form-colors" id="colorPicker"></div>
+      </div>
+      <div class="form-group">
+        <label>Progress</label>
+        <span class="progress-val" id="progressVal">0%</span>
+        <input type="range" id="taskProgress" min="0" max="100" value="0" oninput="document.getElementById('progressVal').textContent=this.value+'%'">
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Task</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+const STORAGE_KEY = 'gantt_timeline';
+const COLORS = ['#4a6cf7','#34c759','#ff9500','#ff3b30','#af52de','#5ac8fa','#ff2d55','#30b0c7','#8e8e93','#636366'];
+const DAY_W = 36;
+let tasks = [];
+let activeFilter = 'all';
+let selectedId = null;
+
+// ---- Helpers ----
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function parseD(s){const p=s.split('-');return new Date(+p[0],+p[1]-1,+p[2])}
+function fmtD(d){return d.toISOString().slice(0,10)}
+function daysBetween(a,b){return Math.round((b-a)/864e5)}
+function isWeekend(d){const day=d.getDay();return day===0||day===6}
+
+// ---- Data ----
+function load(){
+  const raw=localStorage.getItem(STORAGE_KEY);
+  if(raw){try{tasks=JSON.parse(raw)}catch(e){tasks=[]}}
+  if(!tasks.length)seedDemo();
+}
+function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(tasks))}
+
+function seedDemo(){
+  const today=new Date();
+  const base=new Date(today.getFullYear(),today.getMonth(),1);
+  const d=(offset)=>fmtD(new Date(base.getTime()+offset*864e5));
+  tasks=[
+    {id:uid(),name:'Research & Discovery',start:d(-10),end:d(8),assignee:'Alex',status:'completed',color:'#4a6cf7',progress:100},
+    {id:uid(),name:'UI/UX Design',start:d(2),end:d(25),assignee:'Maya',status:'in-progress',color:'#af52de',progress:65},
+    {id:uid(),name:'Backend Development',start:d(12),end:d(50),assignee:'Jordan',status:'in-progress',color:'#34c759',progress:30},
+    {id:uid(),name:'Frontend Development',start:d(20),end:d(60),assignee:'Sam',status:'not-started',color:'#ff9500',progress:0},
+    {id:uid(),name:'QA & Testing',start:d(50),end:d(75),assignee:'Riley',status:'not-started',color:'#ff3b30',progress:0},
+    {id:uid(),name:'Deployment & Launch',start:d(70),end:d(85),assignee:'Alex',status:'not-started',color:'#30b0c7',progress:0},
+  ];
+  save();
+}
+
+// ---- Timeline Range ----
+function getRange(){
+  if(!tasks.length){
+    const t=new Date();
+    return{start:new Date(t.getFullYear(),t.getMonth()-1,1),end:new Date(t.getFullYear(),t.getMonth()+2,0)};
+  }
+  let mn=Infinity,mx=-Infinity;
+  tasks.forEach(t=>{
+    const s=parseD(t.start).getTime(),e=parseD(t.end).getTime();
+    if(s<mn)mn=s;if(e>mx)mx=e;
+  });
+  const pad=14*864e5;
+  return{start:new Date(mn-pad),end:new Date(mx+pad)};
+}
+
+// ---- Stats ----
+function renderStats(){
+  const total=tasks.length;
+  const completed=tasks.filter(t=>t.status==='completed').length;
+  const inProgress=tasks.filter(t=>t.status==='in-progress').length;
+  const today=new Date();today.setHours(0,0,0,0);
+  const overdue=tasks.filter(t=>t.status!=='completed'&&parseD(t.end)<today).length;
+  document.getElementById('statsBar').innerHTML=`
+    <div class="stat"><span class="num">${total}</span> Total Tasks</div>
+    <div class="stat completed"><span class="num">${completed}</span> Completed</div>
+    <div class="stat progress"><span class="num">${inProgress}</span> In Progress</div>
+    <div class="stat overdue"><span class="num">${overdue}</span> Overdue</div>
+  `;
+}
+
+// ---- Filters ----
+function renderFilters(){
+  const counts={all:tasks.length,'not-started':0,'in-progress':0,completed:0};
+  tasks.forEach(t=>counts[t.status]++);
+  const labels={all:'All','not-started':'Not Started','in-progress':'In Progress',completed:'Completed'};
+  document.getElementById('filterBar').innerHTML=Object.entries(labels).map(([k,v])=>
+    `<button class="filter-btn ${activeFilter===k?'active':''}" onclick="setFilter('${k}')">${v} (${counts[k]})</button>`
+  ).join('');
+}
+function setFilter(f){activeFilter=f;render()}
+
+// ---- Task List ----
+function filtered(){return activeFilter==='all'?tasks:tasks.filter(t=>t.status===activeFilter)}
+
+function renderTaskList(){
+  const list=document.getElementById('taskList');
+  const ft=filtered();
+  if(!ft.length){list.innerHTML='<p style="text-align:center;padding:40px 0;color:var(--muted);font-size:.8rem">No tasks found</p>';return}
+  list.innerHTML=ft.map(t=>{
+    const dur=daysBetween(parseD(t.start),parseD(t.end));
+    return `<div class="task-card ${selectedId===t.id?'selected':''}" onclick="selectTask('${t.id}')">
+      <div class="task-card-color" style="background:${t.color}"></div>
+      <div class="task-card-actions">
+        <button onclick="event.stopPropagation();editTask('${t.id}')" title="Edit">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+        <button class="del" onclick="event.stopPropagation();deleteTask('${t.id}')" title="Delete">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+        </button>
+      </div>
+      <div class="task-card-name">${esc(t.name)}</div>
+      <div class="task-card-meta">
+        <span><span class="status-dot ${t.status}"></span>${statusLabel(t.status)}</span>
+        <span>${dur} day${dur!==1?'s':''}</span>
+        ${t.assignee?`<span>${esc(t.assignee)}</span>`:''}
+      </div>
+      <div class="task-card-progress"><div class="task-card-progress-fill" style="width:${t.progress}%;background:${t.color}"></div></div>
+    </div>`;
+  }).join('');
+}
+
+function statusLabel(s){return{['not-started']:'Not Started',['in-progress']:'In Progress',completed:'Completed'}[s]||s}
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function selectTask(id){selectedId=selectedId===id?null:id;render()}
+
+// ---- Gantt Chart ----
+function renderGantt(){
+  const range=getRange();
+  const startDate=new Date(range.start.getFullYear(),range.start.getMonth(),range.start.getDate());
+  const endDate=new Date(range.end.getFullYear(),range.end.getMonth(),range.end.getDate());
+  const totalDays=daysBetween(startDate,endDate)+1;
+  const totalW=totalDays*DAY_W;
+  const ft=filtered();
+
+  // Build month header
+  let months=[];
+  let cur=new Date(startDate);
+  while(cur<=endDate){
+    const mStart=new Date(cur);
+    const mEnd=new Date(cur.getFullYear(),cur.getMonth()+1,0);
+    const effEnd=mEnd>endDate?endDate:mEnd;
+    const days=daysBetween(mStart,effEnd)+1;
+    const label=mStart.toLocaleDateString('en-US',{month:'short',year:'numeric'});
+    months.push({label,days});
+    cur=new Date(cur.getFullYear(),cur.getMonth()+1,1);
+  }
+
+  // Build day header
+  let days=[];
+  for(let i=0;i<totalDays;i++){
+    const d=new Date(startDate.getTime()+i*864e5);
+    const today=new Date();today.setHours(0,0,0,0);
+    days.push({
+      label:d.getDate(),
+      weekend:isWeekend(d),
+      isToday:d.getTime()===today.getTime(),
+      date:d
+    });
+  }
+
+  // Today offset
+  const today=new Date();today.setHours(0,0,0,0);
+  const todayOff=daysBetween(startDate,today);
+
+  const container=document.getElementById('ganttContainer');
+  container.style.width=totalW+'px';
+
+  let html=`<div class="gantt-header">
+    <div class="gantt-months">${months.map(m=>`<div class="gantt-month" style="width:${m.days*DAY_W}px">${m.label}</div>`).join('')}</div>
+    <div class="gantt-days">${days.map(d=>`<div class="gantt-day${d.weekend?' weekend':''}${d.isToday?' today':''}" style="width:${DAY_W}px">${d.label}</div>`).join('')}</div>
+  </div>`;
+
+  html+='<div class="gantt-body">';
+
+  // Today line
+  if(todayOff>=0&&todayOff<totalDays){
+    html+=`<div class="today-line" style="left:${todayOff*DAY_W+DAY_W/2}px;top:0;bottom:0"></div>`;
+  }
+
+  ft.forEach(t=>{
+    const ts=parseD(t.start),te=parseD(t.end);
+    const left=daysBetween(startDate,ts)*DAY_W;
+    const width=(daysBetween(ts,te)+1)*DAY_W;
+
+    // Row bg
+    let bgCells='';
+    for(let i=0;i<totalDays;i++){
+      const d=new Date(startDate.getTime()+i*864e5);
+      bgCells+=`<div class="gantt-row-bg-cell${isWeekend(d)?' weekend':''}" style="width:${DAY_W}px"></div>`;
+    }
+
+    html+=`<div class="gantt-row">
+      <div class="gantt-row-bg">${bgCells}</div>
+      <div class="gantt-bar ${selectedId===t.id?'selected':''}"
+        style="left:${left}px;width:${width}px;background:${t.color}"
+        onclick="selectTask('${t.id}')"
+        title="${esc(t.name)} (${t.progress}%)">
+        <div class="gantt-bar-progress" style="width:${t.progress}%"></div>
+        <span class="gantt-bar-label">${esc(t.name)} ${t.progress}%</span>
+        <div class="gantt-bar-handle" onmousedown="startDrag(event,'${t.id}',${width})"></div>
+      </div>
+    </div>`;
+  });
+
+  html+='</div>';
+  container.innerHTML=html;
+
+  // Scroll today into view
+  if(todayOff>=0){
+    const wrapper=document.getElementById('ganttWrapper');
+    const target=todayOff*DAY_W-wrapper.clientWidth/3;
+    if(!window._scrolledOnce){wrapper.scrollLeft=Math.max(0,target);window._scrolledOnce=true}
+  }
+}
+
+// ---- Drag Progress ----
+function startDrag(e,id,barW){
+  e.stopPropagation();e.preventDefault();
+  const bar=e.target.closest('.gantt-bar');
+  const startX=e.clientX;
+  const task=tasks.find(t=>t.id===id);
+  const startProg=task.progress;
+
+  function onMove(ev){
+    const dx=ev.clientX-startX;
+    const pctDelta=(dx/barW)*100;
+    task.progress=Math.min(100,Math.max(0,Math.round(startProg+pctDelta)));
+    if(task.progress===100)task.status='completed';
+    else if(task.progress>0)task.status='in-progress';
+    const progEl=bar.querySelector('.gantt-bar-progress');
+    const lblEl=bar.querySelector('.gantt-bar-label');
+    if(progEl)progEl.style.width=task.progress+'%';
+    if(lblEl)lblEl.textContent=`${task.name} ${task.progress}%`;
+  }
+  function onUp(){
+    document.removeEventListener('mousemove',onMove);
+    document.removeEventListener('mouseup',onUp);
+    save();render();
+  }
+  document.addEventListener('mousemove',onMove);
+  document.addEventListener('mouseup',onUp);
+}
+
+// ---- Modal ----
+function openModal(task){
+  const overlay=document.getElementById('modalOverlay');
+  document.getElementById('modalTitle').textContent=task?'Edit Task':'Add Task';
+  document.getElementById('taskId').value=task?task.id:'';
+  document.getElementById('taskName').value=task?task.name:'';
+  document.getElementById('taskStart').value=task?task.start:fmtD(new Date());
+  document.getElementById('taskEnd').value=task?task.end:fmtD(new Date(Date.now()+7*864e5));
+  document.getElementById('taskAssignee').value=task?task.assignee:'';
+  document.getElementById('taskStatus').value=task?task.status:'not-started';
+  document.getElementById('taskProgress').value=task?task.progress:0;
+  document.getElementById('progressVal').textContent=(task?task.progress:0)+'%';
+
+  const sel=task?task.color:COLORS[Math.floor(Math.random()*COLORS.length)];
+  document.getElementById('colorPicker').innerHTML=COLORS.map(c=>
+    `<div class="form-color ${c===sel?'active':''}" style="background:${c}" onclick="pickColor(this,'${c}')"></div>`
+  ).join('');
+  document.getElementById('colorPicker').dataset.selected=sel;
+
+  overlay.classList.add('open');
+  setTimeout(()=>document.getElementById('taskName').focus(),100);
+}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('open')}
+function pickColor(el,c){
+  document.querySelectorAll('.form-color').forEach(e=>e.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('colorPicker').dataset.selected=c;
+}
+
+function saveTask(e){
+  e.preventDefault();
+  const id=document.getElementById('taskId').value;
+  const data={
+    id:id||uid(),
+    name:document.getElementById('taskName').value.trim(),
+    start:document.getElementById('taskStart').value,
+    end:document.getElementById('taskEnd').value,
+    assignee:document.getElementById('taskAssignee').value.trim(),
+    status:document.getElementById('taskStatus').value,
+    color:document.getElementById('colorPicker').dataset.selected||COLORS[0],
+    progress:parseInt(document.getElementById('taskProgress').value)||0,
+  };
+  if(parseD(data.end)<parseD(data.start)){toast('End date must be after start date');return}
+  if(id){const i=tasks.findIndex(t=>t.id===id);if(i>-1)tasks[i]=data}
+  else tasks.push(data);
+  save();closeModal();window._scrolledOnce=false;render();
+  toast(id?'Task updated':'Task added');
+}
+
+function editTask(id){const t=tasks.find(x=>x.id===id);if(t)openModal(t)}
+function deleteTask(id){
+  tasks=tasks.filter(t=>t.id!==id);
+  if(selectedId===id)selectedId=null;
+  save();render();toast('Task deleted');
+}
+
+// ---- Export / Import ----
+function exportJSON(){
+  const blob=new Blob([JSON.stringify(tasks,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='gantt_timeline.json';
+  a.click();URL.revokeObjectURL(a.href);
+  toast('Exported successfully');
+}
+function importJSON(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    try{
+      const data=JSON.parse(ev.target.result);
+      if(!Array.isArray(data))throw new Error();
+      tasks=data;save();window._scrolledOnce=false;render();
+      toast(`Imported ${data.length} tasks`);
+    }catch(er){toast('Invalid JSON file')}
+  };
+  reader.readAsText(file);
+  e.target.value='';
+}
+
+// ---- Toast ----
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.classList.add('show');
+  clearTimeout(el._t);
+  el._t=setTimeout(()=>el.classList.remove('show'),2500);
+}
+
+// ---- Render ----
+function render(){renderStats();renderFilters();renderTaskList();renderGantt()}
+
+// ---- Init ----
+load();render();
+</script>
+</body>
+</html>

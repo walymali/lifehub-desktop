@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Receipt Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #f5f5f3;
+  --card: #fff;
+  --heading: #1a1a1a;
+  --text: #555;
+  --border: #e8e8e6;
+  --accent: #1a1a1a;
+  --accent-light: #f0f0ee;
+  --input-bg: #fafaf9;
+  --danger: #c0392b;
+  --radius: 10px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+}
+
+html { font-size: 15px; }
+
+body {
+  font-family: 'Sora', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ── Header ────────────────────────────── */
+.app-header {
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.app-header h1 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--heading);
+  letter-spacing: -0.3px;
+}
+
+.app-header h1 span {
+  font-weight: 400;
+  color: var(--text);
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ── Layout ────────────────────────────── */
+.app-layout {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 0;
+  min-height: calc(100vh - 57px);
+}
+
+/* ── Editor Panel ──────────────────────── */
+.editor-panel {
+  padding: 28px 32px;
+  overflow-y: auto;
+  max-height: calc(100vh - 57px);
+}
+
+.section {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px 24px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+}
+
+.section-title {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--heading);
+  margin-bottom: 18px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.field-row.three { grid-template-columns: 1fr 1fr 1fr; }
+.field-row.single { grid-template-columns: 1fr; }
+
+.field label {
+  display: block;
+  font-size: 0.73rem;
+  font-weight: 500;
+  color: var(--heading);
+  margin-bottom: 5px;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.85rem;
+  color: var(--heading);
+  background: var(--input-bg);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(26,26,26,0.06);
+}
+
+.field textarea { resize: vertical; min-height: 60px; }
+
+/* Logo Upload */
+.logo-upload-area {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 0;
+}
+
+.logo-preview {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  border: 2px dashed var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--input-bg);
+  cursor: pointer;
+  transition: border-color 0.2s;
+  flex-shrink: 0;
+}
+
+.logo-preview:hover { border-color: var(--accent); }
+
+.logo-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.logo-preview svg {
+  width: 22px;
+  height: 22px;
+  color: #bbb;
+}
+
+.logo-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.logo-actions span {
+  font-size: 0.73rem;
+  color: var(--text);
+}
+
+/* ── Line Items ────────────────────────── */
+.items-header {
+  display: grid;
+  grid-template-columns: 2fr 0.7fr 0.9fr 0.9fr 36px;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.items-header span {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text);
+}
+
+.item-row {
+  display: grid;
+  grid-template-columns: 2fr 0.7fr 0.9fr 0.9fr 36px;
+  gap: 8px;
+  margin-bottom: 6px;
+  align-items: center;
+}
+
+.item-row input {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.82rem;
+  color: var(--heading);
+  background: var(--input-bg);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.item-row input:focus { border-color: var(--accent); }
+
+.item-row input.computed {
+  background: var(--accent-light);
+  color: var(--heading);
+  font-weight: 500;
+  pointer-events: none;
+}
+
+.item-remove {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #bbb;
+  transition: background 0.15s, color 0.15s;
+}
+
+.item-remove:hover { background: #ffeaea; color: var(--danger); }
+
+/* ── Buttons ───────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+  font-family: 'Sora', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--heading);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn:hover { background: var(--accent-light); }
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.btn-primary:hover { background: #333; }
+
+.btn-sm {
+  padding: 7px 14px;
+  font-size: 0.73rem;
+}
+
+.btn-danger { color: var(--danger); }
+.btn-danger:hover { background: #ffeaea; border-color: #f5c6cb; }
+
+.add-item-btn {
+  width: 100%;
+  padding: 10px;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  background: none;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.78rem;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s;
+  margin-top: 8px;
+}
+
+.add-item-btn:hover { border-color: var(--accent); color: var(--heading); background: var(--accent-light); }
+
+/* ── Totals Row ────────────────────────── */
+.totals-display {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.total-row span:first-child { color: var(--text); }
+.total-row span:last-child { color: var(--heading); font-weight: 500; }
+
+.total-row.grand {
+  padding-top: 8px;
+  margin-top: 4px;
+  border-top: 1px solid var(--border);
+  font-size: 0.95rem;
+}
+
+.total-row.grand span:last-child { font-weight: 700; }
+
+/* ── Receipt Style Tabs ────────────────── */
+.style-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.style-tab {
+  padding: 7px 16px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: none;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.73rem;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.style-tab:hover { border-color: var(--accent); color: var(--heading); }
+.style-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* ── Preview Panel ─────────────────────── */
+.preview-panel {
+  background: #eae9e6;
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 24px;
+  overflow-y: auto;
+  max-height: calc(100vh - 57px);
+}
+
+.preview-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: #999;
+  margin-bottom: 16px;
+}
+
+/* ── Thermal Receipt ───────────────────── */
+.receipt {
+  width: 320px;
+  background: #fff;
+  padding: 28px 22px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12px;
+  color: #222;
+  line-height: 1.5;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  position: relative;
+}
+
+/* Jagged top/bottom edges for thermal look */
+.receipt::before,
+.receipt::after {
+  content: '';
+  display: block;
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background: linear-gradient(135deg, #fff 33.33%, transparent 33.33%) 0 0 / 8px 100%,
+              linear-gradient(225deg, #fff 33.33%, transparent 33.33%) 0 0 / 8px 100%;
+  background-repeat: repeat-x;
+}
+
+.receipt::before { top: -8px; }
+.receipt::after {
+  bottom: -8px;
+  background: linear-gradient(315deg, #fff 33.33%, transparent 33.33%) 0 0 / 8px 100%,
+              linear-gradient(45deg, #fff 33.33%, transparent 33.33%) 0 0 / 8px 100%;
+  background-repeat: repeat-x;
+}
+
+.receipt-logo {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.receipt-logo img {
+  max-width: 80px;
+  max-height: 50px;
+  object-fit: contain;
+}
+
+.receipt-store {
+  text-align: center;
+  font-weight: bold;
+  font-size: 16px;
+  letter-spacing: 1px;
+  margin-bottom: 2px;
+}
+
+.receipt-address {
+  text-align: center;
+  font-size: 10px;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.receipt-divider {
+  border: none;
+  border-top: 1px dashed #aaa;
+  margin: 10px 0;
+}
+
+.receipt-meta {
+  font-size: 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.receipt-meta-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.receipt-items-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  font-size: 11px;
+  margin-bottom: 4px;
+}
+
+.receipt-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  padding: 2px 0;
+}
+
+.receipt-item-detail {
+  font-size: 10px;
+  color: #888;
+  padding-left: 8px;
+}
+
+.receipt-totals {
+  margin-top: 6px;
+  font-size: 11px;
+}
+
+.receipt-total-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 1px 0;
+}
+
+.receipt-total-row.grand {
+  font-weight: bold;
+  font-size: 14px;
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 2px solid #222;
+}
+
+.receipt-payment {
+  text-align: center;
+  font-size: 10px;
+  margin-top: 8px;
+  color: #666;
+}
+
+.receipt-footer {
+  text-align: center;
+  font-size: 10px;
+  margin-top: 12px;
+  color: #999;
+}
+
+.receipt-barcode {
+  text-align: center;
+  margin-top: 10px;
+  font-family: 'Libre Barcode 39', cursive;
+  font-size: 36px;
+  letter-spacing: 2px;
+  color: #222;
+  overflow: hidden;
+}
+
+/* ── Style: Modern ─────────────────────── */
+.receipt.modern {
+  font-family: 'Sora', sans-serif;
+  border-radius: 6px;
+  padding: 30px 24px;
+}
+
+.receipt.modern::before,
+.receipt.modern::after { display: none; }
+
+.receipt.modern .receipt-store {
+  font-size: 18px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.receipt.modern .receipt-divider {
+  border-top: 1px solid #e0e0e0;
+}
+
+.receipt.modern .receipt-total-row.grand {
+  border-top: 2px solid #222;
+}
+
+.receipt.modern .receipt-barcode { display: none; }
+
+/* ── Style: Minimal ────────────────────── */
+.receipt.minimal {
+  font-family: 'Sora', sans-serif;
+  padding: 32px 26px;
+  border: 1px solid #e0e0e0;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.receipt.minimal::before,
+.receipt.minimal::after { display: none; }
+
+.receipt.minimal .receipt-store {
+  font-size: 14px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.receipt.minimal .receipt-address { font-size: 9px; }
+
+.receipt.minimal .receipt-divider {
+  border-top: 1px solid #ddd;
+  margin: 14px 0;
+}
+
+.receipt.minimal .receipt-total-row.grand {
+  font-size: 13px;
+  border-top: 1px solid #222;
+}
+
+.receipt.minimal .receipt-barcode { display: none; }
+.receipt.minimal .receipt-footer { display: none; }
+
+/* ── Hidden file input ─────────────────── */
+#logoInput { display: none; }
+
+/* ── Responsive ────────────────────────── */
+@media (max-width: 900px) {
+  .app-layout { grid-template-columns: 1fr; }
+  .preview-panel {
+    border-left: none;
+    border-top: 1px solid var(--border);
+    max-height: none;
+  }
+  .editor-panel { max-height: none; }
+}
+
+/* ── Print ─────────────────────────────── */
+@media print {
+  body { background: #fff; }
+  .app-header, .editor-panel { display: none !important; }
+  .preview-panel {
+    border: none;
+    background: #fff;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+  .preview-label { display: none; }
+  .receipt { box-shadow: none; }
+}
+
+/* canvas for export (hidden) */
+#exportCanvas { display: none; }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <h1>Receipt <span>Generator</span></h1>
+  <div class="header-actions">
+    <button class="btn btn-sm" onclick="resetAll()" title="Clear all data">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2m2 0v14a1 1 0 01-1 1H7a1 1 0 01-1-1V6h14z"/></svg>
+      Reset
+    </button>
+    <button class="btn btn-sm" onclick="exportImage()">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+      Export Image
+    </button>
+    <button class="btn btn-sm btn-primary" onclick="printReceipt()">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      Print / PDF
+    </button>
+  </div>
+</header>
+
+<div class="app-layout">
+  <!-- ── Editor ─────────────────────── -->
+  <div class="editor-panel">
+
+    <!-- Receipt Style -->
+    <div class="section">
+      <div class="section-title">Receipt Style</div>
+      <div class="style-tabs">
+        <button class="style-tab active" data-style="classic" onclick="setStyle('classic', this)">Classic</button>
+        <button class="style-tab" data-style="modern" onclick="setStyle('modern', this)">Modern</button>
+        <button class="style-tab" data-style="minimal" onclick="setStyle('minimal', this)">Minimal</button>
+      </div>
+    </div>
+
+    <!-- Store Info -->
+    <div class="section">
+      <div class="section-title">Store Information</div>
+      <div class="logo-upload-area">
+        <div class="logo-preview" id="logoPreview" onclick="document.getElementById('logoInput').click()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        </div>
+        <input type="file" id="logoInput" accept="image/*" onchange="handleLogo(event)">
+        <div class="logo-actions">
+          <span>Upload store logo (optional)</span>
+          <button class="btn btn-sm" onclick="document.getElementById('logoInput').click()" style="align-self:flex-start; margin-top:4px">Choose File</button>
+          <button class="btn btn-sm btn-danger" onclick="removeLogo()" style="align-self:flex-start; margin-top:2px" id="removeLogoBtn" hidden>Remove</button>
+        </div>
+      </div>
+      <div class="field-row single">
+        <div class="field">
+          <label>Store Name</label>
+          <input type="text" id="storeName" placeholder="e.g. Corner Market" oninput="saveAndRender()">
+        </div>
+      </div>
+      <div class="field-row single">
+        <div class="field">
+          <label>Address</label>
+          <textarea id="storeAddress" rows="2" placeholder="123 Main St, Suite 4&#10;New York, NY 10001" oninput="saveAndRender()"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Receipt Details -->
+    <div class="section">
+      <div class="section-title">Receipt Details</div>
+      <div class="field-row">
+        <div class="field">
+          <label>Date</label>
+          <input type="date" id="receiptDate" oninput="saveAndRender()">
+        </div>
+        <div class="field">
+          <label>Time</label>
+          <input type="time" id="receiptTime" oninput="saveAndRender()">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Receipt Number</label>
+          <input type="text" id="receiptNumber" placeholder="e.g. #00421" oninput="saveAndRender()">
+        </div>
+        <div class="field">
+          <label>Payment Method</label>
+          <select id="paymentMethod" onchange="saveAndRender()">
+            <option value="Cash">Cash</option>
+            <option value="Card">Card</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Line Items -->
+    <div class="section">
+      <div class="section-title">Line Items</div>
+      <div class="items-header">
+        <span>Item</span>
+        <span>Qty</span>
+        <span>Price</span>
+        <span>Total</span>
+        <span></span>
+      </div>
+      <div id="itemsContainer"></div>
+      <button class="add-item-btn" onclick="addItem()">+ Add Item</button>
+    </div>
+
+    <!-- Tax & Totals -->
+    <div class="section">
+      <div class="section-title">Tax & Totals</div>
+      <div class="field-row">
+        <div class="field">
+          <label>Tax Rate (%)</label>
+          <input type="number" id="taxRate" value="0" min="0" step="0.01" oninput="saveAndRender()">
+        </div>
+        <div class="field">
+          <label>Custom Footer Message</label>
+          <input type="text" id="footerMsg" placeholder="Thank you for shopping!" oninput="saveAndRender()">
+        </div>
+      </div>
+      <div class="totals-display">
+        <div class="total-row">
+          <span>Subtotal</span>
+          <span id="dispSubtotal">$0.00</span>
+        </div>
+        <div class="total-row">
+          <span>Tax</span>
+          <span id="dispTax">$0.00</span>
+        </div>
+        <div class="total-row grand">
+          <span>Total</span>
+          <span id="dispTotal">$0.00</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Preview ────────────────────── -->
+  <div class="preview-panel">
+    <div class="preview-label">Live Preview</div>
+    <div id="receiptPreview"></div>
+  </div>
+</div>
+
+<canvas id="exportCanvas"></canvas>
+
+<script>
+// ── State ──────────────────────────────────
+let state = {
+  storeName: '',
+  storeAddress: '',
+  receiptDate: '',
+  receiptTime: '',
+  receiptNumber: '',
+  paymentMethod: 'Cash',
+  items: [],
+  taxRate: 0,
+  footerMsg: 'Thank you for your purchase!',
+  style: 'classic',
+  logo: null
+};
+
+// ── Init ───────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  loadState();
+  populateFields();
+  if (state.items.length === 0) addItem();
+  renderReceipt();
+});
+
+// ── LocalStorage ───────────────────────────
+function saveState() {
+  localStorage.setItem('receiptGenState', JSON.stringify(state));
+}
+
+function loadState() {
+  const saved = localStorage.getItem('receiptGenState');
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      state = { ...state, ...parsed };
+    } catch(e) {}
+  }
+  if (!state.receiptDate) {
+    const now = new Date();
+    state.receiptDate = now.toISOString().split('T')[0];
+    state.receiptTime = now.toTimeString().slice(0, 5);
+  }
+}
+
+function populateFields() {
+  document.getElementById('storeName').value = state.storeName;
+  document.getElementById('storeAddress').value = state.storeAddress;
+  document.getElementById('receiptDate').value = state.receiptDate;
+  document.getElementById('receiptTime').value = state.receiptTime;
+  document.getElementById('receiptNumber').value = state.receiptNumber;
+  document.getElementById('paymentMethod').value = state.paymentMethod;
+  document.getElementById('taxRate').value = state.taxRate;
+  document.getElementById('footerMsg').value = state.footerMsg;
+
+  // Style tab
+  document.querySelectorAll('.style-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.style === state.style);
+  });
+
+  // Logo
+  if (state.logo) {
+    const prev = document.getElementById('logoPreview');
+    prev.innerHTML = '<img src="' + state.logo + '" alt="Logo">';
+    document.getElementById('removeLogoBtn').hidden = false;
+  }
+
+  // Items
+  const container = document.getElementById('itemsContainer');
+  container.innerHTML = '';
+  state.items.forEach((item, i) => {
+    createItemRow(item, i);
+  });
+}
+
+// ── Sync fields to state ───────────────────
+function readFields() {
+  state.storeName = document.getElementById('storeName').value;
+  state.storeAddress = document.getElementById('storeAddress').value;
+  state.receiptDate = document.getElementById('receiptDate').value;
+  state.receiptTime = document.getElementById('receiptTime').value;
+  state.receiptNumber = document.getElementById('receiptNumber').value;
+  state.paymentMethod = document.getElementById('paymentMethod').value;
+  state.taxRate = parseFloat(document.getElementById('taxRate').value) || 0;
+  state.footerMsg = document.getElementById('footerMsg').value;
+
+  // Read items
+  const rows = document.querySelectorAll('.item-row');
+  state.items = [];
+  rows.forEach(row => {
+    const inputs = row.querySelectorAll('input');
+    state.items.push({
+      name: inputs[0].value,
+      qty: parseFloat(inputs[1].value) || 0,
+      price: parseFloat(inputs[2].value) || 0
+    });
+  });
+}
+
+function saveAndRender() {
+  readFields();
+  computeTotals();
+  saveState();
+  renderReceipt();
+}
+
+// ── Items ──────────────────────────────────
+function addItem() {
+  const item = { name: '', qty: 1, price: 0 };
+  state.items.push(item);
+  createItemRow(item, state.items.length - 1);
+  saveAndRender();
+}
+
+function createItemRow(item, index) {
+  const container = document.getElementById('itemsContainer');
+  const row = document.createElement('div');
+  row.className = 'item-row';
+
+  const lineTotal = (item.qty * item.price).toFixed(2);
+
+  row.innerHTML = `
+    <input type="text" placeholder="Item name" value="${escAttr(item.name)}" oninput="saveAndRender()">
+    <input type="number" min="0" step="1" value="${item.qty}" oninput="saveAndRender()">
+    <input type="number" min="0" step="0.01" value="${item.price}" oninput="saveAndRender()">
+    <input type="text" class="computed" value="$${lineTotal}" tabindex="-1" readonly>
+    <button class="item-remove" onclick="removeItem(this)" title="Remove item">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  `;
+  container.appendChild(row);
+}
+
+function removeItem(btn) {
+  btn.closest('.item-row').remove();
+  saveAndRender();
+}
+
+// ── Compute ────────────────────────────────
+function computeTotals() {
+  let subtotal = 0;
+  state.items.forEach(it => { subtotal += it.qty * it.price; });
+  const tax = subtotal * (state.taxRate / 100);
+  const total = subtotal + tax;
+
+  document.getElementById('dispSubtotal').textContent = '$' + subtotal.toFixed(2);
+  document.getElementById('dispTax').textContent = '$' + tax.toFixed(2);
+  document.getElementById('dispTotal').textContent = '$' + total.toFixed(2);
+
+  // Update line totals in editor
+  const rows = document.querySelectorAll('.item-row');
+  rows.forEach((row, i) => {
+    const inputs = row.querySelectorAll('input');
+    const qty = parseFloat(inputs[1].value) || 0;
+    const price = parseFloat(inputs[2].value) || 0;
+    inputs[3].value = '$' + (qty * price).toFixed(2);
+  });
+}
+
+// ── Receipt Style ──────────────────────────
+function setStyle(style, btn) {
+  state.style = style;
+  document.querySelectorAll('.style-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  saveAndRender();
+}
+
+// ── Logo ───────────────────────────────────
+function handleLogo(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    state.logo = evt.target.result;
+    const prev = document.getElementById('logoPreview');
+    prev.innerHTML = '<img src="' + state.logo + '" alt="Logo">';
+    document.getElementById('removeLogoBtn').hidden = false;
+    saveAndRender();
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeLogo() {
+  state.logo = null;
+  const prev = document.getElementById('logoPreview');
+  prev.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>';
+  document.getElementById('removeLogoBtn').hidden = true;
+  document.getElementById('logoInput').value = '';
+  saveAndRender();
+}
+
+// ── Render Receipt ─────────────────────────
+function renderReceipt() {
+  readFields();
+
+  let subtotal = 0;
+  state.items.forEach(it => { subtotal += it.qty * it.price; });
+  const tax = subtotal * (state.taxRate / 100);
+  const total = subtotal + tax;
+
+  const styleClass = state.style !== 'classic' ? ' ' + state.style : '';
+
+  const dateFormatted = state.receiptDate ? formatDate(state.receiptDate) : '';
+  const timeFormatted = state.receiptTime ? formatTime(state.receiptTime) : '';
+
+  let itemsHTML = '';
+  state.items.forEach(it => {
+    if (!it.name && it.qty === 0 && it.price === 0) return;
+    const lineTotal = (it.qty * it.price).toFixed(2);
+    itemsHTML += `
+      <div class="receipt-item">
+        <span>${esc(it.name || 'Item')}</span>
+        <span>$${lineTotal}</span>
+      </div>
+      <div class="receipt-item-detail">${it.qty} x $${it.price.toFixed(2)}</div>
+    `;
+  });
+
+  const barcodeText = state.receiptNumber
+    ? state.receiptNumber.replace(/[^a-zA-Z0-9]/g, '')
+    : '0042100001';
+
+  const html = `
+    <div class="receipt${styleClass}" id="receiptCapture">
+      ${state.logo ? '<div class="receipt-logo"><img src="' + state.logo + '" alt="Logo"></div>' : ''}
+      <div class="receipt-store">${esc(state.storeName || 'Store Name')}</div>
+      <div class="receipt-address">${esc(state.storeAddress || '123 Main Street').replace(/\n/g, '<br>')}</div>
+      <hr class="receipt-divider">
+      <div class="receipt-meta">
+        <div class="receipt-meta-row"><span>Date: ${esc(dateFormatted)}</span><span>Time: ${esc(timeFormatted)}</span></div>
+        <div class="receipt-meta-row"><span>Receipt: ${esc(state.receiptNumber || '#0001')}</span><span>Cashier: 01</span></div>
+      </div>
+      <hr class="receipt-divider">
+      <div class="receipt-items-header"><span>ITEM</span><span>AMOUNT</span></div>
+      <hr class="receipt-divider" style="margin:4px 0">
+      ${itemsHTML || '<div class="receipt-item"><span>No items</span><span>$0.00</span></div>'}
+      <hr class="receipt-divider">
+      <div class="receipt-totals">
+        <div class="receipt-total-row"><span>Subtotal</span><span>$${subtotal.toFixed(2)}</span></div>
+        <div class="receipt-total-row"><span>Tax (${state.taxRate}%)</span><span>$${tax.toFixed(2)}</span></div>
+        <div class="receipt-total-row grand"><span>TOTAL</span><span>$${total.toFixed(2)}</span></div>
+      </div>
+      <div class="receipt-payment">Payment: ${esc(state.paymentMethod)}</div>
+      <hr class="receipt-divider">
+      <div class="receipt-footer">${esc(state.footerMsg || 'Thank you!')}</div>
+      <div class="receipt-barcode">${barcodeText}</div>
+    </div>
+  `;
+
+  document.getElementById('receiptPreview').innerHTML = html;
+  computeTotals();
+}
+
+// ── Print ──────────────────────────────────
+function printReceipt() {
+  window.print();
+}
+
+// ── Export as Image ────────────────────────
+function exportImage() {
+  const receiptEl = document.getElementById('receiptCapture');
+  if (!receiptEl) return;
+
+  const scale = 2;
+  const rect = receiptEl.getBoundingClientRect();
+  const w = rect.width;
+  const h = rect.height;
+
+  const canvas = document.getElementById('exportCanvas');
+  canvas.width = w * scale;
+  canvas.height = h * scale;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(scale, scale);
+
+  // Draw white background
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, w, h);
+
+  // Use the newer approach: render to SVG foreignObject then draw
+  const data = new XMLSerializer().serializeToString(receiptEl);
+  const svgStr = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}">
+      <foreignObject width="100%" height="100%">
+        <div xmlns="http://www.w3.org/1999/xhtml">
+          ${data}
+        </div>
+      </foreignObject>
+    </svg>
+  `;
+
+  // We'll use a simpler canvas-based method: clone styles inline then render
+  renderToCanvas(receiptEl, canvas, scale).then(() => {
+    const link = document.createElement('a');
+    link.download = 'receipt-' + (state.receiptNumber || 'export') + '.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  });
+}
+
+async function renderToCanvas(element, canvas, scale) {
+  const ctx = canvas.getContext('2d');
+  const rect = element.getBoundingClientRect();
+  const w = rect.width;
+  const h = rect.height;
+
+  canvas.width = w * scale;
+  canvas.height = h * scale;
+  ctx.scale(scale, scale);
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, w, h);
+
+  // Clone the element and inline all styles
+  const clone = element.cloneNode(true);
+  const origElements = element.querySelectorAll('*');
+  const cloneElements = clone.querySelectorAll('*');
+
+  // Inline styles on the clone root
+  const rootStyles = window.getComputedStyle(element);
+  for (let i = 0; i < rootStyles.length; i++) {
+    const prop = rootStyles[i];
+    clone.style.setProperty(prop, rootStyles.getPropertyValue(prop));
+  }
+
+  // Inline styles on all children
+  origElements.forEach((origEl, i) => {
+    const computed = window.getComputedStyle(origEl);
+    const cloneEl = cloneElements[i];
+    for (let j = 0; j < computed.length; j++) {
+      const prop = computed[j];
+      cloneEl.style.setProperty(prop, computed.getPropertyValue(prop));
+    }
+  });
+
+  clone.style.width = w + 'px';
+  clone.style.position = 'static';
+  clone.style.margin = '0';
+
+  // Convert images to data URLs if not already
+  const imgs = clone.querySelectorAll('img');
+  for (const img of imgs) {
+    if (!img.src.startsWith('data:')) {
+      try {
+        const response = await fetch(img.src);
+        const blob = await response.blob();
+        const dataUrl = await new Promise(resolve => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.readAsDataURL(blob);
+        });
+        img.src = dataUrl;
+      } catch(e) {}
+    }
+  }
+
+  const svgData = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}">
+      <foreignObject width="100%" height="100%">
+        ${new XMLSerializer().serializeToString(clone)}
+      </foreignObject>
+    </svg>
+  `;
+
+  const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+  const url = URL.createObjectURL(svgBlob);
+
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      ctx.drawImage(img, 0, 0);
+      URL.revokeObjectURL(url);
+      resolve();
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      // Fallback: simple text-based render
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0, 0, w, h);
+      ctx.fillStyle = '#222';
+      ctx.font = '14px Courier New';
+      ctx.fillText('Receipt exported', 20, 30);
+      resolve();
+    };
+    img.src = url;
+  });
+}
+
+// ── Reset ──────────────────────────────────
+function resetAll() {
+  if (!confirm('Clear all receipt data?')) return;
+  localStorage.removeItem('receiptGenState');
+  state = {
+    storeName: '',
+    storeAddress: '',
+    receiptDate: new Date().toISOString().split('T')[0],
+    receiptTime: new Date().toTimeString().slice(0, 5),
+    receiptNumber: '',
+    paymentMethod: 'Cash',
+    items: [],
+    taxRate: 0,
+    footerMsg: 'Thank you for your purchase!',
+    style: 'classic',
+    logo: null
+  };
+  populateFields();
+  if (state.items.length === 0) addItem();
+  renderReceipt();
+}
+
+// ── Helpers ────────────────────────────────
+function esc(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function escAttr(str) {
+  return str.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+}
+
+function formatTime(timeStr) {
+  if (!timeStr) return '';
+  const [h, m] = timeStr.split(':');
+  const hr = parseInt(h);
+  const ampm = hr >= 12 ? 'PM' : 'AM';
+  const h12 = hr % 12 || 12;
+  return h12 + ':' + m + ' ' + ampm;
+}
+</script>
+
+</body>
+</html>

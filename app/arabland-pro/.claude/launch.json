@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "arabland-preview",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "/Users/walysmac/arabland-pro", "-l", "3456"],
+      "port": 3456
+    }
+  ]
+}

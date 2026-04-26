@@ -1,0 +1,221 @@
+{
+  "version": 2,
+  "name": "LifeHub",
+  "currency": "USD",
+  "moneyBackDays": 30,
+  "marketingUrl": "https://trylifehub.com",
+  "appUrl": "https://app.trylifehub.com",
+  "accountUrl": "https://trylifehub.com/my-account",
+  "freeTools": ["password-gen-pro", "qr-generator", "countdown-timer", "unit-converter", "markdown-editor"],
+  "bundles": {
+    "freelancer": {
+      "id": "freelancer",
+      "code": "FRL",
+      "name": "Freelancer Pro",
+      "tagline": "Everything a solo professional needs",
+      "description": "Invoicing, contracts, CRM, AI resume builder, and 6 more tools designed for independent freelancers and consultants.",
+      "icon": "💼",
+      "color": "#6366f1",
+      "deviceLimit": 2,
+      "tools": [
+        "quickinvoice-pro",
+        "client-crm",
+        "pricing-calculator",
+        "freelancer-toolkit",
+        "contract-bundle",
+        "resume-builder",
+        "email-signature-gen",
+        "portfolio-site",
+        "timezone-converter",
+        "markdown-editor"
+      ],
+      "pricing": {
+        "monthly":  { "price": 12,  "wcProductId": null, "stripePriceId": "" },
+        "yearly":   { "price": 99,  "wcProductId": null, "stripePriceId": "", "savings": "31%" },
+        "lifetime": { "price": 199, "wcProductId": null, "stripePriceId": "" }
+      }
+    },
+    "productivity": {
+      "id": "productivity",
+      "code": "PRD",
+      "name": "Productivity Pro",
+      "tagline": "Organize your personal life",
+      "description": "LifeBoard dashboard hub, Student Planner, Workout Builder, habits, mood, meal planning — your personal command center.",
+      "icon": "📊",
+      "color": "#16a34a",
+      "deviceLimit": 3,
+      "tools": [
+        "lifeboard-pro",
+        "student-planner",
+        "workout-plan",
+        "habit-tracker",
+        "mood-tracker",
+        "meal-planner",
+        "recipe-box",
+        "wedding-planner",
+        "typing-test",
+        "countdown-timer",
+        "markdown-editor"
+      ],
+      "pricing": {
+        "monthly":  { "price": 9,   "wcProductId": null, "stripePriceId": "" },
+        "yearly":   { "price": 79,  "wcProductId": null, "stripePriceId": "", "savings": "27%" },
+        "lifetime": { "price": 149, "wcProductId": null, "stripePriceId": "" }
+      }
+    },
+    "creator": {
+      "id": "creator",
+      "code": "CRT",
+      "name": "Creator Studio",
+      "tagline": "For designers and content creators",
+      "description": "Instagram templates, YouTube thumbnails, color palettes, wireframes, AI prompt vault, portfolio builder — all the visual tools you need.",
+      "icon": "🎨",
+      "color": "#ec4899",
+      "deviceLimit": 3,
+      "tools": [
+        "instagram-templates",
+        "youtube-thumbnail",
+        "social-media-kit",
+        "color-palette-gen",
+        "business-card-gen",
+        "wireframe-kit",
+        "portfolio-site",
+        "pitch-deck",
+        "prompt-vault-pro",
+        "email-signature-gen",
+        "resume-builder"
+      ],
+      "pricing": {
+        "monthly":  { "price": 19,  "wcProductId": null, "stripePriceId": "" },
+        "yearly":   { "price": 179, "wcProductId": null, "stripePriceId": "", "savings": "21%" },
+        "lifetime": { "price": 349, "wcProductId": null, "stripePriceId": "" }
+      }
+    },
+    "smallbusiness": {
+      "id": "smallbusiness",
+      "code": "SMB",
+      "name": "Small Business",
+      "tagline": "For teams of 2-20",
+      "description": "Everything in Freelancer + employee directory, meeting agendas, project Gantt, budget tracker, A/B test calculator, social analytics, and more. 5 seats included.",
+      "icon": "🏢",
+      "color": "#2563eb",
+      "deviceLimit": 5,
+      "seatsIncluded": 5,
+      "extraSeatPrice": 5,
+      "tools": [
+        "quickinvoice-pro",
+        "client-crm",
+        "pricing-calculator",
+        "freelancer-toolkit",
+        "contract-bundle",
+        "resume-builder",
+        "email-signature-gen",
+        "portfolio-site",
+        "timezone-converter",
+        "markdown-editor",
+        "employee-directory",
+        "meeting-agenda",
+        "gantt-timeline",
+        "receipt-scanner",
+        "budget-tracker",
+        "ab-test-calc",
+        "social-analytics",
+        "pitch-deck",
+        "wireframe-kit",
+        "password-gen-pro",
+        "countdown-timer",
+        "qr-generator"
+      ],
+      "pricing": {
+        "monthly":  { "price": 29,  "wcProductId": null, "stripePriceId": "" },
+        "yearly":   { "price": 249, "wcProductId": null, "stripePriceId": "", "savings": "28%" },
+        "lifetime": { "price": 499, "wcProductId": null, "stripePriceId": "" }
+      }
+    },
+    "enterprise": {
+      "id": "enterprise",
+      "code": "ENT",
+      "name": "Enterprise / All-Access",
+      "tagline": "Everything we make, forever",
+      "description": "All 43 tools + 3 landing page templates + cloud sync + priority support + white-label option (Lifetime). 10 seats included, future API access.",
+      "icon": "⚡",
+      "color": "#1a1a1a",
+      "deviceLimit": 20,
+      "seatsIncluded": 10,
+      "extraSeatPrice": 3,
+      "allTools": true,
+      "perks": [
+        "All 43 tools + 3 landing templates",
+        "Cloud sync included",
+        "Priority email support (24h SLA)",
+        "White-label option (Lifetime tier only)",
+        "Custom branded landing pages",
+        "Future API access"
+      ],
+      "pricing": {
+        "monthly":  { "price": 49,  "wcProductId": null, "stripePriceId": "" },
+        "yearly":   { "price": 399, "wcProductId": null, "stripePriceId": "", "savings": "32%" },
+        "lifetime": { "price": 799, "wcProductId": null, "stripePriceId": "" }
+      }
+    }
+  },
+  "tools": [
+    { "id": "lifeboard-pro", "name": "LifeBoard Pro", "description": "All-in-one personal dashboard with 10+ features", "category": "productivity", "path": "../lifeboard-pro/index.html", "icon": "📊", "color": "#6366f1", "proFeatures": ["unlimited-widgets", "cloud-sync", "themes"] },
+    { "id": "habit-tracker", "name": "Habit Tracker", "description": "Build better habits with daily tracking and streaks", "category": "productivity", "path": "../habit-tracker/index.html", "icon": "📅", "color": "#16a34a", "proFeatures": ["unlimited-habits", "export-csv", "streak-analytics"] },
+    { "id": "student-planner", "name": "Student Planner", "description": "Schedule, assignments, grades, exams in one place", "category": "productivity", "path": "../student-planner/index.html", "icon": "🎓", "color": "#2563eb", "proFeatures": ["unlimited-subjects", "gpa-forecast", "pdf-export"] },
+    { "id": "wedding-planner", "name": "Wedding Planner", "description": "Complete wedding planning dashboard", "category": "productivity", "path": "../wedding-planner/index.html", "icon": "💒", "color": "#b4838d", "proFeatures": ["unlimited-guests", "budget-forecasts", "vendor-manager"] },
+    { "id": "workout-plan", "name": "Workout Plan Builder", "description": "Create routines and track training progress", "category": "productivity", "path": "../workout-plan/index.html", "icon": "💪", "color": "#2ecc71", "proFeatures": ["exercise-library-pro", "progress-charts", "pdf-export"] },
+    { "id": "meeting-agenda", "name": "Meeting Agenda", "description": "Generate professional meeting agendas", "category": "productivity", "path": "../meeting-agenda/index.html", "icon": "📋", "color": "#1a1a1a", "proFeatures": ["unlimited-templates", "branded-export"] },
+    { "id": "meal-planner", "name": "Meal Planner", "description": "Weekly meal planning with shopping lists", "category": "productivity", "path": "../meal-planner/index.html", "icon": "🍽️", "color": "#d97706", "proFeatures": ["recipe-scaling", "nutrition-pro", "pdf-export"] },
+    { "id": "gantt-timeline", "name": "Project Timeline", "description": "Gantt chart for project management", "category": "productivity", "path": "../gantt-timeline/index.html", "icon": "📊", "color": "#0891b2", "proFeatures": ["dependencies", "milestones", "team-view"] },
+    { "id": "mood-tracker", "name": "Mood Tracker", "description": "Track daily mood and emotional patterns", "category": "productivity", "path": "../mood-tracker/index.html", "icon": "😊", "color": "#f59e0b", "proFeatures": ["insights-pro", "export-data", "reminders"] },
+    { "id": "typing-test", "name": "Typing Speed Test", "description": "Measure WPM and accuracy", "category": "productivity", "path": "../typing-test/index.html", "icon": "⌨️", "color": "#1a1a1a", "proFeatures": ["custom-texts", "multi-language", "detailed-stats"] },
+
+    { "id": "budget-tracker", "name": "Budget Tracker", "description": "Income, expenses, and financial overview", "category": "finance", "path": "../budget-tracker/index.html", "icon": "💰", "color": "#16a34a", "proFeatures": ["unlimited-accounts", "recurring", "pdf-reports"] },
+    { "id": "quickinvoice-pro", "name": "Invoice Generator", "description": "Professional invoices with EN/AR support", "category": "finance", "path": "../quickinvoice-pro/index.html", "icon": "🧾", "color": "#6366f1", "proFeatures": ["recurring-invoices", "branded-templates", "client-manager"] },
+    { "id": "client-crm", "name": "Client CRM", "description": "Manage clients with pipeline and kanban", "category": "finance", "path": "../client-crm/index.html", "icon": "👥", "color": "#2563eb", "proFeatures": ["unlimited-clients", "email-sync", "reports"] },
+    { "id": "freelancer-toolkit", "name": "Freelancer Toolkit", "description": "Proposal, contract, and brief templates", "category": "finance", "path": "../freelancer-toolkit/index.html", "icon": "🛠️", "color": "#1a1a1a", "proFeatures": ["premium-templates", "editable-clauses"] },
+    { "id": "contract-bundle", "name": "Contract Bundle", "description": "10 professional legal templates", "category": "finance", "path": "../contract-bundle/index.html", "icon": "📄", "color": "#dc2626", "proFeatures": ["editable-contracts", "watermark-free"] },
+    { "id": "pricing-calculator", "name": "Pricing Calculator", "description": "Calculate freelance rates and pricing", "category": "finance", "path": "../pricing-calculator/index.html", "icon": "💵", "color": "#16a34a", "proFeatures": ["scenarios", "currency-conversion", "pdf-export"] },
+    { "id": "ab-test-calc", "name": "A/B Test Calculator", "description": "Statistical significance for A/B tests", "category": "finance", "path": "../ab-test-calc/index.html", "icon": "🧪", "color": "#9333ea", "proFeatures": ["multi-variant", "bayesian", "reports"] },
+    { "id": "unit-converter", "name": "Unit Converter", "description": "Convert length, weight, temperature, and more", "category": "finance", "path": "../unit-converter/index.html", "icon": "📏", "color": "#0891b2", "proFeatures": ["currency-live", "history-sync"] },
+    { "id": "social-analytics", "name": "Social Media Analytics", "description": "Track engagement across platforms", "category": "finance", "path": "../social-analytics/index.html", "icon": "📈", "color": "#ec4899", "proFeatures": ["unlimited-platforms", "competitor-tracking", "reports"] },
+
+    { "id": "business-card-gen", "name": "Business Card Generator", "description": "Design professional business cards", "category": "design", "path": "../business-card-gen/index.html", "icon": "💳", "color": "#1a1a1a", "proFeatures": ["premium-layouts", "high-res-export"] },
+    { "id": "color-palette-gen", "name": "Color Palette Generator", "description": "Create palettes with harmony rules", "category": "design", "path": "../color-palette-gen/index.html", "icon": "🎨", "color": "#e74c3c", "proFeatures": ["unlimited-saves", "export-formats", "accessibility-check"] },
+    { "id": "email-signature-gen", "name": "Email Signature", "description": "Professional email signatures", "category": "design", "path": "../email-signature-gen/index.html", "icon": "✉️", "color": "#2563eb", "proFeatures": ["html-export", "image-upload", "social-icons"] },
+    { "id": "instagram-templates", "name": "Instagram Templates", "description": "30+ Story templates with live preview", "category": "design", "path": "../instagram-templates/index.html", "icon": "📱", "color": "#ec4899", "proFeatures": ["unlimited-templates", "hd-export", "brand-kit"] },
+    { "id": "portfolio-site", "name": "Portfolio Site Generator", "description": "Build a standalone portfolio site", "category": "design", "path": "../portfolio-site/index.html", "icon": "💼", "color": "#9333ea", "proFeatures": ["premium-themes", "custom-domain-guide"] },
+    { "id": "social-media-kit", "name": "Social Media Kit", "description": "Bio templates, hashtags, and calendar", "category": "design", "path": "../social-media-kit/index.html", "icon": "📲", "color": "#f59e0b", "proFeatures": ["unlimited-bios", "calendar-export"] },
+    { "id": "youtube-thumbnail", "name": "YouTube Thumbnail Kit", "description": "Create high-CTR thumbnails", "category": "design", "path": "../youtube-thumbnail/index.html", "icon": "🎬", "color": "#dc2626", "proFeatures": ["premium-templates", "hd-download", "fonts-library"] },
+    { "id": "pitch-deck", "name": "Pitch Deck", "description": "12-slide startup presentation", "category": "design", "path": "../pitch-deck/index.html", "icon": "📊", "color": "#1a1a1a", "proFeatures": ["premium-layouts", "pdf-export", "brand-kit"] },
+    { "id": "wireframe-kit", "name": "Wireframe Kit", "description": "22 UI components for wireframing", "category": "design", "path": "../wireframe-kit/index.html", "icon": "📐", "color": "#6b7280", "proFeatures": ["unlimited-components", "export-figma"] },
+    { "id": "linkinbio-gen", "name": "Link-in-Bio", "description": "Bio page generator with live preview", "category": "design", "path": "../linkinbio-gen/index.html", "icon": "🔗", "color": "#9333ea", "proFeatures": ["unlimited-links", "analytics", "custom-domain"] },
+
+    { "id": "countdown-timer", "name": "Countdown Timer", "description": "Create countdown pages for launches", "category": "tools", "path": "../countdown-timer/index.html", "icon": "⏰", "color": "#dc2626", "proFeatures": ["unlimited-events", "custom-themes", "embed"] },
+    { "id": "qr-generator", "name": "QR Code Generator", "description": "URL, WiFi, email, phone QR codes", "category": "tools", "path": "../qr-generator/index.html", "icon": "📱", "color": "#1a1a1a", "proFeatures": ["logo-embed", "color-custom", "hd-export"] },
+    { "id": "markdown-editor", "name": "Markdown Editor", "description": "Live preview markdown editor", "category": "tools", "path": "../markdown-editor/index.html", "icon": "📝", "color": "#0891b2", "proFeatures": ["syntax-themes", "pdf-export", "templates"] },
+    { "id": "timezone-converter", "name": "Timezone Converter", "description": "World clock and meeting planner", "category": "tools", "path": "../timezone-converter/index.html", "icon": "🌍", "color": "#2563eb", "proFeatures": ["unlimited-zones", "reminders"] },
+    { "id": "password-gen-pro", "name": "Password Generator", "description": "Secure passwords with history", "category": "tools", "path": "../password-gen-pro/index.html", "icon": "🔐", "color": "#1a1a1a", "proFeatures": ["password-vault", "breach-check", "2fa-codes"] },
+    { "id": "receipt-scanner", "name": "Receipt Generator", "description": "Professional receipt templates", "category": "tools", "path": "../receipt-scanner/index.html", "icon": "🧾", "color": "#16a34a", "proFeatures": ["unlimited-templates", "logo-embed", "bulk-gen"] },
+    { "id": "fitness-tracker", "name": "Fitness Tracker", "description": "Workouts, body stats, challenges", "category": "tools", "path": "../fitness-tracker/index.html", "icon": "🏋️", "color": "#16a34a", "proFeatures": ["workout-library-pro", "progress-charts", "nutrition"] },
+
+    { "id": "prompt-vault-pro", "name": "PromptVault Pro", "description": "150+ AI prompts in 10 categories", "category": "content", "path": "../prompt-vault-pro/index.html", "icon": "🤖", "color": "#8b5cf6", "proFeatures": ["unlimited-prompts", "custom-categories", "api-ready"] },
+    { "id": "recipe-box", "name": "Recipe Box", "description": "Recipe collection with shopping list", "category": "content", "path": "../recipe-box/index.html", "icon": "🍳", "color": "#d97706", "proFeatures": ["unlimited-recipes", "meal-scaling", "nutrition"] },
+    { "id": "resume-builder", "name": "Resume Builder", "description": "Professional CV generator", "category": "content", "path": "../resume-builder/index.html", "icon": "📄", "color": "#1a1a1a", "proFeatures": ["premium-templates", "pdf-watermark-free", "ats-check"] },
+    { "id": "employee-directory", "name": "Employee Directory", "description": "Manage company employee records", "category": "content", "path": "../employee-directory/index.html", "icon": "👥", "color": "#2563eb", "proFeatures": ["unlimited-employees", "org-chart", "csv-export"] },
+
+    { "id": "arabland-saas", "name": "Nexus SaaS Landing", "description": "Modern SaaS startup landing page", "category": "landing", "path": "../arabland-pro/saas-startup/index.html", "icon": "🚀", "color": "#6366f1", "proFeatures": ["ar-version", "source-files"] },
+    { "id": "arabland-agency", "name": "Noir Agency Landing", "description": "Creative digital agency landing page", "category": "landing", "path": "../arabland-pro/agency-portfolio/index.html", "icon": "🎨", "color": "#f59e0b", "proFeatures": ["ar-version", "source-files"] },
+    { "id": "arabland-restaurant", "name": "Saffron Restaurant Landing", "description": "Fine dining restaurant landing page", "category": "landing", "path": "../arabland-pro/restaurant/index.html", "icon": "🍽️", "color": "#d97706", "proFeatures": ["ar-version", "source-files"] }
+  ],
+  "categories": [
+    { "id": "all", "name": "All Tools", "icon": "⚡" },
+    { "id": "productivity", "name": "Productivity", "icon": "📊" },
+    { "id": "finance", "name": "Finance & Business", "icon": "💰" },
+    { "id": "design", "name": "Design & Creative", "icon": "🎨" },
+    { "id": "tools", "name": "Tools & Utilities", "icon": "🛠️" },
+    { "id": "content", "name": "Content & Templates", "icon": "📝" },
+    { "id": "landing", "name": "Landing Pages", "icon": "🚀" }
+  ]
+}

@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A/B Test Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #f5f5f3;
+  --card: #fff;
+  --heading: #1a1a1a;
+  --text: #555;
+  --text-light: #888;
+  --border: #e8e8e6;
+  --accent: #2563eb;
+  --accent-light: #dbeafe;
+  --green: #16a34a;
+  --green-light: #dcfce7;
+  --red: #dc2626;
+  --red-light: #fee2e2;
+  --orange: #ea580c;
+  --orange-light: #fff7ed;
+  --radius: 12px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-lg: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+body {
+  font-family: 'Sora', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--heading);
+  letter-spacing: -0.5px;
+}
+
+header p {
+  font-size: 14px;
+  color: var(--text-light);
+  margin-top: 6px;
+  font-weight: 300;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--card);
+  border-radius: 10px;
+  padding: 4px;
+  margin-bottom: 32px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border: none;
+  background: transparent;
+  font-family: 'Sora', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-light);
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.tab-btn.active {
+  background: var(--heading);
+  color: #fff;
+}
+
+.tab-btn:hover:not(.active) {
+  color: var(--heading);
+  background: var(--bg);
+}
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* Cards */
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 28px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+
+.card + .card { margin-top: 20px; }
+
+.card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--heading);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-title .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* Variant columns */
+.variants-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 640px) {
+  .variants-grid { grid-template-columns: 1fr; }
+}
+
+.variant-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  position: relative;
+}
+
+.variant-card.winner {
+  border-color: var(--green);
+  box-shadow: 0 0 0 1px var(--green), var(--shadow-lg);
+}
+
+.variant-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.variant-label .badge {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.variant-a .variant-label { color: var(--accent); }
+.variant-a .badge { background: var(--accent-light); color: var(--accent); }
+.variant-b .variant-label { color: #7c3aed; }
+.variant-b .badge { background: #ede9fe; color: #7c3aed; }
+
+.winner-badge {
+  position: absolute;
+  top: -10px;
+  right: 16px;
+  background: var(--green);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 12px;
+  border-radius: 20px;
+  display: none;
+  align-items: center;
+  gap: 4px;
+}
+
+.variant-card.winner .winner-badge { display: flex; }
+
+/* Form controls */
+.field { margin-bottom: 16px; }
+
+.field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-light);
+  margin-bottom: 6px;
+}
+
+.field input, .field select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: 'Sora', sans-serif;
+  font-size: 14px;
+  color: var(--heading);
+  background: var(--bg);
+  transition: border-color 0.2s;
+  outline: none;
+}
+
+.field input:focus, .field select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+}
+
+.field input[readonly] {
+  background: #fafaf9;
+  color: var(--text);
+  cursor: default;
+}
+
+.conversion-rate-display {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--heading);
+  text-align: center;
+  padding: 12px 0 4px;
+}
+
+.conversion-rate-display small {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-light);
+  display: block;
+  margin-top: 2px;
+}
+
+/* Confidence selector */
+.confidence-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.confidence-row label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.confidence-pills {
+  display: flex;
+  gap: 4px;
+}
+
+.confidence-pill {
+  padding: 6px 16px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--card);
+  font-family: 'Sora', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.confidence-pill.active {
+  background: var(--heading);
+  color: #fff;
+  border-color: var(--heading);
+}
+
+.confidence-pill:hover:not(.active) {
+  border-color: var(--heading);
+}
+
+/* Calculate button */
+.btn-calculate {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  background: var(--heading);
+  color: #fff;
+  font-family: 'Sora', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 8px;
+}
+
+.btn-calculate:hover {
+  background: #333;
+  box-shadow: var(--shadow-lg);
+}
+
+/* Results */
+.results-section {
+  display: none;
+  margin-top: 24px;
+}
+
+.results-section.visible { display: block; }
+
+.result-banner {
+  padding: 20px 24px;
+  border-radius: var(--radius);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.result-banner.significant {
+  background: var(--green-light);
+  border: 1px solid #bbf7d0;
+}
+
+.result-banner.not-significant {
+  background: var(--orange-light);
+  border: 1px solid #fed7aa;
+}
+
+.result-banner.warning {
+  background: var(--red-light);
+  border: 1px solid #fecaca;
+}
+
+.result-banner .icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.result-banner.significant .icon { background: var(--green); color: #fff; }
+.result-banner.not-significant .icon { background: var(--orange); color: #fff; }
+.result-banner.warning .icon { background: var(--red); color: #fff; }
+
+.result-banner .text h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--heading);
+  margin-bottom: 2px;
+}
+
+.result-banner .text p {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+/* Stats grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 640px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+.stat-box {
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+}
+
+.stat-box .stat-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.stat-box .stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--heading);
+}
+
+.stat-box .stat-value.positive { color: var(--green); }
+.stat-box .stat-value.negative { color: var(--red); }
+
+/* Bar chart */
+.bar-chart-section { margin-bottom: 20px; }
+
+.bar-chart-section h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--heading);
+  margin-bottom: 14px;
+}
+
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.bar-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+  width: 80px;
+  flex-shrink: 0;
+}
+
+.bar-track {
+  flex: 1;
+  height: 32px;
+  background: var(--bg);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 8px;
+  transition: width 0.6s ease;
+  display: flex;
+  align-items: center;
+  padding-left: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  min-width: 50px;
+}
+
+.bar-fill.variant-a-bar { background: var(--accent); }
+.bar-fill.variant-b-bar { background: #7c3aed; }
+
+.bar-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--heading);
+  width: 60px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* Plain English */
+.explanation-box {
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.explanation-box h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--heading);
+  margin-bottom: 8px;
+}
+
+.explanation-box p {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.7;
+}
+
+/* Copy button */
+.btn-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+  font-family: 'Sora', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-copy:hover {
+  border-color: var(--heading);
+  color: var(--heading);
+}
+
+.btn-copy.copied {
+  border-color: var(--green);
+  color: var(--green);
+}
+
+/* Sample Size Calculator */
+.sample-result {
+  display: none;
+  margin-top: 20px;
+}
+
+.sample-result.visible { display: block; }
+
+.sample-result-value {
+  text-align: center;
+  padding: 24px;
+  background: var(--bg);
+  border-radius: 10px;
+}
+
+.sample-result-value .big-number {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--heading);
+}
+
+.sample-result-value .big-number small {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-light);
+}
+
+.sample-result-value p {
+  font-size: 13px;
+  color: var(--text);
+  margin-top: 8px;
+}
+
+/* History */
+.history-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-light);
+  font-size: 13px;
+}
+
+.history-item {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.history-item:last-child { border-bottom: none; }
+
+.history-info { flex: 1; min-width: 0; }
+
+.history-info .history-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--heading);
+  margin-bottom: 2px;
+}
+
+.history-info .history-meta {
+  font-size: 11px;
+  color: var(--text-light);
+}
+
+.history-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  flex-shrink: 0;
+}
+
+.history-badge.sig { background: var(--green-light); color: var(--green); }
+.history-badge.not-sig { background: var(--orange-light); color: var(--orange); }
+
+.history-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.btn-small {
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--card);
+  font-family: 'Sora', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-small:hover { border-color: var(--heading); color: var(--heading); }
+.btn-small.danger:hover { border-color: var(--red); color: var(--red); }
+
+.btn-clear-history {
+  margin-top: 16px;
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+  font-family: 'Sora', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-clear-history:hover { border-color: var(--red); color: var(--red); }
+
+/* Footer */
+.footer {
+  text-align: center;
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-light);
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>A/B Test Calculator</h1>
+    <p>Statistical significance testing for conversion rate experiments</p>
+  </header>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="calculator">Calculator</button>
+    <button class="tab-btn" data-tab="sample-size">Sample Size</button>
+    <button class="tab-btn" data-tab="history">History</button>
+  </div>
+
+  <!-- Calculator Tab -->
+  <div id="tab-calculator" class="tab-panel active">
+
+    <!-- Confidence selector -->
+    <div class="card" style="margin-bottom: 20px;">
+      <div class="confidence-row">
+        <label>Confidence Level</label>
+        <div class="confidence-pills">
+          <button class="confidence-pill" data-confidence="0.90">90%</button>
+          <button class="confidence-pill active" data-confidence="0.95">95%</button>
+          <button class="confidence-pill" data-confidence="0.99">99%</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Variant inputs -->
+    <div class="variants-grid">
+      <!-- Variant A -->
+      <div class="variant-card variant-a" id="card-a">
+        <div class="winner-badge"><span>&#10003;</span> Winner</div>
+        <div class="variant-label">
+          Variant A <span class="badge">Control</span>
+        </div>
+        <div class="field">
+          <label>Visitors</label>
+          <input type="number" id="visitors-a" placeholder="e.g. 10000" min="0">
+        </div>
+        <div class="field">
+          <label>Conversions</label>
+          <input type="number" id="conversions-a" placeholder="e.g. 500" min="0">
+        </div>
+        <div class="conversion-rate-display">
+          <span id="rate-a">--%</span>
+          <small>Conversion Rate</small>
+        </div>
+      </div>
+
+      <!-- Variant B -->
+      <div class="variant-card variant-b" id="card-b">
+        <div class="winner-badge"><span>&#10003;</span> Winner</div>
+        <div class="variant-label">
+          Variant B <span class="badge">Test</span>
+        </div>
+        <div class="field">
+          <label>Visitors</label>
+          <input type="number" id="visitors-b" placeholder="e.g. 10000" min="0">
+        </div>
+        <div class="field">
+          <label>Conversions</label>
+          <input type="number" id="conversions-b" placeholder="e.g. 550" min="0">
+        </div>
+        <div class="conversion-rate-display">
+          <span id="rate-b">--%</span>
+          <small>Conversion Rate</small>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 20px;">
+      <button class="btn-calculate" id="btn-calc" onclick="calculate()">Calculate Results</button>
+    </div>
+
+    <!-- Results -->
+    <div class="results-section" id="results-section">
+      <!-- Banner -->
+      <div class="result-banner" id="result-banner">
+        <div class="icon" id="result-icon"></div>
+        <div class="text">
+          <h3 id="result-title"></h3>
+          <p id="result-subtitle"></p>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="card">
+        <div class="stats-grid">
+          <div class="stat-box">
+            <div class="stat-label">Rate A</div>
+            <div class="stat-value" id="stat-rate-a">--</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Rate B</div>
+            <div class="stat-value" id="stat-rate-b">--</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Uplift</div>
+            <div class="stat-value" id="stat-uplift">--</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">P-Value</div>
+            <div class="stat-value" id="stat-pvalue">--</div>
+          </div>
+        </div>
+
+        <!-- Bar chart -->
+        <div class="bar-chart-section">
+          <h4>Conversion Rate Comparison</h4>
+          <div class="bar-row">
+            <span class="bar-label">Variant A</span>
+            <div class="bar-track">
+              <div class="bar-fill variant-a-bar" id="bar-a" style="width: 0%"></div>
+            </div>
+            <span class="bar-value" id="bar-val-a">--</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">Variant B</span>
+            <div class="bar-track">
+              <div class="bar-fill variant-b-bar" id="bar-b" style="width: 0%"></div>
+            </div>
+            <span class="bar-value" id="bar-val-b">--</span>
+          </div>
+        </div>
+
+        <!-- Plain English -->
+        <div class="explanation-box">
+          <h4>What does this mean?</h4>
+          <p id="explanation-text"></p>
+        </div>
+
+        <!-- Copy -->
+        <button class="btn-copy" id="btn-copy" onclick="copyResults()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          Copy Results
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sample Size Tab -->
+  <div id="tab-sample-size" class="tab-panel">
+    <div class="card">
+      <div class="card-title">
+        <span class="dot" style="background: var(--accent);"></span>
+        Sample Size Calculator
+      </div>
+      <p style="font-size: 13px; color: var(--text); margin-bottom: 20px;">
+        Estimate how many visitors per variant you need before running your test.
+      </p>
+      <div class="variants-grid">
+        <div class="field">
+          <label>Baseline Conversion Rate (%)</label>
+          <input type="number" id="ss-baseline" placeholder="e.g. 5" min="0.01" max="100" step="0.1">
+        </div>
+        <div class="field">
+          <label>Minimum Detectable Effect (%)</label>
+          <input type="number" id="ss-mde" placeholder="e.g. 10" min="0.1" max="100" step="0.1">
+        </div>
+      </div>
+      <div class="confidence-row" style="margin-top: 8px;">
+        <label>Confidence Level</label>
+        <div class="confidence-pills">
+          <button class="confidence-pill ss-conf" data-confidence="0.90">90%</button>
+          <button class="confidence-pill ss-conf active" data-confidence="0.95">95%</button>
+          <button class="confidence-pill ss-conf" data-confidence="0.99">99%</button>
+        </div>
+      </div>
+      <div class="confidence-row">
+        <label>Statistical Power</label>
+        <div class="confidence-pills">
+          <button class="confidence-pill ss-power active" data-power="0.80">80%</button>
+          <button class="confidence-pill ss-power" data-power="0.90">90%</button>
+        </div>
+      </div>
+      <button class="btn-calculate" onclick="calcSampleSize()">Calculate Sample Size</button>
+
+      <div class="sample-result" id="sample-result">
+        <div class="sample-result-value">
+          <div class="big-number" id="ss-result-number">--</div>
+          <p id="ss-result-text"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- History Tab -->
+  <div id="tab-history" class="tab-panel">
+    <div class="card">
+      <div class="card-title">
+        <span class="dot" style="background: var(--accent);"></span>
+        Test History
+      </div>
+      <div id="history-list"></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    A/B Test Calculator &middot; Two-tailed Z-test for proportions
+  </div>
+</div>
+
+<script>
+// ===== State =====
+let selectedConfidence = 0.95;
+let ssConfidence = 0.95;
+let ssPower = 0.80;
+let lastResult = null;
+
+// ===== Tab switching =====
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    if (btn.dataset.tab === 'history') renderHistory();
+  });
+});
+
+// ===== Confidence pills (calculator) =====
+document.querySelectorAll('.confidence-pill:not(.ss-conf):not(.ss-power)').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('.confidence-pill:not(.ss-conf):not(.ss-power)').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+    selectedConfidence = parseFloat(pill.dataset.confidence);
+  });
+});
+
+// ===== Confidence pills (sample size) =====
+document.querySelectorAll('.ss-conf').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('.ss-conf').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+    ssConfidence = parseFloat(pill.dataset.confidence);
+  });
+});
+
+document.querySelectorAll('.ss-power').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('.ss-power').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+    ssPower = parseFloat(pill.dataset.power);
+  });
+});
+
+// ===== Live conversion rate =====
+['a', 'b'].forEach(v => {
+  ['visitors-' + v, 'conversions-' + v].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => updateRate(v));
+  });
+});
+
+function updateRate(variant) {
+  const visitors = parseInt(document.getElementById('visitors-' + variant).value) || 0;
+  const conversions = parseInt(document.getElementById('conversions-' + variant).value) || 0;
+  const el = document.getElementById('rate-' + variant);
+  if (visitors > 0 && conversions >= 0) {
+    el.textContent = ((conversions / visitors) * 100).toFixed(2) + '%';
+  } else {
+    el.textContent = '--%';
+  }
+}
+
+// ===== Statistics =====
+
+// Standard normal CDF approximation (Abramowitz & Stegun)
+function normalCDF(x) {
+  const a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741;
+  const a4 = -1.453152027, a5 = 1.061405429, p = 0.3275911;
+  const sign = x < 0 ? -1 : 1;
+  x = Math.abs(x) / Math.SQRT2;
+  const t = 1.0 / (1.0 + p * x);
+  const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+  return 0.5 * (1.0 + sign * y);
+}
+
+// Inverse normal CDF (rational approximation)
+function normalInvCDF(p) {
+  if (p <= 0) return -Infinity;
+  if (p >= 1) return Infinity;
+  if (p < 0.5) return -normalInvCDF(1 - p);
+  // Rational approximation for upper half
+  const a = [-3.969683028665376e+01, 2.209460984245205e+02,
+             -2.759285104469687e+02, 1.383577518672690e+02,
+             -3.066479806614716e+01, 2.506628277459239e+00];
+  const b = [-5.447609879822406e+01, 1.615858368580409e+02,
+             -1.556989798598866e+02, 6.680131188771972e+01,
+             -1.328068155288572e+01];
+  const c = [-7.784894002430293e-03, -3.223964580411365e-01,
+             -2.400758277161838e+00, -2.549732539343734e+00,
+              4.374664141464968e+00, 2.938163982698783e+00];
+  const d = [7.784695709041462e-03, 3.224671290700398e-01,
+             2.445134137142996e+00, 3.754408661907416e+00];
+  const pLow = 0.02425, pHigh = 1 - pLow;
+  let q, r;
+  if (p < pLow) {
+    q = Math.sqrt(-2 * Math.log(p));
+    return (((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) /
+           ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);
+  } else if (p <= pHigh) {
+    q = p - 0.5;
+    r = q * q;
+    return (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q /
+           (((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1);
+  } else {
+    q = Math.sqrt(-2 * Math.log(1 - p));
+    return -(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) /
+            ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);
+  }
+}
+
+// Z-test for two proportions
+function zTest(n1, c1, n2, c2) {
+  const p1 = c1 / n1;
+  const p2 = c2 / n2;
+  const pPool = (c1 + c2) / (n1 + n2);
+  const se = Math.sqrt(pPool * (1 - pPool) * (1/n1 + 1/n2));
+  if (se === 0) return { z: 0, pValue: 1 };
+  const z = (p2 - p1) / se;
+  const pValue = 2 * (1 - normalCDF(Math.abs(z))); // two-tailed
+  return { z, pValue };
+}
+
+// ===== Main calculation =====
+function calculate() {
+  const vA = parseInt(document.getElementById('visitors-a').value) || 0;
+  const cA = parseInt(document.getElementById('conversions-a').value) || 0;
+  const vB = parseInt(document.getElementById('visitors-b').value) || 0;
+  const cB = parseInt(document.getElementById('conversions-b').value) || 0;
+
+  // Validation
+  if (vA <= 0 || vB <= 0) return alert('Please enter visitors for both variants.');
+  if (cA < 0 || cB < 0) return alert('Conversions cannot be negative.');
+  if (cA > vA) return alert('Conversions for Variant A cannot exceed visitors.');
+  if (cB > vB) return alert('Conversions for Variant B cannot exceed visitors.');
+
+  const rateA = cA / vA;
+  const rateB = cB / vB;
+  const { z, pValue } = zTest(vA, cA, vB, cB);
+  const isSignificant = pValue < (1 - selectedConfidence);
+  const uplift = rateA > 0 ? ((rateB - rateA) / rateA) * 100 : 0;
+  const minSample = 100;
+  const tooSmall = vA < minSample || vB < minSample;
+  const winnerIsB = rateB > rateA;
+
+  // Store result
+  lastResult = { vA, cA, vB, cB, rateA, rateB, pValue, z, isSignificant, uplift, tooSmall, winnerIsB, confidence: selectedConfidence };
+
+  // Update variant card styles
+  document.getElementById('card-a').classList.toggle('winner', isSignificant && !winnerIsB);
+  document.getElementById('card-b').classList.toggle('winner', isSignificant && winnerIsB);
+
+  // Show results
+  const section = document.getElementById('results-section');
+  section.classList.add('visible');
+
+  // Banner
+  const banner = document.getElementById('result-banner');
+  const icon = document.getElementById('result-icon');
+  const title = document.getElementById('result-title');
+  const subtitle = document.getElementById('result-subtitle');
+
+  banner.className = 'result-banner';
+  if (tooSmall) {
+    banner.classList.add('warning');
+    icon.textContent = '!';
+    title.textContent = 'Not Enough Data';
+    subtitle.textContent = 'Each variant needs at least 100 visitors for a reliable test. Collect more data before drawing conclusions.';
+  } else if (isSignificant) {
+    banner.classList.add('significant');
+    icon.textContent = '\u2713';
+    const winner = winnerIsB ? 'Variant B' : 'Variant A';
+    title.textContent = winner + ' is the Winner';
+    subtitle.textContent = 'The difference is statistically significant at the ' + (selectedConfidence * 100) + '% confidence level.';
+  } else {
+    banner.classList.add('not-significant');
+    icon.textContent = '~';
+    title.textContent = 'No Significant Difference';
+    subtitle.textContent = 'The observed difference is not statistically significant at the ' + (selectedConfidence * 100) + '% confidence level. Consider running the test longer.';
+  }
+
+  // Stats
+  document.getElementById('stat-rate-a').textContent = (rateA * 100).toFixed(2) + '%';
+  document.getElementById('stat-rate-b').textContent = (rateB * 100).toFixed(2) + '%';
+
+  const upliftEl = document.getElementById('stat-uplift');
+  upliftEl.textContent = (uplift >= 0 ? '+' : '') + uplift.toFixed(2) + '%';
+  upliftEl.className = 'stat-value ' + (uplift >= 0 ? 'positive' : 'negative');
+
+  document.getElementById('stat-pvalue').textContent = pValue < 0.0001 ? '<0.0001' : pValue.toFixed(4);
+
+  // Bar chart
+  const maxRate = Math.max(rateA, rateB, 0.001);
+  const scaleA = (rateA / maxRate) * 100;
+  const scaleB = (rateB / maxRate) * 100;
+  document.getElementById('bar-a').style.width = Math.max(scaleA, 5) + '%';
+  document.getElementById('bar-b').style.width = Math.max(scaleB, 5) + '%';
+  document.getElementById('bar-val-a').textContent = (rateA * 100).toFixed(2) + '%';
+  document.getElementById('bar-val-b').textContent = (rateB * 100).toFixed(2) + '%';
+
+  // Explanation
+  const expEl = document.getElementById('explanation-text');
+  if (tooSmall) {
+    expEl.textContent = 'Your sample sizes are too small to draw reliable conclusions. Variant A has ' + vA.toLocaleString() + ' visitors and Variant B has ' + vB.toLocaleString() + ' visitors. We recommend at least 100 visitors per variant, though larger samples will give more reliable results. Continue collecting data and re-run the test.';
+  } else if (isSignificant) {
+    const winner = winnerIsB ? 'B' : 'A';
+    const loser = winnerIsB ? 'A' : 'B';
+    const winRate = winnerIsB ? rateB : rateA;
+    const loseRate = winnerIsB ? rateA : rateB;
+    const absLift = Math.abs(uplift);
+    expEl.textContent = 'Variant ' + winner + ' converts at ' + (winRate * 100).toFixed(2) + '%, compared to Variant ' + loser + '\'s ' + (loseRate * 100).toFixed(2) + '%. That is a relative improvement of ' + absLift.toFixed(2) + '%. With a p-value of ' + (pValue < 0.0001 ? 'less than 0.0001' : pValue.toFixed(4)) + ', there is less than a ' + ((1 - selectedConfidence) * 100).toFixed(0) + '% chance this difference occurred by random chance. You can confidently implement Variant ' + winner + '.';
+  } else {
+    expEl.textContent = 'Variant A converts at ' + (rateA * 100).toFixed(2) + '% and Variant B converts at ' + (rateB * 100).toFixed(2) + '%. The p-value is ' + pValue.toFixed(4) + ', which means we cannot rule out that this difference happened by chance. The test has not reached statistical significance at the ' + (selectedConfidence * 100) + '% confidence level. Consider running the test longer or increasing traffic to both variants.';
+  }
+
+  // Save to history
+  saveToHistory();
+
+  // Scroll to results
+  section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ===== Copy results =====
+function copyResults() {
+  if (!lastResult) return;
+  const r = lastResult;
+  const lines = [
+    'A/B Test Results',
+    '================',
+    '',
+    'Variant A (Control): ' + (r.rateA * 100).toFixed(2) + '% (' + r.cA.toLocaleString() + '/' + r.vA.toLocaleString() + ')',
+    'Variant B (Test):    ' + (r.rateB * 100).toFixed(2) + '% (' + r.cB.toLocaleString() + '/' + r.vB.toLocaleString() + ')',
+    '',
+    'Relative Improvement: ' + (r.uplift >= 0 ? '+' : '') + r.uplift.toFixed(2) + '%',
+    'P-Value: ' + (r.pValue < 0.0001 ? '<0.0001' : r.pValue.toFixed(4)),
+    'Confidence Level: ' + (r.confidence * 100) + '%',
+    'Statistically Significant: ' + (r.isSignificant ? 'Yes' : 'No'),
+    '',
+    r.tooSmall ? 'Warning: Sample size too small for reliable results.' :
+      (r.isSignificant ? 'Winner: Variant ' + (r.winnerIsB ? 'B' : 'A') : 'No significant winner detected.')
+  ];
+  navigator.clipboard.writeText(lines.join('\n')).then(() => {
+    const btn = document.getElementById('btn-copy');
+    btn.classList.add('copied');
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Copied';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy Results';
+    }, 2000);
+  });
+}
+
+// ===== Sample Size Calculator =====
+function calcSampleSize() {
+  const baselinePercent = parseFloat(document.getElementById('ss-baseline').value);
+  const mdePercent = parseFloat(document.getElementById('ss-mde').value);
+
+  if (!baselinePercent || baselinePercent <= 0 || baselinePercent >= 100) return alert('Enter a valid baseline conversion rate (0-100%).');
+  if (!mdePercent || mdePercent <= 0) return alert('Enter a valid minimum detectable effect (>0%).');
+
+  const p1 = baselinePercent / 100;
+  const relativeEffect = mdePercent / 100;
+  const p2 = p1 * (1 + relativeEffect);
+
+  if (p2 >= 1) return alert('The effect size would result in a conversion rate over 100%. Please use a smaller MDE.');
+
+  const alpha = 1 - ssConfidence;
+  const zAlpha = normalInvCDF(1 - alpha / 2);
+  const zBeta = normalInvCDF(ssPower);
+
+  // Sample size formula for two proportions
+  const pAvg = (p1 + p2) / 2;
+  const numerator = Math.pow(zAlpha * Math.sqrt(2 * pAvg * (1 - pAvg)) + zBeta * Math.sqrt(p1 * (1 - p1) + p2 * (1 - p2)), 2);
+  const denominator = Math.pow(p2 - p1, 2);
+  const n = Math.ceil(numerator / denominator);
+
+  document.getElementById('ss-result-number').innerHTML = n.toLocaleString() + ' <small>per variant</small>';
+  document.getElementById('ss-result-text').textContent =
+    'You need ' + n.toLocaleString() + ' visitors in each variant (' + (n * 2).toLocaleString() + ' total) to detect a ' + mdePercent + '% relative change from a ' + baselinePercent + '% baseline with ' + (ssConfidence * 100) + '% confidence and ' + (ssPower * 100) + '% power.';
+
+  const result = document.getElementById('sample-result');
+  result.classList.add('visible');
+  result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ===== History =====
+function getHistory() {
+  try { return JSON.parse(localStorage.getItem('ab_test_history') || '[]'); }
+  catch { return []; }
+}
+
+function saveToHistory() {
+  if (!lastResult) return;
+  const r = lastResult;
+  const history = getHistory();
+  history.unshift({
+    id: Date.now(),
+    date: new Date().toISOString(),
+    vA: r.vA, cA: r.cA, vB: r.vB, cB: r.cB,
+    rateA: r.rateA, rateB: r.rateB,
+    pValue: r.pValue, uplift: r.uplift,
+    isSignificant: r.isSignificant,
+    winnerIsB: r.winnerIsB,
+    confidence: r.confidence
+  });
+  // Keep last 50 entries
+  if (history.length > 50) history.length = 50;
+  localStorage.setItem('ab_test_history', JSON.stringify(history));
+}
+
+function renderHistory() {
+  const list = document.getElementById('history-list');
+  const history = getHistory();
+
+  if (history.length === 0) {
+    list.innerHTML = '<div class="history-empty">No tests recorded yet. Run a test to see it here.</div>';
+    return;
+  }
+
+  let html = '';
+  history.forEach((h, i) => {
+    const date = new Date(h.date);
+    const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    const winner = h.isSignificant ? ('Variant ' + (h.winnerIsB ? 'B' : 'A') + ' won') : 'No winner';
+
+    html += '<div class="history-item">' +
+      '<div class="history-info">' +
+        '<div class="history-title">' + (h.rateA * 100).toFixed(2) + '% vs ' + (h.rateB * 100).toFixed(2) + '% &middot; ' + (h.uplift >= 0 ? '+' : '') + h.uplift.toFixed(1) + '% uplift</div>' +
+        '<div class="history-meta">' + dateStr + ' at ' + timeStr + ' &middot; ' + (h.vA + h.vB).toLocaleString() + ' total visitors &middot; p=' + (h.pValue < 0.0001 ? '<.0001' : h.pValue.toFixed(4)) + '</div>' +
+      '</div>' +
+      '<span class="history-badge ' + (h.isSignificant ? 'sig' : 'not-sig') + '">' + winner + '</span>' +
+      '<div class="history-actions">' +
+        '<button class="btn-small" onclick="loadHistory(' + i + ')">Load</button>' +
+        '<button class="btn-small danger" onclick="deleteHistory(' + i + ')">Del</button>' +
+      '</div>' +
+    '</div>';
+  });
+
+  html += '<button class="btn-clear-history" onclick="clearHistory()">Clear All History</button>';
+  list.innerHTML = html;
+}
+
+function loadHistory(index) {
+  const history = getHistory();
+  if (!history[index]) return;
+  const h = history[index];
+
+  document.getElementById('visitors-a').value = h.vA;
+  document.getElementById('conversions-a').value = h.cA;
+  document.getElementById('visitors-b').value = h.vB;
+  document.getElementById('conversions-b').value = h.cB;
+  updateRate('a');
+  updateRate('b');
+
+  // Set confidence
+  selectedConfidence = h.confidence || 0.95;
+  document.querySelectorAll('.confidence-pill:not(.ss-conf):not(.ss-power)').forEach(p => {
+    p.classList.toggle('active', parseFloat(p.dataset.confidence) === selectedConfidence);
+  });
+
+  // Switch to calculator tab
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelector('[data-tab="calculator"]').classList.add('active');
+  document.getElementById('tab-calculator').classList.add('active');
+
+  calculate();
+}
+
+function deleteHistory(index) {
+  const history = getHistory();
+  history.splice(index, 1);
+  localStorage.setItem('ab_test_history', JSON.stringify(history));
+  renderHistory();
+}
+
+function clearHistory() {
+  if (confirm('Clear all test history?')) {
+    localStorage.removeItem('ab_test_history');
+    renderHistory();
+  }
+}
+</script>
+</body>
+</html>

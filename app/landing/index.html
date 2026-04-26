@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LifeHub Pro Bundle - 43 Tools. 1 Price. Forever.</title>
+<meta name="description" content="The complete productivity suite for freelancers and creators. 43 premium tools for a one-time $49 launch price. No subscriptions. No limits.">
+<meta property="og:title" content="LifeHub Pro Bundle - 43 Tools. 1 Price. Forever.">
+<meta property="og:description" content="The complete productivity suite. 43 tools for $49 — launch price.">
+<meta name="theme-color" content="#0a0a0b">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0b;--surface:#111113;--card:#16161a;--border:rgba(255,255,255,0.08);--text:rgba(255,255,255,0.7);--text2:rgba(255,255,255,0.45);--text3:rgba(255,255,255,0.3);--heading:#fff;--accent:#f59e0b;--accent2:#dc2626;--accent-g:linear-gradient(135deg,#f59e0b,#dc2626);--green:#10b981}
+html{scroll-behavior:smooth}
+body{font-family:'Sora',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+
+/* ── Announcement Bar ── */
+.announce{background:var(--accent-g);color:#fff;padding:10px 20px;text-align:center;font-size:0.78rem;font-weight:600;letter-spacing:0.01em}
+.announce strong{font-weight:700}
+
+/* ── Navigation ── */
+.nav{position:sticky;top:0;background:rgba(10,10,11,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:18px 0;z-index:100}
+.nav-inner{display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:1.1rem;font-weight:800;color:var(--heading);display:flex;align-items:center;gap:10px;letter-spacing:-0.02em}
+.logo::before{content:'';width:10px;height:10px;background:var(--accent);border-radius:50%;box-shadow:0 0 20px var(--accent)}
+.nav-links{display:flex;gap:28px;font-size:0.82rem}
+.nav-links a{color:var(--text2);transition:color 0.2s}
+.nav-links a:hover{color:var(--heading)}
+.nav-cta{padding:10px 22px;background:var(--heading);color:#000;border-radius:99px;font-weight:600;font-size:0.8rem;transition:all 0.2s}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(255,255,255,0.15)}
+
+/* ── Hero ── */
+.hero{padding:90px 0 80px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:800px;height:800px;background:radial-gradient(circle,rgba(245,158,11,0.15),transparent 60%);filter:blur(80px);pointer-events:none}
+.hero-inner{position:relative;z-index:1}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 18px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);border-radius:99px;color:var(--accent);font-size:0.72rem;font-weight:600;letter-spacing:0.05em;margin-bottom:28px}
+.hero-badge::before{content:'';width:6px;height:6px;background:var(--accent);border-radius:50%;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.6;transform:scale(1.5)}}
+.hero h1{font-size:clamp(2.4rem,6vw,4.8rem);font-weight:800;color:var(--heading);letter-spacing:-0.04em;line-height:1.05;margin-bottom:24px;max-width:900px;margin-inline:auto}
+.hero h1 .grad{background:var(--accent-g);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:1.15rem;color:var(--text2);max-width:560px;margin:0 auto 40px;line-height:1.7}
+.hero-cta{display:flex;gap:12px;justify-content:center;margin-bottom:20px;flex-wrap:wrap}
+.btn-primary{padding:16px 36px;background:var(--accent-g);color:#fff;border-radius:99px;font-weight:700;font-size:0.95rem;transition:all 0.25s;display:inline-flex;align-items:center;gap:8px;border:none;cursor:pointer;font-family:inherit;box-shadow:0 4px 24px rgba(245,158,11,0.3)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(245,158,11,0.5)}
+.btn-ghost{padding:16px 32px;background:rgba(255,255,255,0.05);color:var(--heading);border:1px solid var(--border);border-radius:99px;font-weight:600;font-size:0.9rem;transition:all 0.2s}
+.btn-ghost:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.2)}
+.hero-price{font-size:0.78rem;color:var(--text3)}
+.hero-price strong{color:var(--heading);font-weight:600}
+.hero-price s{color:var(--text3)}
+.hero-social{display:flex;justify-content:center;gap:24px;margin-top:44px;flex-wrap:wrap;font-size:0.72rem;color:var(--text3)}
+.hero-social strong{color:var(--heading);display:block;font-size:1rem;font-weight:700;margin-bottom:2px}
+
+/* ── Stats Row ── */
+.stats{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:50px 0}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:30px;text-align:center}
+.stat strong{display:block;font-size:2.8rem;font-weight:800;color:var(--heading);letter-spacing:-0.03em;line-height:1}
+.stat span{display:block;font-size:0.68rem;color:var(--text3);margin-top:6px;text-transform:uppercase;letter-spacing:0.12em;font-weight:600}
+
+/* ── Tools Grid ── */
+.tools-section{padding:90px 0}
+.section-head{text-align:center;max-width:700px;margin:0 auto 56px}
+.section-label{display:inline-block;font-size:0.68rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.15em;margin-bottom:14px}
+.section-head h2{font-size:clamp(2rem,4vw,3.2rem);font-weight:700;color:var(--heading);letter-spacing:-0.03em;line-height:1.15;margin-bottom:16px}
+.section-head p{font-size:1rem;color:var(--text2);line-height:1.7}
+/* ── Featured Tools (big cards) ── */
+.featured-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:50px;margin-bottom:80px}
+.feat-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px;transition:all 0.3s;position:relative;overflow:hidden}
+.feat-card::before{content:'';position:absolute;top:-50%;right:-50%;width:200px;height:200px;background:radial-gradient(circle,rgba(245,158,11,0.08),transparent 60%);pointer-events:none}
+.feat-card:hover{transform:translateY(-4px);border-color:rgba(245,158,11,0.35);box-shadow:0 20px 40px rgba(0,0,0,0.3)}
+.feat-icon{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin-bottom:20px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.2)}
+.feat-card h3{font-size:1.15rem;font-weight:700;color:var(--heading);margin-bottom:8px;letter-spacing:-0.01em}
+.feat-card > p{font-size:0.82rem;color:var(--text2);line-height:1.7;margin-bottom:18px}
+.feat-benefits{list-style:none;padding:0;margin:0}
+.feat-benefits li{display:flex;align-items:flex-start;gap:8px;padding:5px 0;font-size:0.75rem;color:var(--text);line-height:1.5}
+.feat-benefits li::before{content:'✓';color:var(--accent);font-weight:700;flex-shrink:0;font-size:0.88rem;margin-top:1px}
+.feat-replaces{display:inline-flex;align-items:center;gap:6px;margin-top:18px;padding:6px 14px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:99px;font-size:0.65rem;color:var(--green);font-weight:600}
+
+/* ── Category Tabs ── */
+.cat-tabs{display:flex;justify-content:center;gap:6px;margin-bottom:40px;flex-wrap:wrap}
+.cat-tab{padding:10px 20px;background:var(--card);border:1px solid var(--border);color:var(--text2);border-radius:99px;cursor:pointer;font-size:0.78rem;font-weight:600;font-family:inherit;transition:all 0.2s;display:flex;align-items:center;gap:8px}
+.cat-tab:hover{border-color:rgba(255,255,255,0.2);color:var(--heading)}
+.cat-tab.active{background:var(--accent);color:#000;border-color:var(--accent)}
+.cat-tab .cnt{opacity:0.6;font-weight:500}
+
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.tool-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;transition:all 0.25s;cursor:pointer;position:relative}
+.tool-card:hover{transform:translateY(-4px);border-color:rgba(245,158,11,0.3);box-shadow:0 12px 32px rgba(245,158,11,0.08)}
+.tool-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.tool-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;background:rgba(255,255,255,0.04);flex-shrink:0}
+.tool-title{flex:1;min-width:0}
+.tool-name{font-size:0.92rem;font-weight:600;color:var(--heading);letter-spacing:-0.01em}
+.tool-cat{font-size:0.6rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-top:2px}
+.tool-desc{font-size:0.76rem;color:var(--text2);line-height:1.6;margin-bottom:12px;min-height:40px}
+.tool-benefit{display:flex;align-items:center;gap:6px;font-size:0.68rem;color:var(--green);font-weight:500}
+.tool-benefit::before{content:'→';color:var(--accent);font-weight:700}
+
+/* ── Features ── */
+.features{background:var(--surface);padding:90px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:50px}
+.feature{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:36px 30px;transition:border-color 0.3s}
+.feature:hover{border-color:rgba(245,158,11,0.2)}
+.feature-icon{width:48px;height:48px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.2);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:20px}
+.feature h3{font-size:1.05rem;font-weight:600;color:var(--heading);margin-bottom:10px;letter-spacing:-0.01em}
+.feature p{font-size:0.82rem;color:var(--text2);line-height:1.7}
+
+/* ── Comparison ── */
+.comparison{padding:90px 0}
+.compare-table{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:36px;max-width:800px;margin:40px auto 0}
+.compare-row{display:grid;grid-template-columns:2fr 1fr 1fr;gap:20px;padding:16px 0;border-bottom:1px solid var(--border);font-size:0.88rem;align-items:center}
+.compare-row:last-child{border-bottom:none}
+.compare-row.header{font-size:0.62rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;font-weight:700}
+.compare-row .opt{text-align:center;font-weight:600}
+.compare-row .opt.bad{color:var(--text3)}
+.compare-row .opt.good{color:var(--green)}
+.compare-row .opt.winner{color:var(--accent)}
+
+/* ── Pricing ── */
+.pricing{background:var(--surface);padding:90px 0;border-top:1px solid var(--border)}
+.price-card{max-width:540px;margin:50px auto 0;background:var(--card);border:2px solid var(--accent);border-radius:24px;padding:48px 40px;text-align:center;position:relative;box-shadow:0 20px 60px rgba(245,158,11,0.1)}
+.price-card::before{content:'🔥 LAUNCH PRICE';position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:var(--accent-g);color:#fff;padding:6px 16px;border-radius:99px;font-size:0.65rem;font-weight:700;letter-spacing:0.08em;white-space:nowrap}
+.price-name{font-size:1.1rem;font-weight:700;color:var(--heading);margin-bottom:6px;letter-spacing:-0.01em}
+.price-tag{font-size:0.78rem;color:var(--text2);margin-bottom:24px}
+.price-amount{display:flex;align-items:baseline;justify-content:center;gap:12px;margin:20px 0 6px}
+.price-old{font-size:1.6rem;color:var(--text3);text-decoration:line-through;font-weight:600}
+.price-new{font-size:4.5rem;font-weight:800;color:var(--heading);letter-spacing:-0.04em;line-height:1}
+.price-unit{color:var(--accent);font-size:1.2rem;font-weight:700}
+.price-saving{display:inline-block;padding:5px 14px;background:rgba(16,185,129,0.12);color:var(--green);border-radius:99px;font-size:0.72rem;font-weight:600;margin-bottom:30px}
+.price-features{text-align:left;max-width:340px;margin:30px auto;padding:0}
+.price-features li{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:0.85rem;color:var(--text);list-style:none}
+.price-features li::before{content:'✓';color:var(--green);font-weight:700;font-size:1.1rem}
+.price-btn{display:block;width:100%;padding:18px;background:var(--accent-g);color:#fff;border-radius:14px;font-weight:700;font-size:1rem;text-align:center;transition:all 0.25s;border:none;cursor:pointer;font-family:inherit;margin-top:12px;box-shadow:0 4px 20px rgba(245,158,11,0.25)}
+.price-btn:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(245,158,11,0.4)}
+.price-guarantee{font-size:0.72rem;color:var(--text3);margin-top:16px;display:flex;align-items:center;justify-content:center;gap:6px}
+
+/* ── FAQ ── */
+.faq-section{padding:90px 0}
+.faq-list{max-width:760px;margin:50px auto 0}
+.faq-item{border-bottom:1px solid var(--border);padding:20px 0}
+.faq-q{font-size:0.95rem;font-weight:600;color:var(--heading);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:20px;letter-spacing:-0.01em}
+.faq-q::after{content:'+';color:var(--accent);font-size:1.5rem;font-weight:400;transition:transform 0.3s;flex-shrink:0}
+.faq-item.open .faq-q::after{transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height 0.35s ease;color:var(--text2);font-size:0.85rem;line-height:1.7}
+.faq-item.open .faq-a{max-height:240px;padding-top:14px}
+
+/* ── Final CTA ── */
+.final-cta{padding:100px 0;text-align:center;position:relative;overflow:hidden}
+.final-cta::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(245,158,11,0.12),transparent 70%);pointer-events:none}
+.final-cta-inner{position:relative;z-index:1}
+.final-cta h2{font-size:clamp(2.2rem,5vw,3.8rem);font-weight:800;color:var(--heading);letter-spacing:-0.03em;line-height:1.1;margin-bottom:20px}
+.final-cta p{font-size:1.1rem;color:var(--text2);margin-bottom:36px;max-width:520px;margin-inline:auto}
+
+/* ── Footer ── */
+.site-footer{border-top:1px solid var(--border);padding:40px 0;color:var(--text3);font-size:0.78rem}
+.footer-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px}
+
+/* ── Responsive ── */
+@media(max-width:900px){
+  .nav-links{display:none}
+  .stats-grid{grid-template-columns:1fr 1fr;gap:20px}
+  .features-grid{grid-template-columns:1fr}
+  .compare-row{font-size:0.78rem;gap:10px}
+  .price-card{padding:36px 24px}
+}
+@media(max-width:480px){
+  .stat strong{font-size:2rem}
+  .hero{padding:60px 0 50px}
+  .tools-section,.features,.comparison,.pricing,.faq-section,.final-cta{padding:60px 0}
+  .price-new{font-size:3.5rem}
+}
+</style>
+</head>
+<body>
+
+<div class="announce">🔥 Launch Week: First 100 copies at $49 (regular $79). Use code <strong>LAUNCH49</strong> at checkout.</div>
+
+<nav class="nav">
+  <div class="container nav-inner">
+    <div class="logo">LifeHub</div>
+    <div class="nav-links">
+      <a href="#tools">Tools</a>
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <a href="#pricing" class="nav-cta">Get Bundle</a>
+  </div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="container hero-inner">
+    <div class="hero-badge">NEW · LAUNCH WEEK</div>
+    <h1>43 Tools.<br>1 Price. <span class="grad">Forever.</span></h1>
+    <p>The complete productivity suite for freelancers, creators, and small businesses. No subscriptions. No limits. Own it forever.</p>
+    <div class="hero-cta">
+      <a href="#pricing" class="btn-primary">Get LifeHub for $49 →</a>
+      <a href="#tools" class="btn-ghost">See all 43 tools</a>
+    </div>
+    <div class="hero-price"><strong>$49</strong> launch · regular <s>$79</s> · Total value <s>$399</s></div>
+
+    <div class="hero-social">
+      <div><strong>43</strong><span>Premium Tools</span></div>
+      <div><strong>$399</strong><span>Total Value</span></div>
+      <div><strong>$0/mo</strong><span>Forever</span></div>
+      <div><strong>30-day</strong><span>Refund</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ STATS ═══ -->
+<section class="stats">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat"><strong>43</strong><span>Tools Included</span></div>
+      <div class="stat"><strong>7</strong><span>Categories</span></div>
+      <div class="stat"><strong>∞</strong><span>Lifetime Updates</span></div>
+      <div class="stat"><strong>0</strong><span>Monthly Fees</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TOOLS GRID ═══ -->
+<section class="tools-section" id="tools">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-label">Featured Tools</div>
+      <h2>The tools you'll<br>actually use daily.</h2>
+      <p>Here are 6 of the most powerful tools in the bundle. Each one replaces a paid SaaS you're probably already using.</p>
+    </div>
+
+    <div class="featured-grid">
+      <div class="feat-card">
+        <div class="feat-icon">📊</div>
+        <h3>LifeBoard Pro</h3>
+        <p>Your personal command center. Track tasks, habits, journal entries, expenses, water intake, and more — all in one beautiful dashboard.</p>
+        <ul class="feat-benefits">
+          <li>10+ widgets (tasks, habits, journal, expenses)</li>
+          <li>Pomodoro timer with session tracking</li>
+          <li>Password vault & bookmarks</li>
+          <li>Works offline as PWA or desktop app</li>
+        </ul>
+        <div class="feat-replaces">Replaces Notion ($10/mo)</div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon">🧾</div>
+        <h3>QuickInvoice Pro</h3>
+        <p>Create professional invoices in seconds. Full bilingual support (EN/AR), 9 currencies, logo upload, and instant PDF export.</p>
+        <ul class="feat-benefits">
+          <li>English + Arabic RTL support</li>
+          <li>9 currencies including SAR, AED, EGP</li>
+          <li>Upload your logo and brand colors</li>
+          <li>Print or download as PDF instantly</li>
+        </ul>
+        <div class="feat-replaces">Replaces HoneyBook ($39/mo)</div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon">👥</div>
+        <h3>Client CRM</h3>
+        <p>Manage clients like a pro agency. Pipeline view, kanban boards, status tracking, and contact history.</p>
+        <ul class="feat-benefits">
+          <li>Visual pipeline: Lead → Active → Completed</li>
+          <li>Unlimited clients and projects</li>
+          <li>Notes, tags, and custom statuses</li>
+          <li>Export & import as JSON</li>
+        </ul>
+        <div class="feat-replaces">Replaces Pipedrive ($14/mo)</div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon">📄</div>
+        <h3>Resume Builder</h3>
+        <p>Build a stunning CV in minutes. Live preview, multiple themes, photo upload, and PDF export — no design skills needed.</p>
+        <ul class="feat-benefits">
+          <li>6 color themes + custom colors</li>
+          <li>Photo upload with auto-crop</li>
+          <li>Experience, education, skills sections</li>
+          <li>Print-ready PDF export</li>
+        </ul>
+        <div class="feat-replaces">Replaces Canva Resume ($12/mo)</div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon">📅</div>
+        <h3>Habit Tracker</h3>
+        <p>Build better habits with visual tracking, streaks, and a GitHub-style heatmap showing your consistency all year.</p>
+        <ul class="feat-benefits">
+          <li>Daily, calendar & insights views</li>
+          <li>Streak tracking per habit</li>
+          <li>Category organization (health, work, etc.)</li>
+          <li>Year-long contribution heatmap</li>
+        </ul>
+        <div class="feat-replaces">Replaces Streaks ($5/mo)</div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon">🤖</div>
+        <h3>PromptVault Pro</h3>
+        <p>150+ ready-to-use AI prompts organized by category. Works with ChatGPT, Claude, Gemini — just copy, paste, customize.</p>
+        <ul class="feat-benefits">
+          <li>150+ prompts in 10 categories</li>
+          <li>Social media, blog, email, ads, video</li>
+          <li>Bracket system for easy customization</li>
+          <li>Works with any AI chatbot</li>
+        </ul>
+        <div class="feat-replaces">Replaces PromptBase ($19/mo)</div>
+      </div>
+    </div>
+
+    <div class="section-head" style="margin-top:40px">
+      <div class="section-label">All 43 Tools</div>
+      <h2 style="font-size:2rem">The complete collection.</h2>
+      <p>Browse by category. Every tool is production-ready and works offline.</p>
+    </div>
+
+    <div class="cat-tabs" id="cat-tabs"></div>
+    <div class="tools-grid" id="tools-grid"></div>
+  </div>
+</section>
+
+<!-- ═══ FEATURES ═══ -->
+<section class="features" id="features">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-label">Why LifeHub</div>
+      <h2>Built different.<br>Priced fair.</h2>
+      <p>No subscription traps. No limits. No account required. Just tools that work.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature">
+        <div class="feature-icon">🚀</div>
+        <h3>Works Offline</h3>
+        <p>Every tool runs in your browser. No internet required. Your data never leaves your device unless you want it to.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🔒</div>
+        <h3>Privacy First</h3>
+        <p>No accounts, no tracking, no ads. All your data stays in your browser's local storage. Export anytime.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">⚡</div>
+        <h3>Lightning Fast</h3>
+        <p>Pure HTML, CSS, and JavaScript. No bloated frameworks. Every tool loads in under a second.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">💰</div>
+        <h3>One Payment</h3>
+        <p>Pay once, own forever. No recurring fees. No surprise charges. Lifetime updates included.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🎨</div>
+        <h3>Clean Design</h3>
+        <p>Beautiful, minimal interfaces across all 43 tools. Consistent, distraction-free, and delightful to use.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🔧</div>
+        <h3>Self-Hosted</h3>
+        <p>Host on your own domain, server, or localhost. No vendor lock-in. You own the files.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ COMPARISON ═══ -->
+<section class="comparison">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-label">The Math</div>
+      <h2>Stop bleeding money<br>on subscriptions.</h2>
+      <p>How much are you paying for the tools you already use?</p>
+    </div>
+    <div class="compare-table">
+      <div class="compare-row header">
+        <div>Tool</div>
+        <div class="opt">Their Price</div>
+        <div class="opt">In LifeHub</div>
+      </div>
+      <div class="compare-row">
+        <div>Notion (Planner, Dashboard)</div>
+        <div class="opt bad">$10/mo</div>
+        <div class="opt winner">Included</div>
+      </div>
+      <div class="compare-row">
+        <div>Canva (Design Tools)</div>
+        <div class="opt bad">$12/mo</div>
+        <div class="opt winner">Included</div>
+      </div>
+      <div class="compare-row">
+        <div>HoneyBook (Invoices, Contracts)</div>
+        <div class="opt bad">$39/mo</div>
+        <div class="opt winner">Included</div>
+      </div>
+      <div class="compare-row">
+        <div>Linktree (Link in Bio)</div>
+        <div class="opt bad">$9/mo</div>
+        <div class="opt winner">Included</div>
+      </div>
+      <div class="compare-row">
+        <div>Calendly (Meeting Agenda)</div>
+        <div class="opt bad">$12/mo</div>
+        <div class="opt winner">Included</div>
+      </div>
+      <div class="compare-row">
+        <div>1Password (Password Manager)</div>
+        <div class="opt bad">$3/mo</div>
+        <div class="opt winner">Included</div>
+      </div>
+      <div class="compare-row" style="border-top:2px solid var(--accent);margin-top:8px;padding-top:18px">
+        <div style="font-weight:700;color:var(--heading)">Total per year</div>
+        <div class="opt bad" style="font-weight:700">$1,020/year</div>
+        <div class="opt winner" style="font-weight:700;font-size:1.1rem">$49 once</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PRICING ═══ -->
+<section class="pricing" id="pricing">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-label">Pricing</div>
+      <h2>One price.<br>Everything unlocked.</h2>
+      <p>First 100 copies at launch price. No hidden fees. No subscriptions.</p>
+    </div>
+
+    <div class="price-card">
+      <div class="price-name">LifeHub Pro Bundle</div>
+      <div class="price-tag">Everything you need in one place</div>
+      <div class="price-amount">
+        <span class="price-old">$399</span>
+        <span class="price-new">$49</span>
+      </div>
+      <div class="price-saving">💰 Save $350 (88% off)</div>
+      <ul class="price-features">
+        <li>All 43 premium tools</li>
+        <li>Unlimited use, forever</li>
+        <li>Lifetime updates</li>
+        <li>Works offline</li>
+        <li>No account required</li>
+        <li>30-day money-back guarantee</li>
+        <li>Commercial use allowed</li>
+        <li>Email support</li>
+      </ul>
+      <a href="https://gumroad.com/l/lifehub-pro" class="price-btn">Get LifeHub Now →</a>
+      <div class="price-guarantee">🛡️ 30-day money-back guarantee</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FAQ ═══ -->
+<section class="faq-section" id="faq">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-label">FAQ</div>
+      <h2>Common questions.</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">Is this really a one-time payment?</div>
+        <div class="faq-a">Yes. You pay $49 once and get all 43 tools forever. No subscriptions, no hidden fees, no trial limits. You own the files.</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">How do I get the tools after purchase?</div>
+        <div class="faq-a">You'll get an instant download link for a ZIP file containing all 43 tools plus your unique license key. Just unzip and open any tool in your browser.</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">Do I need to be technical to use LifeHub?</div>
+        <div class="faq-a">Not at all. Every tool is a standalone HTML file. Just double-click to open in your browser. No installation, no accounts, no setup.</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">Can I use these tools commercially?</div>
+        <div class="faq-a">Yes! Your purchase includes a commercial use license. Use them for your freelance clients, agency work, or internal business operations.</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">Where is my data stored?</div>
+        <div class="faq-a">All your data stays in your browser's local storage. Nothing is sent to any server. You can export your data as JSON anytime for backup.</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">What if I don't like it?</div>
+        <div class="faq-a">No risk. You have 30 days to request a full refund — no questions asked. Just email us and you'll get 100% of your money back.</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">Do I get future updates?</div>
+        <div class="faq-a">Yes. Any improvements, bug fixes, or new features added to existing tools are included for life. New tools added to the suite may require an upgrade.</div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">Can I host these on my website?</div>
+        <div class="faq-a">Absolutely. You can host them on your own server, GitHub Pages, Netlify, or any static host. They're just HTML files.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FINAL CTA ═══ -->
+<section class="final-cta">
+  <div class="container final-cta-inner">
+    <h2>Stop paying rent<br>on your own tools.</h2>
+    <p>Own all 43 productivity tools for one fair price. No strings attached.</p>
+    <div class="hero-cta">
+      <a href="https://gumroad.com/l/lifehub-pro" class="btn-primary">Get LifeHub for $49 →</a>
+    </div>
+    <div class="hero-price" style="margin-top:16px">🔥 Only <strong>83</strong> copies left at launch price</div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <div>© 2026 LifeHub. All rights reserved.</div>
+    <div>Made with care for freelancers worldwide.</div>
+  </div>
+</footer>
+
+<script>
+// ── Tool benefits (what each tool actually does FOR you) ──
+const BENEFITS = {
+  'lifeboard-pro': 'Stop juggling 10 apps',
+  'habit-tracker': 'Build streaks that stick',
+  'student-planner': 'Never miss a deadline',
+  'wedding-planner': 'Plan every detail',
+  'workout-plan': 'Track every rep & PR',
+  'meeting-agenda': 'Run tighter meetings',
+  'meal-planner': 'Save 3 hours a week',
+  'gantt-timeline': 'Visualize project deadlines',
+  'mood-tracker': 'Understand your patterns',
+  'typing-test': 'Boost your WPM',
+  'budget-tracker': 'See where money goes',
+  'quickinvoice-pro': 'Get paid faster',
+  'client-crm': 'Close more deals',
+  'freelancer-toolkit': 'Professional contracts in 2 min',
+  'contract-bundle': '10 legal templates ready',
+  'pricing-calculator': 'Price your work right',
+  'ab-test-calc': 'Stop guessing, test data',
+  'unit-converter': 'Convert anything instantly',
+  'social-analytics': 'Grow your following',
+  'business-card-gen': 'Print-ready in minutes',
+  'color-palette-gen': 'Brand colors that work',
+  'email-signature-gen': 'Look pro in every email',
+  'instagram-templates': '30 story templates ready',
+  'portfolio-site': 'Your portfolio, exported',
+  'social-media-kit': 'Bio, hashtags, calendar',
+  'youtube-thumbnail': 'Higher CTR thumbnails',
+  'pitch-deck': '12 slides ready to present',
+  'wireframe-kit': '22 UI components ready',
+  'linkinbio-gen': 'Your link-in-bio page',
+  'countdown-timer': 'Launch day, ready',
+  'qr-generator': 'Any QR code in seconds',
+  'markdown-editor': 'Write & publish faster',
+  'timezone-converter': 'Book meetings globally',
+  'password-gen-pro': 'Strong passwords, vault',
+  'receipt-scanner': 'Professional receipts',
+  'fitness-tracker': 'Track every workout',
+  'prompt-vault-pro': '150+ AI prompts ready',
+  'recipe-box': 'Your recipes, organized',
+  'resume-builder': 'CV that gets callbacks',
+  'employee-directory': 'Team info at a glance',
+  'arabland-saas': 'SaaS landing page',
+  'arabland-agency': 'Agency portfolio site',
+  'arabland-restaurant': 'Restaurant website'
+};
+
+let allTools = [];
+let activeCategory = 'all';
+
+// Fetch config and render tools grid
+fetch('../dashboard/config.json')
+  .then(r => r.json())
+  .then(config => {
+    allTools = config.tools;
+    renderTabs(config.categories);
+    renderGrid();
+  })
+  .catch(err => {
+    document.getElementById('tools-grid').innerHTML = '<p style="color:var(--text3);text-align:center;grid-column:1/-1">Tools list loading…</p>';
+  });
+
+function renderTabs(categories) {
+  const tabs = document.getElementById('cat-tabs');
+  tabs.innerHTML = categories.map(c => {
+    const count = c.id === 'all' ? allTools.length : allTools.filter(t => t.category === c.id).length;
+    return `<button class="cat-tab ${c.id === activeCategory ? 'active' : ''}" onclick="setCategory('${c.id}')"><span>${c.icon}</span><span>${c.name}</span><span class="cnt">${count}</span></button>`;
+  }).join('');
+}
+
+function setCategory(cat) {
+  activeCategory = cat;
+  document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+  event.target.closest('.cat-tab').classList.add('active');
+  renderGrid();
+}
+
+function renderGrid() {
+  const grid = document.getElementById('tools-grid');
+  const tools = activeCategory === 'all' ? allTools : allTools.filter(t => t.category === activeCategory);
+  grid.innerHTML = tools.map(t => `
+    <div class="tool-card">
+      <div class="tool-header">
+        <div class="tool-icon" style="background:${t.color}15;color:${t.color}">${t.icon}</div>
+        <div class="tool-title">
+          <div class="tool-name">${t.name}</div>
+          <div class="tool-cat">${t.category}</div>
+        </div>
+      </div>
+      <div class="tool-desc">${t.description}</div>
+      <div class="tool-benefit">${BENEFITS[t.id] || 'Save time, work smarter'}</div>
+    </div>
+  `).join('');
+}
+</script>
+
+</body>
+</html>

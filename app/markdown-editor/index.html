@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Markdown Editor</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Sora',system-ui,sans-serif;background:#f5f5f3;color:#555;height:100vh;display:flex;flex-direction:column}
+.toolbar{display:flex;align-items:center;gap:4px;padding:10px 20px;background:#fff;border-bottom:1px solid rgba(0,0,0,0.06);flex-shrink:0}
+.toolbar h1{font-size:0.9rem;font-weight:700;color:#1a1a1a;margin-right:16px}
+.tb-btn{width:32px;height:32px;border:none;border-radius:8px;background:transparent;color:#888;font-size:0.85rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;font-family:inherit;font-weight:600}
+.tb-btn:hover{background:rgba(0,0,0,0.05);color:#1a1a1a}
+.tb-sep{width:1px;height:20px;background:rgba(0,0,0,0.06);margin:0 4px}
+.tb-right{margin-left:auto;display:flex;gap:6px;align-items:center}
+.tb-action{padding:6px 14px;border:1px solid rgba(0,0,0,0.08);border-radius:8px;background:#fff;color:#888;font-size:0.68rem;cursor:pointer;font-family:inherit;font-weight:500;transition:all 0.2s}
+.tb-action:hover{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+.tb-action.primary{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+.wordcount{font-size:0.65rem;color:#bbb;margin-left:8px}
+.editor-wrap{display:grid;grid-template-columns:1fr 1fr;flex:1;overflow:hidden}
+.editor-pane{display:flex;flex-direction:column;overflow:hidden}
+.pane-label{font-size:0.6rem;font-weight:600;color:#bbb;text-transform:uppercase;letter-spacing:0.1em;padding:8px 20px;border-bottom:1px solid rgba(0,0,0,0.04);background:#fafaf8;flex-shrink:0}
+#editor{flex:1;padding:20px;border:none;resize:none;font-family:'SF Mono',Monaco,'Courier New',monospace;font-size:0.88rem;line-height:1.8;color:#333;background:#fff;outline:none;border-right:1px solid rgba(0,0,0,0.06)}
+#preview{flex:1;padding:20px;overflow-y:auto;background:#fff;line-height:1.7}
+#preview h1{font-size:1.8rem;font-weight:700;color:#1a1a1a;margin:0 0 12px;letter-spacing:-0.02em}
+#preview h2{font-size:1.4rem;font-weight:600;color:#1a1a1a;margin:24px 0 8px;padding-bottom:6px;border-bottom:1px solid rgba(0,0,0,0.06)}
+#preview h3{font-size:1.1rem;font-weight:600;color:#1a1a1a;margin:20px 0 6px}
+#preview p{margin:0 0 12px;color:#555}
+#preview a{color:#2563eb;text-decoration:underline}
+#preview code{background:#f5f5f3;padding:2px 6px;border-radius:4px;font-size:0.85em;font-family:'SF Mono',Monaco,monospace;color:#e74c3c}
+#preview pre{background:#1a1a1a;color:#e5e5e5;padding:16px;border-radius:10px;overflow-x:auto;margin:12px 0;font-size:0.82rem;line-height:1.6}
+#preview pre code{background:none;color:inherit;padding:0}
+#preview blockquote{border-left:3px solid #1a1a1a;padding:8px 16px;margin:12px 0;color:#888;background:#fafaf8;border-radius:0 8px 8px 0}
+#preview ul,#preview ol{margin:0 0 12px 20px;color:#555}
+#preview li{margin-bottom:4px}
+#preview img{max-width:100%;border-radius:8px;margin:12px 0}
+#preview hr{border:none;height:1px;background:rgba(0,0,0,0.08);margin:20px 0}
+#preview table{width:100%;border-collapse:collapse;margin:12px 0}
+#preview th{text-align:left;padding:8px;border-bottom:2px solid #eee;font-size:0.8rem;color:#999;text-transform:uppercase}
+#preview td{padding:8px;border-bottom:1px solid #f0f0f0;font-size:0.88rem}
+#preview strong{color:#1a1a1a}
+@media(max-width:768px){.editor-wrap{grid-template-columns:1fr}#editor{border-right:none;border-bottom:1px solid rgba(0,0,0,0.06)}}
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <h1>MD Editor</h1>
+  <button class="tb-btn" onclick="insert('**','**')" title="Bold"><b>B</b></button>
+  <button class="tb-btn" onclick="insert('*','*')" title="Italic"><i>I</i></button>
+  <button class="tb-btn" onclick="insert('~~','~~')" title="Strikethrough"><s>S</s></button>
+  <div class="tb-sep"></div>
+  <button class="tb-btn" onclick="insertLine('# ')" title="H1">H1</button>
+  <button class="tb-btn" onclick="insertLine('## ')" title="H2">H2</button>
+  <button class="tb-btn" onclick="insertLine('### ')" title="H3">H3</button>
+  <div class="tb-sep"></div>
+  <button class="tb-btn" onclick="insertLine('- ')" title="List">-</button>
+  <button class="tb-btn" onclick="insertLine('1. ')" title="Numbered">1.</button>
+  <button class="tb-btn" onclick="insertLine('> ')" title="Quote">"</button>
+  <button class="tb-btn" onclick="insert('\`','\`')" title="Code">&lt;/&gt;</button>
+  <button class="tb-btn" onclick="insert('\n\`\`\`\n','\n\`\`\`\n')" title="Code Block">{}</button>
+  <button class="tb-btn" onclick="insert('[','](url)')" title="Link">🔗</button>
+  <button class="tb-btn" onclick="insertLine('---')" title="Divider">—</button>
+  <div class="tb-right">
+    <span class="wordcount" id="wordcount">0 words</span>
+    <button class="tb-action" onclick="copyMD()">Copy MD</button>
+    <button class="tb-action" onclick="copyHTML()">Copy HTML</button>
+    <button class="tb-action" onclick="downloadMD()">Download .md</button>
+    <button class="tb-action primary" onclick="clearEditor()">New</button>
+  </div>
+</div>
+<div class="editor-wrap">
+  <div class="editor-pane">
+    <div class="pane-label">Markdown</div>
+    <textarea id="editor" spellcheck="false" oninput="renderPreview()">
+# Welcome to Markdown Editor
+
+This is a **live preview** markdown editor. Start typing on the left and see the result on the right.
+
+## Features
+
+- **Bold**, *italic*, ~~strikethrough~~
+- Headings (H1, H2, H3)
+- Lists (ordered and unordered)
+- Code blocks with syntax highlighting
+- Blockquotes
+- Links and images
+- Tables
+
+## Code Example
+
+\`\`\`javascript
+function greet(name) {
+  return \`Hello, \${name}!\`;
+}
+console.log(greet("World"));
+\`\`\`
+
+## Table Example
+
+| Feature | Status |
+|---------|--------|
+| Bold | ✅ |
+| Italic | ✅ |
+| Links | ✅ |
+| Tables | ✅ |
+
+> "The best way to predict the future is to create it." — Peter Drucker
+
+---
+
+Start writing your content above!
+</textarea>
+  </div>
+  <div class="editor-pane">
+    <div class="pane-label">Preview</div>
+    <div id="preview"></div>
+  </div>
+</div>
+
+<script>
+function renderPreview(){
+  let md=document.getElementById('editor').value;
+  // Word count
+  const words=md.trim().split(/\s+/).filter(w=>w).length;
+  document.getElementById('wordcount').textContent=words+' words';
+  // Parse markdown
+  let html=md
+    .replace(/```(\w*)\n([\s\S]*?)```/g,'<pre><code>$2</code></pre>')
+    .replace(/`([^`]+)`/g,'<code>$1</code>')
+    .replace(/^### (.+)$/gm,'<h3>$1</h3>')
+    .replace(/^## (.+)$/gm,'<h2>$1</h2>')
+    .replace(/^# (.+)$/gm,'<h1>$1</h1>')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g,'<em>$1</em>')
+    .replace(/~~(.+?)~~/g,'<del>$1</del>')
+    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g,'<img src="$2" alt="$1">')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2">$1</a>')
+    .replace(/^> (.+)$/gm,'<blockquote>$1</blockquote>')
+    .replace(/^---$/gm,'<hr>')
+    .replace(/^\d+\. (.+)$/gm,'<li>$1</li>')
+    .replace(/^- (.+)$/gm,'<li>$1</li>')
+    .replace(/\n{2,}/g,'</p><p>')
+    .replace(/^\|(.+)\|$/gm,function(m){const cells=m.split('|').filter(c=>c.trim());if(cells.every(c=>/^[\s-:]+$/.test(c)))return'';return'<tr>'+cells.map(c=>'<td>'+c.trim()+'</td>').join('')+'</tr>';});
+  html='<p>'+html+'</p>';
+  html=html.replace(/<p><h([123])>/g,'<h$1>').replace(/<\/h([123])><\/p>/g,'</h$1>');
+  html=html.replace(/<p><pre>/g,'<pre>').replace(/<\/pre><\/p>/g,'</pre>');
+  html=html.replace(/<p><hr><\/p>/g,'<hr>');
+  html=html.replace(/<p><blockquote>/g,'<blockquote>').replace(/<\/blockquote><\/p>/g,'</blockquote>');
+  html=html.replace(/<p><li>/g,'<ul><li>').replace(/<\/li><\/p>/g,'</li></ul>');
+  html=html.replace(/<p><tr>/g,'<table><tr>').replace(/<\/tr><\/p>/g,'</tr></table>');
+  document.getElementById('preview').innerHTML=html;
+}
+
+function insert(before,after){const el=document.getElementById('editor');const start=el.selectionStart,end=el.selectionEnd;const text=el.value;const selected=text.substring(start,end)||'text';el.value=text.substring(0,start)+before+selected+after+text.substring(end);el.focus();el.selectionStart=start+before.length;el.selectionEnd=start+before.length+selected.length;renderPreview();}
+function insertLine(prefix){const el=document.getElementById('editor');const start=el.selectionStart;const text=el.value;const lineStart=text.lastIndexOf('\n',start-1)+1;el.value=text.substring(0,lineStart)+prefix+text.substring(lineStart);el.focus();renderPreview();}
+function copyMD(){navigator.clipboard.writeText(document.getElementById('editor').value);alert('Markdown copied!');}
+function copyHTML(){navigator.clipboard.writeText(document.getElementById('preview').innerHTML);alert('HTML copied!');}
+function downloadMD(){const blob=new Blob([document.getElementById('editor').value],{type:'text/markdown'});const a=document.createElement('a');a.download='document.md';a.href=URL.createObjectURL(blob);a.click();}
+function clearEditor(){if(confirm('Start new document?')){document.getElementById('editor').value='# New Document\n\nStart writing...';renderPreview();}}
+
+// Auto-save
+setInterval(()=>localStorage.setItem('md_content',document.getElementById('editor').value),5000);
+const saved=localStorage.getItem('md_content');
+if(saved)document.getElementById('editor').value=saved;
+renderPreview();
+</script>
+</body>
+</html>

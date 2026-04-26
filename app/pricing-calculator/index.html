@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Freelance Pricing Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Sora',system-ui,sans-serif;background:#f5f5f3;color:#555;min-height:100vh;display:flex;align-items:center;justify-content:center}
+.app{max-width:900px;width:100%;margin:40px auto;padding:0 24px}
+.header{text-align:center;margin-bottom:40px}
+.header h1{font-size:2rem;font-weight:700;color:#1a1a1a;letter-spacing:-0.03em;margin-bottom:6px}
+.header p{font-size:0.88rem;color:#999}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.card{background:#fff;border:1px solid rgba(0,0,0,0.06);border-radius:18px;padding:28px;box-shadow:0 2px 8px rgba(0,0,0,0.03)}
+.card h2{font-size:0.9rem;font-weight:600;color:#1a1a1a;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.card h2 span{font-size:1.1rem}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:0.72rem;font-weight:500;color:#888;margin-bottom:4px}
+.field input,.field select{width:100%;padding:10px 14px;background:#f5f5f3;border:1px solid rgba(0,0,0,0.06);border-radius:10px;color:#1a1a1a;font-family:inherit;font-size:0.88rem}
+.field input:focus{outline:none;border-color:#1a1a1a}
+.field .hint{font-size:0.65rem;color:#bbb;margin-top:3px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.slider-field{margin-bottom:14px}
+.slider-field label{display:flex;justify-content:space-between;font-size:0.72rem;font-weight:500;color:#888;margin-bottom:6px}
+.slider-field label strong{color:#1a1a1a;font-size:0.85rem}
+.slider-field input[type="range"]{width:100%;-webkit-appearance:none;height:6px;background:#e5e5e3;border-radius:99px;outline:none}
+.slider-field input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#1a1a1a;cursor:pointer}
+/* Results */
+.results{grid-column:1/-1}
+.results-card{background:#1a1a1a;color:#fff;border-radius:18px;padding:32px}
+.results-card h2{color:#fff;margin-bottom:20px;font-size:1rem}
+.results-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+.result-item{text-align:center;padding:16px;background:rgba(255,255,255,0.06);border-radius:12px}
+.result-item .val{font-size:1.6rem;font-weight:700;color:#fff;letter-spacing:-0.02em}
+.result-item .lbl{font-size:0.62rem;color:rgba(255,255,255,0.5);margin-top:3px;text-transform:uppercase;letter-spacing:0.08em}
+.result-item.highlight .val{color:#f59e0b}
+.breakdown{margin-top:16px}
+.breakdown h3{font-size:0.75rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px}
+.breakdown-row{display:flex;justify-content:space-between;padding:8px 0;font-size:0.82rem;border-bottom:1px solid rgba(255,255,255,0.06)}
+.breakdown-row:last-child{border-bottom:none}
+.breakdown-row .bl{color:rgba(255,255,255,0.6)}
+.breakdown-row .bv{color:#fff;font-weight:600}
+.export-btns{display:flex;gap:8px;margin-top:16px;justify-content:flex-end}
+.exp-btn{padding:8px 18px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:transparent;color:rgba(255,255,255,0.7);font-size:0.72rem;cursor:pointer;font-family:inherit;transition:all 0.2s}
+.exp-btn:hover{background:rgba(255,255,255,0.1);color:#fff}
+@media(max-width:768px){.grid{grid-template-columns:1fr}.results-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <h1>Pricing Calculator</h1>
+    <p>Calculate your freelance rates, project pricing, and annual income goals.</p>
+  </div>
+  <div class="grid">
+    <div class="card">
+      <h2><span>💰</span> Income Goals</h2>
+      <div class="field"><label>Desired Annual Income ($)</label><input type="number" id="annual-income" value="80000" oninput="calculate()"><div class="hint">After taxes — what you want to take home</div></div>
+      <div class="field"><label>Tax Rate (%)</label><input type="number" id="tax-rate" value="25" min="0" max="60" oninput="calculate()"></div>
+      <div class="field"><label>Annual Business Expenses ($)</label><input type="number" id="expenses" value="12000" oninput="calculate()"><div class="hint">Software, equipment, office, insurance, etc.</div></div>
+    </div>
+
+    <div class="card">
+      <h2><span>⏰</span> Work Schedule</h2>
+      <div class="slider-field"><label>Weeks Off / Year <strong id="weeks-off-val">4</strong></label><input type="range" id="weeks-off" min="0" max="12" value="4" oninput="document.getElementById('weeks-off-val').textContent=this.value;calculate()"></div>
+      <div class="slider-field"><label>Days / Week <strong id="days-val">5</strong></label><input type="range" id="work-days" min="1" max="7" value="5" oninput="document.getElementById('days-val').textContent=this.value;calculate()"></div>
+      <div class="slider-field"><label>Billable Hours / Day <strong id="hours-val">6</strong></label><input type="range" id="bill-hours" min="1" max="12" value="6" oninput="document.getElementById('hours-val').textContent=this.value;calculate()"></div>
+      <div class="field"><label>Non-Billable Overhead (%)</label><input type="number" id="overhead" value="20" min="0" max="50" oninput="calculate()"><div class="hint">Admin, marketing, invoicing time</div></div>
+    </div>
+
+    <div class="card">
+      <h2><span>📋</span> Project Estimator</h2>
+      <div class="field"><label>Project Hours (estimated)</label><input type="number" id="proj-hours" value="40" oninput="calculate()"></div>
+      <div class="slider-field"><label>Complexity Multiplier <strong id="complex-val">1.0x</strong></label><input type="range" id="complexity" min="10" max="25" value="10" oninput="document.getElementById('complex-val').textContent=(this.value/10).toFixed(1)+'x';calculate()"></div>
+      <div class="slider-field"><label>Rush Fee <strong id="rush-val">0%</strong></label><input type="range" id="rush" min="0" max="100" value="0" step="10" oninput="document.getElementById('rush-val').textContent=this.value+'%';calculate()"></div>
+      <div class="field"><label>Profit Margin (%)</label><input type="number" id="margin" value="20" min="0" max="100" oninput="calculate()"></div>
+    </div>
+
+    <div class="card">
+      <h2><span>🌍</span> Retainer & Packages</h2>
+      <div class="field"><label>Monthly Retainer Hours</label><input type="number" id="retainer-hours" value="20" oninput="calculate()"></div>
+      <div class="field"><label>Retainer Discount (%)</label><input type="number" id="retainer-discount" value="10" min="0" max="30" oninput="calculate()"></div>
+      <div class="row">
+        <div class="field"><label>Package: Small (hrs)</label><input type="number" id="pkg-small" value="10" oninput="calculate()"></div>
+        <div class="field"><label>Package: Large (hrs)</label><input type="number" id="pkg-large" value="40" oninput="calculate()"></div>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div class="results">
+      <div class="results-card">
+        <h2>Your Rates</h2>
+        <div class="results-grid">
+          <div class="result-item highlight"><div class="val" id="r-hourly">$0</div><div class="lbl">Hourly Rate</div></div>
+          <div class="result-item"><div class="val" id="r-daily">$0</div><div class="lbl">Daily Rate</div></div>
+          <div class="result-item"><div class="val" id="r-weekly">$0</div><div class="lbl">Weekly Rate</div></div>
+          <div class="result-item"><div class="val" id="r-monthly">$0</div><div class="lbl">Monthly Rate</div></div>
+        </div>
+        <div class="results-grid">
+          <div class="result-item"><div class="val" id="r-project">$0</div><div class="lbl">Project Quote</div></div>
+          <div class="result-item"><div class="val" id="r-retainer">$0</div><div class="lbl">Monthly Retainer</div></div>
+          <div class="result-item"><div class="val" id="r-pkg-small">$0</div><div class="lbl">Small Package</div></div>
+          <div class="result-item"><div class="val" id="r-pkg-large">$0</div><div class="lbl">Large Package</div></div>
+        </div>
+        <div class="breakdown">
+          <h3>Breakdown</h3>
+          <div class="breakdown-row"><span class="bl">Gross Income Needed</span><span class="bv" id="b-gross">$0</span></div>
+          <div class="breakdown-row"><span class="bl">Taxes</span><span class="bv" id="b-tax">$0</span></div>
+          <div class="breakdown-row"><span class="bl">Business Expenses</span><span class="bv" id="b-exp">$0</span></div>
+          <div class="breakdown-row"><span class="bl">Billable Hours / Year</span><span class="bv" id="b-hours">0</span></div>
+          <div class="breakdown-row"><span class="bl">Working Weeks</span><span class="bv" id="b-weeks">0</span></div>
+        </div>
+        <div class="export-btns">
+          <button class="exp-btn" onclick="exportText()">Copy as Text</button>
+          <button class="exp-btn" onclick="window.print()">Print / PDF</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function fmt(n){return'$'+Math.round(n).toLocaleString();}
+function calculate(){
+  const income=+document.getElementById('annual-income').value||0;
+  const taxRate=(+document.getElementById('tax-rate').value||0)/100;
+  const expenses=+document.getElementById('expenses').value||0;
+  const weeksOff=+document.getElementById('weeks-off').value||0;
+  const workDays=+document.getElementById('work-days').value||1;
+  const billHours=+document.getElementById('bill-hours').value||1;
+  const overhead=(+document.getElementById('overhead').value||0)/100;
+  const projHours=+document.getElementById('proj-hours').value||1;
+  const complexity=(+document.getElementById('complexity').value||10)/10;
+  const rush=(+document.getElementById('rush').value||0)/100;
+  const margin=(+document.getElementById('margin').value||0)/100;
+  const retainerHrs=+document.getElementById('retainer-hours').value||1;
+  const retainerDisc=(+document.getElementById('retainer-discount').value||0)/100;
+  const pkgSmall=+document.getElementById('pkg-small').value||1;
+  const pkgLarge=+document.getElementById('pkg-large').value||1;
+
+  const gross=(income+expenses)/(1-taxRate);
+  const tax=gross*taxRate;
+  const workingWeeks=52-weeksOff;
+  const effectiveHours=billHours*(1-overhead);
+  const annualHours=workingWeeks*workDays*effectiveHours;
+  const hourly=gross/annualHours;
+  const daily=hourly*effectiveHours;
+  const weekly=daily*workDays;
+  const monthly=gross/12;
+
+  const projectBase=projHours*hourly*complexity;
+  const projectRush=projectBase*rush;
+  const projectMargin=projectBase*margin;
+  const projectTotal=projectBase+projectRush+projectMargin;
+
+  const retainerRate=hourly*(1-retainerDisc);
+  const retainerMonthly=retainerRate*retainerHrs;
+
+  document.getElementById('r-hourly').textContent=fmt(hourly);
+  document.getElementById('r-daily').textContent=fmt(daily);
+  document.getElementById('r-weekly').textContent=fmt(weekly);
+  document.getElementById('r-monthly').textContent=fmt(monthly);
+  document.getElementById('r-project').textContent=fmt(projectTotal);
+  document.getElementById('r-retainer').textContent=fmt(retainerMonthly)+'/mo';
+  document.getElementById('r-pkg-small').textContent=fmt(pkgSmall*hourly*0.95);
+  document.getElementById('r-pkg-large').textContent=fmt(pkgLarge*hourly*0.9);
+  document.getElementById('b-gross').textContent=fmt(gross);
+  document.getElementById('b-tax').textContent=fmt(tax);
+  document.getElementById('b-exp').textContent=fmt(expenses);
+  document.getElementById('b-hours').textContent=Math.round(annualHours)+' hrs';
+  document.getElementById('b-weeks').textContent=workingWeeks+' weeks';
+}
+
+function exportText(){
+  const text=`PRICING SUMMARY\n================\nHourly: ${document.getElementById('r-hourly').textContent}\nDaily: ${document.getElementById('r-daily').textContent}\nWeekly: ${document.getElementById('r-weekly').textContent}\nMonthly: ${document.getElementById('r-monthly').textContent}\nProject Quote: ${document.getElementById('r-project').textContent}\nRetainer: ${document.getElementById('r-retainer').textContent}`;
+  navigator.clipboard.writeText(text);alert('Copied!');
+}
+
+calculate();
+</script>
+</body>
+</html>

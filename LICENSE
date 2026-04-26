@@ -1,0 +1,45 @@
+LifeHub Desktop — Proprietary License
+
+Copyright © 2026 walymali. All rights reserved.
+
+This software, including its source code, binaries, design assets, and accompanying
+documentation (the "Software"), is the exclusive property of walymali and is
+protected by international copyright laws and trade secret laws.
+
+NO LICENSE IS GRANTED to any third party, whether express or implied, except as
+explicitly authorized in a separate written agreement signed by the copyright holder.
+
+THE FOLLOWING ARE STRICTLY PROHIBITED without prior written permission:
+
+  • Copying, reproducing, or distributing the Software in any form
+  • Modifying, adapting, or creating derivative works based on the Software
+  • Reverse engineering, decompiling, or disassembling the Software
+  • Selling, sublicensing, renting, leasing, or transferring the Software
+  • Removing or altering any proprietary notices, trademarks, or branding
+  • Hosting the Software on third-party servers for public access
+
+PERMITTED USES (for paying customers only, subject to your purchased license tier):
+
+  • Personal or internal business use of the published binaries (.dmg, .exe, etc.)
+  • Use across the number of devices specified in your bundle (Freelancer: 2,
+    Productivity/Creator: 3, Small Business: 5/seat, Enterprise: 20)
+
+THIRD-PARTY COMPONENTS
+
+This Software incorporates open-source components that retain their original
+licenses. See node_modules/<package>/LICENSE for each dependency. The terms of
+those licenses apply only to the respective components, not to the LifeHub
+Desktop application as a whole.
+
+DISCLAIMER
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+For commercial licensing inquiries: hello@trylifehub.com
+For full terms: https://trylifehub.com/terms

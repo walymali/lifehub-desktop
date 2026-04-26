@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Password Generator Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sora',sans-serif;background:#f5f5f3;color:#555;min-height:100vh;padding:40px 20px}
+h1,h2,h3{color:#1a1a1a;font-weight:600}
+.container{max-width:720px;margin:0 auto}
+.header{text-align:center;margin-bottom:36px}
+.header h1{font-size:28px;margin-bottom:6px;letter-spacing:-0.5px}
+.header p{font-size:14px;color:#888}
+.card{background:#fff;border-radius:14px;padding:28px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.card h2{font-size:16px;margin-bottom:18px;display:flex;align-items:center;gap:8px}
+.card h2 .icon{width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;background:#f0f0ee;border-radius:6px;font-size:12px}
+
+/* Tabs */
+.tabs{display:flex;gap:4px;margin-bottom:22px;background:#f5f5f3;border-radius:10px;padding:4px}
+.tab{flex:1;padding:10px 8px;text-align:center;font-size:13px;font-weight:500;border:none;background:transparent;color:#888;border-radius:8px;cursor:pointer;transition:all .2s;font-family:inherit}
+.tab.active{background:#fff;color:#1a1a1a;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+.tab:hover:not(.active){color:#1a1a1a}
+
+/* Tab content */
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* Password display */
+.password-display{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.password-output{flex:1;font-family:'Sora',monospace;font-size:18px;font-weight:500;padding:14px 16px;background:#f5f5f3;border-radius:10px;border:none;color:#1a1a1a;letter-spacing:0.5px;outline:none;overflow-x:auto;white-space:nowrap}
+.btn{padding:10px 18px;border:none;border-radius:10px;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:#1a1a1a;color:#fff}
+.btn-primary:hover{background:#333}
+.btn-secondary{background:#f0f0ee;color:#1a1a1a}
+.btn-secondary:hover{background:#e5e5e2}
+.btn-copy{padding:12px 16px}
+.btn-copy svg{width:16px;height:16px}
+
+/* Strength bar */
+.strength-bar-wrap{margin-bottom:20px}
+.strength-labels{display:flex;justify-content:space-between;margin-bottom:6px;font-size:12px}
+.strength-label{color:#aaa;font-weight:500}
+.strength-label.active{font-weight:600}
+.strength-track{height:6px;background:#f0f0ee;border-radius:3px;overflow:hidden}
+.strength-fill{height:100%;border-radius:3px;transition:width .4s ease, background .4s ease;width:0}
+
+/* Slider */
+.slider-wrap{margin-bottom:20px}
+.slider-wrap label{display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px;font-weight:500;color:#1a1a1a}
+.slider-wrap label span{color:#888;font-weight:400}
+input[type=range]{-webkit-appearance:none;width:100%;height:6px;background:#f0f0ee;border-radius:3px;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;background:#1a1a1a;border-radius:50%;cursor:pointer;border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.15)}
+
+/* Toggle options */
+.options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.option{display:flex;align-items:center;gap:10px;padding:12px 14px;background:#f9f9f7;border-radius:10px;cursor:pointer;transition:background .2s;font-size:13px;font-weight:500;color:#1a1a1a;user-select:none}
+.option:hover{background:#f0f0ee}
+.toggle{position:relative;width:38px;height:22px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.toggle .slider{position:absolute;inset:0;background:#ddd;border-radius:11px;transition:.2s;cursor:pointer}
+.toggle .slider::before{content:'';position:absolute;width:16px;height:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+.toggle input:checked+.slider{background:#1a1a1a}
+.toggle input:checked+.slider::before{transform:translateX(16px)}
+
+/* Actions row */
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.actions .btn{flex:1;justify-content:center;min-width:120px}
+
+/* Bulk output */
+.bulk-output{margin-top:16px;display:none}
+.bulk-list{list-style:none;display:flex;flex-direction:column;gap:6px}
+.bulk-item{display:flex;align-items:center;gap:8px;padding:10px 14px;background:#f9f9f7;border-radius:8px;font-family:'Sora',monospace;font-size:13px;color:#1a1a1a;letter-spacing:0.3px}
+.bulk-item .bulk-copy{margin-left:auto;background:none;border:none;cursor:pointer;color:#aaa;padding:4px;border-radius:4px;display:flex}
+.bulk-item .bulk-copy:hover{color:#1a1a1a;background:#e5e5e2}
+.bulk-item .bulk-copy svg{width:14px;height:14px}
+.bulk-count-wrap{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.bulk-count-wrap label{font-size:13px;font-weight:500;color:#1a1a1a}
+.bulk-count-wrap select{font-family:inherit;font-size:13px;padding:8px 12px;border-radius:8px;border:1px solid #e5e5e2;background:#fff;color:#1a1a1a;outline:none}
+
+/* QR code */
+.qr-section{text-align:center;margin-top:16px;display:none}
+.qr-section svg{margin:0 auto}
+.qr-label{font-size:12px;color:#aaa;margin-top:8px}
+
+/* History */
+.history-list{list-style:none;display:flex;flex-direction:column;gap:6px}
+.history-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#f9f9f7;border-radius:8px;font-size:13px}
+.history-pw{font-family:'Sora',monospace;color:#1a1a1a;letter-spacing:0.3px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.history-meta{font-size:11px;color:#bbb;white-space:nowrap}
+.history-copy{background:none;border:none;cursor:pointer;color:#aaa;padding:4px;border-radius:4px;display:flex}
+.history-copy:hover{color:#1a1a1a;background:#e5e5e2}
+.history-copy svg{width:14px;height:14px}
+.history-empty{text-align:center;padding:24px;color:#bbb;font-size:13px}
+.clear-history{margin-top:12px;width:100%;justify-content:center}
+
+/* Toast */
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(80px);background:#1a1a1a;color:#fff;padding:12px 24px;border-radius:10px;font-family:'Sora',sans-serif;font-size:13px;font-weight:500;opacity:0;transition:all .3s ease;pointer-events:none;z-index:999}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* Passphrase settings */
+.passphrase-settings{display:flex;gap:12px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+.passphrase-settings label{font-size:13px;font-weight:500;color:#1a1a1a}
+.passphrase-settings select,.passphrase-settings input[type=text]{font-family:inherit;font-size:13px;padding:8px 12px;border-radius:8px;border:1px solid #e5e5e2;background:#fff;color:#1a1a1a;outline:none}
+.passphrase-settings input[type=text]{width:60px;text-align:center}
+
+/* Responsive */
+@media(max-width:540px){
+  .options{grid-template-columns:1fr}
+  .tabs{flex-wrap:wrap}
+  .tab{font-size:12px;padding:8px 4px}
+  .password-output{font-size:15px}
+  .actions{flex-direction:column}
+  .actions .btn{min-width:unset}
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>Password Generator Pro</h1>
+    <p>Generate secure passwords, passphrases, and more</p>
+  </div>
+
+  <!-- Mode Tabs -->
+  <div class="card">
+    <div class="tabs">
+      <button class="tab active" data-tab="standard">Standard</button>
+      <button class="tab" data-tab="memorable">Memorable</button>
+      <button class="tab" data-tab="passphrase">Passphrase</button>
+      <button class="tab" data-tab="bulk">Bulk Generate</button>
+    </div>
+
+    <!-- STANDARD TAB -->
+    <div class="tab-content active" id="tab-standard">
+      <div class="password-display">
+        <input type="text" class="password-output" id="pw-output" readonly placeholder="Click Generate">
+        <button class="btn btn-primary btn-copy" id="btn-copy" title="Copy to clipboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        </button>
+      </div>
+
+      <div class="strength-bar-wrap">
+        <div class="strength-labels">
+          <span class="strength-label" data-level="weak">Weak</span>
+          <span class="strength-label" data-level="medium">Medium</span>
+          <span class="strength-label" data-level="strong">Strong</span>
+          <span class="strength-label" data-level="vstrong">Very Strong</span>
+        </div>
+        <div class="strength-track"><div class="strength-fill" id="strength-fill"></div></div>
+      </div>
+
+      <div class="slider-wrap">
+        <label>Length <span id="length-val">16</span></label>
+        <input type="range" id="pw-length" min="8" max="64" value="16">
+      </div>
+
+      <div class="options">
+        <label class="option"><span class="toggle"><input type="checkbox" id="opt-upper" checked><span class="slider"></span></span>Uppercase (A-Z)</label>
+        <label class="option"><span class="toggle"><input type="checkbox" id="opt-lower" checked><span class="slider"></span></span>Lowercase (a-z)</label>
+        <label class="option"><span class="toggle"><input type="checkbox" id="opt-numbers" checked><span class="slider"></span></span>Numbers (0-9)</label>
+        <label class="option"><span class="toggle"><input type="checkbox" id="opt-symbols" checked><span class="slider"></span></span>Symbols (!@#$)</label>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" id="btn-generate">Generate Password</button>
+        <button class="btn btn-secondary" id="btn-qr-toggle">Show QR Code</button>
+      </div>
+
+      <div class="qr-section" id="qr-section">
+        <div id="qr-canvas"></div>
+        <div class="qr-label">Scan to transfer password</div>
+      </div>
+    </div>
+
+    <!-- MEMORABLE TAB -->
+    <div class="tab-content" id="tab-memorable">
+      <div class="password-display">
+        <input type="text" class="password-output" id="mem-output" readonly placeholder="Click Generate">
+        <button class="btn btn-primary btn-copy" data-copy-target="mem-output" title="Copy">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        </button>
+      </div>
+      <p style="font-size:13px;color:#888;margin-bottom:16px">Generates word-based passwords like "correct-horse-battery-staple" that are easier to remember but still strong.</p>
+      <div class="passphrase-settings">
+        <label>Words: </label>
+        <select id="mem-word-count">
+          <option value="3">3</option>
+          <option value="4" selected>4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+        </select>
+        <label>Separator: </label>
+        <input type="text" id="mem-separator" value="-" maxlength="3">
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary" id="btn-mem-generate">Generate Memorable</button>
+      </div>
+    </div>
+
+    <!-- PASSPHRASE TAB -->
+    <div class="tab-content" id="tab-passphrase">
+      <div class="password-display">
+        <input type="text" class="password-output" id="phrase-output" readonly placeholder="Click Generate">
+        <button class="btn btn-primary btn-copy" data-copy-target="phrase-output" title="Copy">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        </button>
+      </div>
+      <p style="font-size:13px;color:#888;margin-bottom:16px">Random words forming a passphrase. Great for master passwords.</p>
+      <div class="passphrase-settings">
+        <label>Words: </label>
+        <select id="phrase-word-count">
+          <option value="3">3</option>
+          <option value="4" selected>4</option>
+          <option value="5">5</option>
+        </select>
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary" id="btn-phrase-generate">Generate Passphrase</button>
+      </div>
+    </div>
+
+    <!-- BULK TAB -->
+    <div class="tab-content" id="tab-bulk">
+      <p style="font-size:13px;color:#888;margin-bottom:16px">Generate multiple passwords at once using your current settings.</p>
+      <div class="bulk-count-wrap">
+        <label>Count: </label>
+        <select id="bulk-count">
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+        </select>
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary" id="btn-bulk-generate">Generate Bulk</button>
+      </div>
+      <div class="bulk-output" id="bulk-output">
+        <ul class="bulk-list" id="bulk-list"></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- History Card -->
+  <div class="card">
+    <h2><span class="icon">H</span> Password History</h2>
+    <div id="history-container">
+      <div class="history-empty" id="history-empty">No passwords generated yet</div>
+      <ul class="history-list" id="history-list"></ul>
+    </div>
+    <button class="btn btn-secondary clear-history" id="btn-clear-history" style="display:none">Clear History</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── Word list for memorable / passphrase ───
+const WORDS = [
+  "alpha","anchor","arrow","atlas","badge","blaze","bloom","board","brave","brick",
+  "bridge","cabin","camel","candy","cargo","cedar","chain","chess","cider","cliff",
+  "cloud","cobra","comet","coral","crane","crisp","crown","curve","dance","delta",
+  "diary","draft","dream","drift","dusk","eagle","ember","epoch","fable","falcon",
+  "ferry","flame","flask","flint","flora","forge","frost","gaze","giant","gleam",
+  "globe","grace","grain","grove","guide","gypsy","haven","hawk","hazel","honor",
+  "ivory","jewel","karma","latch","lemon","light","lotus","lunar","maple","marsh",
+  "medal","mesa","mist","mocha","noble","north","oasis","olive","omega","onyx",
+  "orbit","otter","palm","panda","pearl","pebble","penny","pilot","pixel","plaza",
+  "plume","polar","prism","pulse","quartz","quest","raven","realm","ridge","river",
+  "robin","rouge","royal","ruby","sage","satin","scout","shade","shell","shore",
+  "sigma","silk","slate","solar","spark","spice","spine","spoke","stage","steam",
+  "steel","stone","storm","sugar","surge","swift","tango","terra","thorn","tiger",
+  "token","topaz","torch","trail","trend","trout","tulip","umbra","unity","urban",
+  "valor","vapor","vault","venus","vigor","vinyl","viola","vivid","voice","vortex",
+  "waltz","wheat","whirl","bliss","breeze","bronze","canyon","chisel","clover","crest",
+  "dagger","dawn","ember","fennel","flare","frost","ginger","harbor","indigo","jade",
+  "kite","lancer","marble","nectar","orchid","pepper","quill","raptor","sable","thistle",
+  "violet","warden","zenith","acorn","birch","cipher","dune","echo","fern","glyph",
+  "heron","iris","jasper","kelp","lark","moss","nova","opal","pine","quasar",
+  "reef","shard","tidal","umber","vine","wren","xerox","yew","zephyr","apex",
+  "bolt","cove","dome","elm","fjord","gust","helm","isle","jinx","knot",
+  "lynx","mace","neon","oxen","plum","quay","rune","surf","tide","urge"
+];
+
+// ─── State ───
+const state = {
+  history: JSON.parse(localStorage.getItem('pg_history') || '[]')
+};
+
+// ─── DOM refs ───
+const $ = id => document.getElementById(id);
+const pwOutput = $('pw-output');
+const memOutput = $('mem-output');
+const phraseOutput = $('phrase-output');
+const lengthSlider = $('pw-length');
+const lengthVal = $('length-val');
+const strengthFill = $('strength-fill');
+const historyList = $('history-list');
+const historyEmpty = $('history-empty');
+const bulkList = $('bulk-list');
+const bulkOutput = $('bulk-output');
+const qrSection = $('qr-section');
+const qrCanvas = $('qr-canvas');
+const toast = $('toast');
+
+// ─── Tabs ───
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+  });
+});
+
+// ─── Slider ───
+lengthSlider.addEventListener('input', () => {
+  lengthVal.textContent = lengthSlider.value;
+});
+
+// ─── Generate standard password ───
+function generatePassword(len) {
+  const upper = $('opt-upper').checked;
+  const lower = $('opt-lower').checked;
+  const numbers = $('opt-numbers').checked;
+  const symbols = $('opt-symbols').checked;
+
+  let chars = '';
+  if (upper) chars += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  if (lower) chars += 'abcdefghijklmnopqrstuvwxyz';
+  if (numbers) chars += '0123456789';
+  if (symbols) chars += '!@#$%^&*()_+-=[]{}|;:,.<>?';
+
+  if (!chars) { showToast('Enable at least one character type'); return null; }
+
+  const arr = new Uint32Array(len || parseInt(lengthSlider.value));
+  crypto.getRandomValues(arr);
+  let pw = '';
+  for (let i = 0; i < arr.length; i++) {
+    pw += chars[arr[i] % chars.length];
+  }
+  return pw;
+}
+
+// ─── Generate memorable ───
+function generateMemorable() {
+  const count = parseInt($('mem-word-count').value);
+  const sep = $('mem-separator').value || '-';
+  const arr = new Uint32Array(count);
+  crypto.getRandomValues(arr);
+  return Array.from(arr).map(n => WORDS[n % WORDS.length]).join(sep);
+}
+
+// ─── Generate passphrase ───
+function generatePassphrase() {
+  const count = parseInt($('phrase-word-count').value);
+  const arr = new Uint32Array(count);
+  crypto.getRandomValues(arr);
+  return Array.from(arr).map(n => {
+    const w = WORDS[n % WORDS.length];
+    return w.charAt(0).toUpperCase() + w.slice(1);
+  }).join(' ');
+}
+
+// ─── Strength ───
+function calcStrength(pw) {
+  if (!pw) return { level: 'weak', pct: 0 };
+  let score = 0;
+  if (pw.length >= 8) score++;
+  if (pw.length >= 12) score++;
+  if (pw.length >= 20) score++;
+  if (pw.length >= 32) score++;
+  if (/[a-z]/.test(pw)) score++;
+  if (/[A-Z]/.test(pw)) score++;
+  if (/[0-9]/.test(pw)) score++;
+  if (/[^a-zA-Z0-9]/.test(pw)) score++;
+
+  const unique = new Set(pw).size;
+  if (unique > 10) score++;
+  if (unique > 20) score++;
+
+  if (score <= 3) return { level: 'weak', pct: 20, color: '#e74c3c' };
+  if (score <= 5) return { level: 'medium', pct: 45, color: '#f39c12' };
+  if (score <= 7) return { level: 'strong', pct: 72, color: '#27ae60' };
+  return { level: 'vstrong', pct: 100, color: '#1a8a4a' };
+}
+
+function updateStrength(pw) {
+  const s = calcStrength(pw);
+  strengthFill.style.width = s.pct + '%';
+  strengthFill.style.background = s.color || '#ddd';
+  document.querySelectorAll('.strength-label').forEach(el => {
+    el.classList.toggle('active', el.dataset.level === s.level);
+    if (el.dataset.level === s.level) el.style.color = s.color;
+    else el.style.color = '#aaa';
+  });
+}
+
+// ─── History ───
+function addToHistory(pw, type) {
+  state.history.unshift({ pw, type, time: Date.now() });
+  if (state.history.length > 10) state.history.pop();
+  localStorage.setItem('pg_history', JSON.stringify(state.history));
+  renderHistory();
+}
+
+function renderHistory() {
+  if (state.history.length === 0) {
+    historyEmpty.style.display = 'block';
+    historyList.innerHTML = '';
+    $('btn-clear-history').style.display = 'none';
+    return;
+  }
+  historyEmpty.style.display = 'none';
+  $('btn-clear-history').style.display = 'flex';
+  historyList.innerHTML = state.history.map((h, i) => {
+    const ago = timeAgo(h.time);
+    return `<li class="history-item">
+      <span class="history-pw">${escapeHtml(h.pw)}</span>
+      <span class="history-meta">${ago}</span>
+      <button class="history-copy" onclick="copyText('${escapeAttr(h.pw)}')" title="Copy">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+      </button>
+    </li>`;
+  }).join('');
+}
+
+function timeAgo(ts) {
+  const diff = Math.floor((Date.now() - ts) / 1000);
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+  return Math.floor(diff / 86400) + 'd ago';
+}
+
+function escapeHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function escapeAttr(s) {
+  return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'\\"');
+}
+
+// ─── Copy ───
+function copyText(text) {
+  navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard'));
+}
+
+// ─── Toast ───
+function showToast(msg) {
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+// ─── QR Code (SVG-based) ───
+function generateQR(text) {
+  // Simple QR using a basic encoding approach
+  // We use a lightweight QR matrix generator
+  const qr = QRMatrix.generate(text);
+  const size = qr.length;
+  const cellSize = 5;
+  const margin = 2;
+  const totalSize = (size + margin * 2) * cellSize;
+  let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${totalSize}" height="${totalSize}" viewBox="0 0 ${totalSize} ${totalSize}">`;
+  svg += `<rect width="${totalSize}" height="${totalSize}" fill="#fff"/>`;
+  for (let r = 0; r < size; r++) {
+    for (let c = 0; c < size; c++) {
+      if (qr[r][c]) {
+        svg += `<rect x="${(c + margin) * cellSize}" y="${(r + margin) * cellSize}" width="${cellSize}" height="${cellSize}" fill="#1a1a1a"/>`;
+      }
+    }
+  }
+  svg += '</svg>';
+  return svg;
+}
+
+// Minimal QR Code matrix generator (Version 1-4, ECC L, numeric/byte)
+const QRMatrix = (() => {
+  // Galois field
+  const EXP = new Uint8Array(256);
+  const LOG = new Uint8Array(256);
+  let x = 1;
+  for (let i = 0; i < 255; i++) { EXP[i] = x; LOG[x] = i; x = (x << 1) ^ (x & 128 ? 0x11d : 0); }
+  EXP[255] = EXP[0];
+
+  function gfMul(a, b) { return a && b ? EXP[(LOG[a] + LOG[b]) % 255] : 0; }
+
+  function polyMul(a, b) {
+    const r = new Uint8Array(a.length + b.length - 1);
+    for (let i = 0; i < a.length; i++)
+      for (let j = 0; j < b.length; j++)
+        r[i + j] ^= gfMul(a[i], b[j]);
+    return r;
+  }
+
+  function eccPoly(n) {
+    let p = new Uint8Array([1]);
+    for (let i = 0; i < n; i++) p = polyMul(p, new Uint8Array([1, EXP[i]]));
+    return p;
+  }
+
+  function computeECC(data, eccLen) {
+    const gen = eccPoly(eccLen);
+    const msg = new Uint8Array(data.length + eccLen);
+    msg.set(data);
+    for (let i = 0; i < data.length; i++) {
+      const coef = msg[i];
+      if (coef) for (let j = 0; j < gen.length; j++) msg[i + j] ^= gfMul(gen[j], coef);
+    }
+    return msg.slice(data.length);
+  }
+
+  const VERSIONS = [
+    null,
+    { total: 26, data: 19, ecc: 7 },
+    { total: 44, data: 34, ecc: 10 },
+    { total: 70, data: 55, ecc: 15 },
+    { total: 100, data: 80, ecc: 20 },
+    { total: 134, data: 108, ecc: 26 },
+    { total: 172, data: 136, ecc: 36 },
+  ];
+
+  function chooseVersion(len) {
+    for (let v = 1; v < VERSIONS.length; v++) {
+      if (len + 3 <= VERSIONS[v].data) return v;
+    }
+    return VERSIONS.length - 1;
+  }
+
+  function encode(text) {
+    const bytes = new TextEncoder().encode(text);
+    const ver = chooseVersion(bytes.length);
+    const info = VERSIONS[ver];
+    const data = new Uint8Array(info.data);
+    // Mode: byte (0100), length
+    data[0] = 0x40 | (bytes.length >> 4);
+    data[1] = ((bytes.length & 0xf) << 4) | (bytes.length > 0 ? (bytes[0] >> 4) : 0);
+    for (let i = 0; i < bytes.length; i++) {
+      data[1 + i] |= (bytes[i] >> 4) & 0x0f;
+      if (i + 2 < info.data) data[2 + i] = (bytes[i] << 4) & 0xf0;
+      if (i + 1 < bytes.length && i + 2 < info.data) data[2 + i] |= (bytes[i + 1] >> 4) & 0x0f;
+    }
+    // Simpler: re-encode properly
+    const dataBuf = new Uint8Array(info.data);
+    let bitPos = 0;
+    function writeBits(val, len) {
+      for (let i = len - 1; i >= 0; i--) {
+        const byteIdx = bitPos >> 3;
+        const bitIdx = 7 - (bitPos & 7);
+        if (byteIdx < dataBuf.length) {
+          if ((val >> i) & 1) dataBuf[byteIdx] |= (1 << bitIdx);
+        }
+        bitPos++;
+      }
+    }
+    writeBits(4, 4); // byte mode
+    if (ver >= 1 && ver <= 9) writeBits(bytes.length, 8);
+    else writeBits(bytes.length, 16);
+    for (const b of bytes) writeBits(b, 8);
+    writeBits(0, 4); // terminator
+    // Pad
+    while (bitPos % 8) writeBits(0, 1);
+    let padByte = 0;
+    while ((bitPos >> 3) < info.data) {
+      writeBits(padByte ? 17 : 236, 8);
+      padByte ^= 1;
+    }
+    const ecc = computeECC(dataBuf, info.ecc);
+    const codewords = new Uint8Array(info.total);
+    codewords.set(dataBuf);
+    codewords.set(ecc, info.data);
+    return { ver, codewords };
+  }
+
+  function createMatrix(ver) {
+    const size = 17 + ver * 4;
+    const m = Array.from({ length: size }, () => new Uint8Array(size));
+    const reserved = Array.from({ length: size }, () => new Uint8Array(size));
+
+    function setModule(r, c, val) {
+      if (r >= 0 && r < size && c >= 0 && c < size) { m[r][c] = val ? 1 : 0; reserved[r][c] = 1; }
+    }
+
+    // Finder patterns
+    function finderPattern(row, col) {
+      for (let r = -1; r <= 7; r++)
+        for (let c = -1; c <= 7; c++) {
+          const rr = row + r, cc = col + c;
+          if (rr < 0 || rr >= size || cc < 0 || cc >= size) continue;
+          const v = (r >= 0 && r <= 6 && (c === 0 || c === 6)) ||
+                    (c >= 0 && c <= 6 && (r === 0 || r === 6)) ||
+                    (r >= 2 && r <= 4 && c >= 2 && c <= 4);
+          setModule(rr, cc, v);
+        }
+    }
+    finderPattern(0, 0);
+    finderPattern(0, size - 7);
+    finderPattern(size - 7, 0);
+
+    // Alignment pattern for version >= 2
+    if (ver >= 2) {
+      const pos = [6, size - 7];
+      for (const r of pos)
+        for (const c of pos) {
+          if (reserved[r][c]) continue;
+          for (let dr = -2; dr <= 2; dr++)
+            for (let dc = -2; dc <= 2; dc++) {
+              const v = Math.abs(dr) === 2 || Math.abs(dc) === 2 || (dr === 0 && dc === 0);
+              setModule(r + dr, c + dc, v);
+            }
+        }
+    }
+
+    // Timing patterns
+    for (let i = 8; i < size - 8; i++) {
+      setModule(6, i, i % 2 === 0);
+      setModule(i, 6, i % 2 === 0);
+    }
+
+    // Dark module
+    setModule(size - 8, 8, 1);
+
+    // Reserve format info
+    for (let i = 0; i < 15; i++) {
+      if (i < 6) { reserved[8][i] = 1; reserved[i][8] = 1; }
+      else if (i < 8) { reserved[8][i + 1] = 1; reserved[i + 1][8] = 1; }
+      else if (i < 9) { reserved[8][size - 15 + i] = 1; reserved[size - 15 + i][8] = 1; }
+      else { reserved[8][size - 15 + i] = 1; reserved[size - 15 + i][8] = 1; }
+    }
+
+    return { m, reserved, size };
+  }
+
+  function placeData(matrix, reserved, size, codewords) {
+    let bitIdx = 0;
+    const totalBits = codewords.length * 8;
+    let col = size - 1;
+    let goingUp = true;
+
+    while (col >= 0) {
+      if (col === 6) col--;
+      const rows = goingUp ? Array.from({ length: size }, (_, i) => size - 1 - i) : Array.from({ length: size }, (_, i) => i);
+      for (const row of rows) {
+        for (let dc = 0; dc <= 1; dc++) {
+          const c = col - dc;
+          if (c < 0 || reserved[row][c]) continue;
+          if (bitIdx < totalBits) {
+            const byteIdx = bitIdx >> 3;
+            const bitInByte = 7 - (bitIdx & 7);
+            matrix[row][c] = (codewords[byteIdx] >> bitInByte) & 1;
+          }
+          bitIdx++;
+        }
+      }
+      col -= 2;
+      goingUp = !goingUp;
+    }
+  }
+
+  function applyMask(matrix, reserved, size, maskId) {
+    const maskFn = [
+      (r, c) => (r + c) % 2 === 0,
+      (r, c) => r % 2 === 0,
+      (r, c) => c % 3 === 0,
+      (r, c) => (r + c) % 3 === 0,
+      (r, c) => (Math.floor(r / 2) + Math.floor(c / 3)) % 2 === 0,
+      (r, c) => ((r * c) % 2 + (r * c) % 3) === 0,
+      (r, c) => ((r * c) % 2 + (r * c) % 3) % 2 === 0,
+      (r, c) => ((r + c) % 2 + (r * c) % 3) % 2 === 0,
+    ][maskId];
+    for (let r = 0; r < size; r++)
+      for (let c = 0; c < size; c++)
+        if (!reserved[r][c] && maskFn(r, c)) matrix[r][c] ^= 1;
+  }
+
+  function placeFormatInfo(matrix, size, maskId) {
+    // ECC level L = 01, mask
+    const FORMAT_BITS = [
+      0x77c4, 0x72f3, 0x7daa, 0x789d, 0x662f, 0x6318, 0x6c41, 0x6976,
+      0x5412, 0x5125, 0x5e7c, 0x5b4b, 0x45f9, 0x40ce, 0x4f97, 0x4aa0,
+    ];
+    // For ECC L: format info index = maskId
+    const bits = FORMAT_BITS[maskId];
+    for (let i = 0; i < 15; i++) {
+      const bit = (bits >> (14 - i)) & 1;
+      // Horizontal
+      if (i < 6) matrix[8][i] = bit;
+      else if (i < 8) matrix[8][i + 1] = bit;
+      else matrix[8][size - 15 + i] = bit;
+      // Vertical
+      if (i < 8) matrix[size - 1 - i][8] = bit;
+      else if (i < 9) matrix[15 - i][8] = bit;
+      else matrix[14 - i][8] = bit;
+    }
+  }
+
+  function penalty(matrix, size) {
+    let score = 0;
+    // Rule 1: runs of same color
+    for (let r = 0; r < size; r++) {
+      let run = 1;
+      for (let c = 1; c < size; c++) {
+        if (matrix[r][c] === matrix[r][c - 1]) { run++; if (run === 5) score += 3; else if (run > 5) score++; }
+        else run = 1;
+      }
+    }
+    for (let c = 0; c < size; c++) {
+      let run = 1;
+      for (let r = 1; r < size; r++) {
+        if (matrix[r][c] === matrix[r - 1][c]) { run++; if (run === 5) score += 3; else if (run > 5) score++; }
+        else run = 1;
+      }
+    }
+    return score;
+  }
+
+  function generate(text) {
+    const { ver, codewords } = encode(text);
+    let bestMatrix, bestScore = Infinity;
+    for (let mask = 0; mask < 8; mask++) {
+      const { m, reserved, size } = createMatrix(ver);
+      placeData(m, reserved, size, codewords);
+      applyMask(m, reserved, size, mask);
+      placeFormatInfo(m, size, mask);
+      const s = penalty(m, size);
+      if (s < bestScore) { bestScore = s; bestMatrix = m; }
+    }
+    return bestMatrix;
+  }
+
+  return { generate };
+})();
+
+// ─── Event Handlers ───
+
+$('btn-generate').addEventListener('click', () => {
+  const pw = generatePassword();
+  if (!pw) return;
+  pwOutput.value = pw;
+  updateStrength(pw);
+  addToHistory(pw, 'standard');
+  if (qrSection.style.display === 'block') qrCanvas.innerHTML = generateQR(pw);
+});
+
+$('btn-copy').addEventListener('click', () => {
+  if (pwOutput.value) copyText(pwOutput.value);
+});
+
+document.querySelectorAll('[data-copy-target]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = $(btn.dataset.copyTarget);
+    if (target && target.value) copyText(target.value);
+  });
+});
+
+$('btn-mem-generate').addEventListener('click', () => {
+  const pw = generateMemorable();
+  memOutput.value = pw;
+  addToHistory(pw, 'memorable');
+});
+
+$('btn-phrase-generate').addEventListener('click', () => {
+  const pw = generatePassphrase();
+  phraseOutput.value = pw;
+  addToHistory(pw, 'passphrase');
+});
+
+$('btn-bulk-generate').addEventListener('click', () => {
+  const count = parseInt($('bulk-count').value);
+  const passwords = [];
+  for (let i = 0; i < count; i++) {
+    const pw = generatePassword(parseInt(lengthSlider.value));
+    if (pw) passwords.push(pw);
+  }
+  if (!passwords.length) return;
+  bulkOutput.style.display = 'block';
+  bulkList.innerHTML = passwords.map(pw =>
+    `<li class="bulk-item">
+      <span>${escapeHtml(pw)}</span>
+      <button class="bulk-copy" onclick="copyText('${escapeAttr(pw)}')" title="Copy">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+      </button>
+    </li>`
+  ).join('');
+  passwords.forEach(pw => addToHistory(pw, 'bulk'));
+});
+
+$('btn-qr-toggle').addEventListener('click', () => {
+  const showing = qrSection.style.display === 'block';
+  qrSection.style.display = showing ? 'none' : 'block';
+  $('btn-qr-toggle').textContent = showing ? 'Show QR Code' : 'Hide QR Code';
+  if (!showing && pwOutput.value) qrCanvas.innerHTML = generateQR(pwOutput.value);
+});
+
+$('btn-clear-history').addEventListener('click', () => {
+  state.history = [];
+  localStorage.setItem('pg_history', JSON.stringify(state.history));
+  renderHistory();
+  showToast('History cleared');
+});
+
+// Ensure at least one option checked
+document.querySelectorAll('.option input[type=checkbox]').forEach(cb => {
+  cb.addEventListener('change', () => {
+    const anyChecked = ['opt-upper','opt-lower','opt-numbers','opt-symbols'].some(id => $(id).checked);
+    if (!anyChecked) { cb.checked = true; showToast('Keep at least one option enabled'); }
+  });
+});
+
+// ─── Init ───
+renderHistory();
+
+// Generate an initial password on load
+const initPw = generatePassword();
+if (initPw) {
+  pwOutput.value = initPw;
+  updateStrength(initPw);
+}
+</script>
+</body>
+</html>

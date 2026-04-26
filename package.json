@@ -1,0 +1,124 @@
+{
+  "name": "lifehub-desktop",
+  "version": "1.0.0",
+  "description": "LifeHub — 43 productivity tools in one app",
+  "main": "main.js",
+  "author": "LifeHub <hello@trylifehub.com>",
+  "license": "UNLICENSED",
+  "scripts": {
+    "start": "electron .",
+    "build-mac": "electron-builder --mac",
+    "build-win": "electron-builder --win",
+    "build-linux": "electron-builder --linux",
+    "build-all": "electron-builder -mwl"
+  },
+  "build": {
+    "appId": "com.lifehub.desktop",
+    "productName": "LifeHub",
+    "copyright": "© 2026 LifeHub",
+    "asar": true,
+    "compression": "maximum",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "app/**/*",
+      "build/icon.*"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "icon": "build/icon.icns",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "arm64"
+          ]
+        }
+      ],
+      "darkModeSupport": true,
+      "hardenedRuntime": false,
+      "gatekeeperAssess": false,
+      "identity": null
+    },
+    "dmg": {
+      "title": "LifeHub Installer",
+      "icon": "build/icon.icns",
+      "iconSize": 110,
+      "window": {
+        "width": 540,
+        "height": 380
+      },
+      "contents": [
+        {
+          "x": 140,
+          "y": 200,
+          "type": "file"
+        },
+        {
+          "x": 400,
+          "y": 200,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "win": {
+      "icon": "build/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "LifeHub"
+    },
+    "linux": {
+      "icon": "build/icon-1024.png",
+      "category": "Office",
+      "target": [
+        "AppImage",
+        "deb"
+      ]
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "walymali",
+        "repo": "lifehub-desktop",
+        "private": false,
+        "releaseType": "release"
+      }
+    ]
+  },
+  "devDependencies": {
+    "electron": "^41.2.0",
+    "electron-builder": "^25.1.8"
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.3"
+  }
+}

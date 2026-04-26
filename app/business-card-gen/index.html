@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Card Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Sora',system-ui,sans-serif;background:#f5f5f3;color:#555}
+.app{display:grid;grid-template-columns:360px 1fr;min-height:100vh}
+.sidebar{background:#fff;border-right:1px solid rgba(0,0,0,0.06);overflow-y:auto;max-height:100vh;scrollbar-width:thin}
+.sidebar-inner{padding:24px}
+.sidebar h1{font-size:1rem;font-weight:700;color:#1a1a1a;margin-bottom:4px}
+.sidebar .tagline{font-size:0.65rem;color:#999;margin-bottom:20px}
+.section-title{font-size:0.6rem;font-weight:600;color:#999;text-transform:uppercase;letter-spacing:0.1em;margin:16px 0 8px;padding-top:12px;border-top:1px solid rgba(0,0,0,0.06)}
+.field{margin-bottom:8px}
+.field label{display:block;font-size:0.68rem;font-weight:500;color:#888;margin-bottom:2px}
+.field input{width:100%;padding:8px 10px;background:#f5f5f3;border:1px solid rgba(0,0,0,0.06);border-radius:8px;color:#1a1a1a;font-family:inherit;font-size:0.8rem}
+.field input:focus{outline:none;border-color:#1a1a1a}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.themes{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px}
+.theme-btn{width:24px;height:24px;border-radius:6px;border:2px solid transparent;cursor:pointer;transition:all 0.2s}
+.theme-btn.active{border-color:#1a1a1a;transform:scale(1.1)}
+.layouts{display:flex;gap:4px;margin-bottom:8px}
+.layout-btn{padding:5px 12px;border:1px solid rgba(0,0,0,0.06);border-radius:6px;background:#fff;color:#999;font-size:0.65rem;cursor:pointer;font-family:inherit;transition:all 0.2s}
+.layout-btn.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+.actions{display:flex;gap:6px;margin-top:14px;padding-top:12px;border-top:1px solid rgba(0,0,0,0.06);position:sticky;bottom:0;background:#fff;padding-bottom:6px}
+.btn-print{flex:1;padding:10px;background:#1a1a1a;color:#fff;border:none;border-radius:8px;font-weight:600;font-size:0.78rem;cursor:pointer;font-family:inherit}
+.preview-area{padding:40px;display:flex;justify-content:center;align-items:center;flex-direction:column;gap:20px}
+.preview-label{font-size:0.7rem;color:#999}
+/* Card Styles */
+.card-wrap{perspective:1000px}
+.bcard{width:400px;height:240px;border-radius:14px;padding:32px;position:relative;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.12);font-family:Arial,Helvetica,sans-serif;transition:all 0.3s}
+.bcard:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,0.18)}
+/* Layout: Modern */
+.bcard.modern{display:flex;flex-direction:column;justify-content:flex-end}
+.bcard.modern .bc-name{font-size:1.3rem;font-weight:700;margin-bottom:2px}
+.bcard.modern .bc-title{font-size:0.72rem;opacity:0.7;margin-bottom:16px}
+.bcard.modern .bc-info{font-size:0.65rem;line-height:1.8;opacity:0.8}
+.bcard.modern .bc-logo{position:absolute;top:28px;right:28px;font-size:0.75rem;font-weight:700;opacity:0.5}
+/* Layout: Classic */
+.bcard.classic{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.bcard.classic .bc-name{font-size:1.2rem;font-weight:700;margin-bottom:2px}
+.bcard.classic .bc-title{font-size:0.7rem;opacity:0.7;margin-bottom:4px}
+.bcard.classic .bc-company{font-size:0.78rem;font-weight:600;opacity:0.9;margin-bottom:16px}
+.bcard.classic .bc-info{font-size:0.62rem;line-height:1.8;opacity:0.7}
+.bcard.classic .bc-divider{width:40px;height:2px;margin:12px auto;opacity:0.3}
+/* Layout: Minimal */
+.bcard.minimal{display:grid;grid-template-columns:1fr auto;align-items:end}
+.bcard.minimal .bc-left{}
+.bcard.minimal .bc-name{font-size:1.1rem;font-weight:700;margin-bottom:2px}
+.bcard.minimal .bc-title{font-size:0.68rem;opacity:0.6}
+.bcard.minimal .bc-right{text-align:right;font-size:0.62rem;line-height:2;opacity:0.7}
+.bcard.minimal .bc-line{position:absolute;bottom:60px;left:32px;right:32px;height:1px;opacity:0.15}
+/* Layout: Bold */
+.bcard.bold{display:flex;flex-direction:column;justify-content:space-between}
+.bcard.bold .bc-name{font-size:1.8rem;font-weight:800;letter-spacing:-0.03em;line-height:1.1}
+.bcard.bold .bc-bottom{display:flex;justify-content:space-between;align-items:flex-end}
+.bcard.bold .bc-title{font-size:0.7rem;opacity:0.6}
+.bcard.bold .bc-info{font-size:0.6rem;text-align:right;line-height:1.8;opacity:0.7}
+/* Back */
+.bcard-back{width:400px;height:240px;border-radius:14px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 30px rgba(0,0,0,0.12)}
+.bcard-back .bc-logo-big{font-size:1.4rem;font-weight:800;opacity:0.2}
+@media print{.sidebar{display:none!important}.app{display:block!important}.preview-area{padding:20px}.bcard{box-shadow:none!important;border:1px solid #ddd}}
+@media(max-width:800px){.app{grid-template-columns:1fr}.bcard,.bcard-back{width:100%;max-width:400px}}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="sidebar">
+<div class="sidebar-inner">
+  <h1>Business Card</h1>
+  <p class="tagline">Professional Card Generator</p>
+
+  <div class="section-title">Layout</div>
+  <div class="layouts">
+    <button class="layout-btn active" onclick="setLayout('modern',this)">Modern</button>
+    <button class="layout-btn" onclick="setLayout('classic',this)">Classic</button>
+    <button class="layout-btn" onclick="setLayout('minimal',this)">Minimal</button>
+    <button class="layout-btn" onclick="setLayout('bold',this)">Bold</button>
+  </div>
+
+  <div class="section-title">Color</div>
+  <div class="themes">
+    <div class="theme-btn active" style="background:#1a1a1a" onclick="setColor('#1a1a1a','#fff',this)"></div>
+    <div class="theme-btn" style="background:#fff;border:1px solid #ddd" onclick="setColor('#fff','#1a1a1a',this)"></div>
+    <div class="theme-btn" style="background:#1e3a5f" onclick="setColor('#1e3a5f','#fff',this)"></div>
+    <div class="theme-btn" style="background:#2d1b4e" onclick="setColor('#2d1b4e','#fff',this)"></div>
+    <div class="theme-btn" style="background:#0f4c3a" onclick="setColor('#0f4c3a','#fff',this)"></div>
+    <div class="theme-btn" style="background:#8b1a1a" onclick="setColor('#8b1a1a','#fff',this)"></div>
+    <div class="theme-btn" style="background:linear-gradient(135deg,#667eea,#764ba2)" onclick="setColor('linear-gradient(135deg,#667eea,#764ba2)','#fff',this)"></div>
+    <div class="theme-btn" style="background:linear-gradient(135deg,#f093fb,#f5576c)" onclick="setColor('linear-gradient(135deg,#f093fb,#f5576c)','#fff',this)"></div>
+  </div>
+
+  <div class="section-title">Details</div>
+  <div class="field"><label>Full Name</label><input id="bc-name" value="Sarah Johnson" oninput="render()"></div>
+  <div class="field"><label>Job Title</label><input id="bc-title" value="Creative Director" oninput="render()"></div>
+  <div class="field"><label>Company</label><input id="bc-company" value="Watermelons Studio" oninput="render()"></div>
+  <div class="row">
+    <div class="field"><label>Email</label><input id="bc-email" value="sarah@watermelons.studio" oninput="render()"></div>
+    <div class="field"><label>Phone</label><input id="bc-phone" value="+1 555 123 4567" oninput="render()"></div>
+  </div>
+  <div class="row">
+    <div class="field"><label>Website</label><input id="bc-website" value="watermelons.studio" oninput="render()"></div>
+    <div class="field"><label>Address</label><input id="bc-address" value="New York, NY" oninput="render()"></div>
+  </div>
+
+  <div class="actions">
+    <button class="btn-print" onclick="window.print()">Print / PDF</button>
+  </div>
+</div>
+</div>
+
+<div class="preview-area">
+  <div class="preview-label">Front</div>
+  <div class="card-wrap"><div class="bcard" id="card-front"></div></div>
+  <div class="preview-label">Back</div>
+  <div class="bcard-back" id="card-back"></div>
+</div>
+</div>
+
+<script>
+let cardBg='#1a1a1a',cardText='#fff',cardLayout='modern';
+
+function setColor(bg,text,el){cardBg=bg;cardText=text;document.querySelectorAll('.theme-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');render();}
+function setLayout(l,el){cardLayout=l;document.querySelectorAll('.layout-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');render();}
+function v(id){return document.getElementById(id).value.trim();}
+
+function render(){
+  const name=v('bc-name'),title=v('bc-title'),company=v('bc-company');
+  const email=v('bc-email'),phone=v('bc-phone'),website=v('bc-website'),address=v('bc-address');
+  const bgStyle=cardBg.includes('gradient')?`background:${cardBg}`:`background:${cardBg}`;
+  const front=document.getElementById('card-front');
+  front.style.cssText=bgStyle+`;color:${cardText}`;
+  front.className='bcard '+cardLayout;
+
+  if(cardLayout==='modern'){
+    front.innerHTML=`<div class="bc-logo">${company}</div><div><div class="bc-name">${name}</div><div class="bc-title">${title}</div><div class="bc-info">${email}<br>${phone}<br>${website}</div></div>`;
+  }else if(cardLayout==='classic'){
+    front.innerHTML=`<div class="bc-name">${name}</div><div class="bc-title">${title}</div><div class="bc-company">${company}</div><div class="bc-divider" style="background:${cardText}"></div><div class="bc-info">${email} | ${phone}<br>${website} | ${address}</div>`;
+  }else if(cardLayout==='minimal'){
+    front.innerHTML=`<div class="bc-line" style="background:${cardText}"></div><div class="bc-left"><div class="bc-name">${name}</div><div class="bc-title">${title} — ${company}</div></div><div class="bc-right">${email}<br>${phone}<br>${website}</div>`;
+  }else if(cardLayout==='bold'){
+    front.innerHTML=`<div class="bc-name">${name}</div><div class="bc-bottom"><div class="bc-title">${title}<br>${company}</div><div class="bc-info">${email}<br>${phone}<br>${website}</div></div>`;
+  }
+
+  const back=document.getElementById('card-back');
+  back.style.cssText=bgStyle+`;color:${cardText}`;
+  back.innerHTML=`<div class="bc-logo-big">${company}</div>`;
+}
+
+render();
+</script>
+</body>
+</html>

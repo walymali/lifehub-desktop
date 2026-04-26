@@ -1,0 +1,78 @@
+{
+	"app": {
+		"name": "LifeHub",
+		"tagline": "43 productivity tools in one place"
+	},
+	"nav": {
+		"tools": "Tools",
+		"analytics": "Analytics",
+		"proManager": "Pro Manager",
+		"settings": "Settings",
+		"signIn": "Sign In / Sync",
+		"signOut": "Sign Out"
+	},
+	"sidebar": {
+		"main": "Main",
+		"quickStats": "Quick Stats",
+		"totalOpens": "Total Opens",
+		"activeToday": "Active Today",
+		"proLicenses": "Pro Licenses",
+		"adminDashboard": "Admin Dashboard",
+		"localOnly": "Local-only mode. Sign in to sync across devices."
+	},
+	"tools": {
+		"heading": "Tools",
+		"subhead": "Your collection of {count} tools",
+		"search": "Search tools…",
+		"refreshCounts": "Refresh Counts",
+		"openTool": "Open Tool",
+		"neverOpened": "Never opened",
+		"openedTimes": "Opened {n} times",
+		"lastOpened": "Last opened {when}"
+	},
+	"categories": {
+		"all": "All Tools",
+		"productivity": "Productivity",
+		"finance": "Finance & Business",
+		"design": "Design & Creative",
+		"tools": "Tools & Utilities",
+		"content": "Content & Templates",
+		"landing": "Landing Pages"
+	},
+	"settings": {
+		"language": "Language",
+		"theme": "Theme",
+		"export": "Export Data",
+		"import": "Import Data",
+		"reset": "Reset Everything",
+		"resetConfirm": "Delete ALL local data? This cannot be undone.",
+		"cloudEndpoint": "Cloud Sync Endpoint"
+	},
+	"license": {
+		"unlock": "Unlock Pro",
+		"enterKey": "Enter your license key",
+		"activate": "Activate",
+		"deactivate": "Deactivate",
+		"placeholder": "LH-XXX-XXXX-XXXX-XXXX",
+		"invalid": "License key is invalid",
+		"expired": "License has expired",
+		"deviceLimit": "Device limit reached. Revoke another device from your account.",
+		"manage": "Manage your account",
+		"buyBundle": "Browse bundles"
+	},
+	"common": {
+		"save": "Save",
+		"cancel": "Cancel",
+		"close": "Close",
+		"delete": "Delete",
+		"loading": "Loading…",
+		"error": "Something went wrong",
+		"yes": "Yes",
+		"no": "No"
+	},
+	"footer": {
+		"poweredBy": "Powered by LifeHub",
+		"version": "Version {version}",
+		"changelog": "What's new"
+	}
+}

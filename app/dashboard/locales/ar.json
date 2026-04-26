@@ -1,0 +1,78 @@
+{
+	"app": {
+		"name": "لايف هَب",
+		"tagline": "٤٣ أداة إنتاجية في مكان واحد"
+	},
+	"nav": {
+		"tools": "الأدوات",
+		"analytics": "التحليلات",
+		"proManager": "إدارة Pro",
+		"settings": "الإعدادات",
+		"signIn": "تسجيل الدخول / المزامنة",
+		"signOut": "تسجيل الخروج"
+	},
+	"sidebar": {
+		"main": "الرئيسية",
+		"quickStats": "إحصائيات سريعة",
+		"totalOpens": "إجمالي الفتحات",
+		"activeToday": "نشط اليوم",
+		"proLicenses": "تراخيص Pro",
+		"adminDashboard": "لوحة الإدارة",
+		"localOnly": "وضع محلي فقط. سجّل دخول للمزامنة بين الأجهزة."
+	},
+	"tools": {
+		"heading": "الأدوات",
+		"subhead": "مجموعتك من {count} أداة",
+		"search": "بحث في الأدوات…",
+		"refreshCounts": "تحديث العدّاد",
+		"openTool": "فتح الأداة",
+		"neverOpened": "لم تُفتح من قبل",
+		"openedTimes": "فُتحت {n} مرة",
+		"lastOpened": "آخر فتح {when}"
+	},
+	"categories": {
+		"all": "كل الأدوات",
+		"productivity": "إنتاجية",
+		"finance": "مالية وأعمال",
+		"design": "تصميم وإبداع",
+		"tools": "أدوات ومنافع",
+		"content": "محتوى وقوالب",
+		"landing": "صفحات هبوط"
+	},
+	"settings": {
+		"language": "اللغة",
+		"theme": "السمة",
+		"export": "تصدير البيانات",
+		"import": "استيراد البيانات",
+		"reset": "إعادة تعيين الكل",
+		"resetConfirm": "حذف كل البيانات المحلية؟ لا يمكن التراجع.",
+		"cloudEndpoint": "نقطة المزامنة السحابية"
+	},
+	"license": {
+		"unlock": "تفعيل Pro",
+		"enterKey": "أدخل مفتاح الترخيص",
+		"activate": "تفعيل",
+		"deactivate": "إلغاء التفعيل",
+		"placeholder": "LH-XXX-XXXX-XXXX-XXXX",
+		"invalid": "مفتاح الترخيص غير صالح",
+		"expired": "انتهت صلاحية الترخيص",
+		"deviceLimit": "تجاوزت حد الأجهزة المسموح. ألغِ تفعيل جهاز آخر من حسابك.",
+		"manage": "إدارة الحساب",
+		"buyBundle": "تصفّح الباقات"
+	},
+	"common": {
+		"save": "حفظ",
+		"cancel": "إلغاء",
+		"close": "إغلاق",
+		"delete": "حذف",
+		"loading": "جاري التحميل…",
+		"error": "حدث خطأ ما",
+		"yes": "نعم",
+		"no": "لا"
+	},
+	"footer": {
+		"poweredBy": "مدعوم بواسطة لايف هَب",
+		"version": "الإصدار {version}",
+		"changelog": "ما الجديد"
+	}
+}

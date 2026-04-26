@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Email Signature Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Sora',system-ui,sans-serif;background:#f5f5f3;color:#555}
+.app{display:grid;grid-template-columns:380px 1fr;min-height:100vh}
+.sidebar{background:#fff;border-right:1px solid rgba(0,0,0,0.06);overflow-y:auto;max-height:100vh;scrollbar-width:thin}
+.sidebar-inner{padding:24px}
+.sidebar h1{font-size:1.1rem;font-weight:700;color:#1a1a1a;margin-bottom:4px}
+.sidebar .tagline{font-size:0.68rem;color:#999;margin-bottom:20px}
+.section-title{font-size:0.62rem;font-weight:600;color:#999;text-transform:uppercase;letter-spacing:0.12em;margin:18px 0 10px;padding-top:14px;border-top:1px solid rgba(0,0,0,0.06)}
+.field{margin-bottom:10px}
+.field label{display:block;font-size:0.7rem;font-weight:500;color:#888;margin-bottom:3px}
+.field input,.field select{width:100%;padding:9px 12px;background:#f5f5f3;border:1px solid rgba(0,0,0,0.06);border-radius:10px;color:#1a1a1a;font-family:inherit;font-size:0.82rem}
+.field input:focus{outline:none;border-color:#1a1a1a}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.photo-upload{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.photo-preview{width:50px;height:50px;border-radius:50%;background:#f5f5f3;border:1px dashed rgba(0,0,0,0.1);display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;font-size:0.65rem;color:#999}
+.photo-preview img{width:100%;height:100%;object-fit:cover}
+.photo-upload input[type="file"]{display:none}
+.themes{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+.theme-btn{width:26px;height:26px;border-radius:7px;border:2px solid transparent;cursor:pointer;transition:all 0.2s}
+.theme-btn.active{border-color:#1a1a1a;transform:scale(1.1)}
+.layouts{display:flex;gap:6px;margin-bottom:8px}
+.layout-btn{padding:6px 14px;border:1px solid rgba(0,0,0,0.08);border-radius:8px;background:#fff;color:#999;font-size:0.68rem;cursor:pointer;font-family:inherit;transition:all 0.2s}
+.layout-btn.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+.actions{display:flex;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid rgba(0,0,0,0.06);position:sticky;bottom:0;background:#fff;padding-bottom:8px}
+.btn-copy{flex:1;padding:12px;background:#1a1a1a;color:#fff;border:none;border-radius:10px;font-weight:600;font-size:0.82rem;cursor:pointer;font-family:inherit}
+.btn-copy:hover{background:#333}
+/* Preview */
+.preview-area{padding:40px;display:flex;justify-content:center;align-items:center;flex-direction:column;gap:16px}
+.preview-label{font-size:0.72rem;color:#999}
+.sig-wrap{background:#fff;border-radius:12px;border:1px solid rgba(0,0,0,0.06);padding:32px;box-shadow:0 2px 10px rgba(0,0,0,0.04);min-width:500px}
+/* Signature Styles */
+.sig{font-family:Arial,Helvetica,sans-serif}
+.sig-horizontal{display:flex;gap:16px;align-items:flex-start}
+.sig-vertical{text-align:left}
+.sig-divider-v{width:2px;align-self:stretch;flex-shrink:0}
+.sig-divider-h{height:2px;margin:12px 0;width:100%}
+.sig-photo{width:70px;height:70px;border-radius:50%;object-fit:cover;flex-shrink:0}
+.sig-photo-sq{border-radius:8px}
+.sig-name{font-size:16px;font-weight:700;margin-bottom:2px}
+.sig-title{font-size:12px;color:#888;margin-bottom:8px}
+.sig-info{font-size:12px;color:#555;line-height:1.8}
+.sig-info a{text-decoration:none}
+.sig-socials{display:flex;gap:8px;margin-top:8px}
+.sig-social{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;text-decoration:none}
+@media(max-width:900px){.app{grid-template-columns:1fr}.sig-wrap{min-width:auto;width:100%}}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="sidebar">
+<div class="sidebar-inner">
+  <h1>Signature Generator</h1>
+  <p class="tagline">Professional Email Signatures</p>
+
+  <div class="section-title">Layout</div>
+  <div class="layouts">
+    <button class="layout-btn active" onclick="setLayout('horizontal',this)">Horizontal</button>
+    <button class="layout-btn" onclick="setLayout('vertical',this)">Vertical</button>
+  </div>
+
+  <div class="section-title">Color</div>
+  <div class="themes">
+    <div class="theme-btn active" style="background:#1a1a1a" onclick="setColor('#1a1a1a',this)"></div>
+    <div class="theme-btn" style="background:#2563eb" onclick="setColor('#2563eb',this)"></div>
+    <div class="theme-btn" style="background:#16a34a" onclick="setColor('#16a34a',this)"></div>
+    <div class="theme-btn" style="background:#dc2626" onclick="setColor('#dc2626',this)"></div>
+    <div class="theme-btn" style="background:#9333ea" onclick="setColor('#9333ea',this)"></div>
+    <div class="theme-btn" style="background:#0891b2" onclick="setColor('#0891b2',this)"></div>
+    <div class="theme-btn" style="background:#d97706" onclick="setColor('#d97706',this)"></div>
+    <label class="theme-btn" style="background:conic-gradient(red,yellow,lime,aqua,blue,magenta,red);position:relative;overflow:hidden"><input type="color" value="#1a1a1a" style="position:absolute;inset:0;opacity:0;cursor:pointer" oninput="setColor(this.value,this.parentElement)"></label>
+  </div>
+
+  <div class="section-title">Photo</div>
+  <div class="photo-upload">
+    <div class="photo-preview" id="sig-photo-prev" onclick="document.getElementById('sig-photo-input').click()">Photo</div>
+    <div style="font-size:0.7rem;color:#999">Click to upload</div>
+    <input type="file" id="sig-photo-input" accept="image/*" onchange="handleSigPhoto(this)">
+  </div>
+
+  <div class="section-title">Personal</div>
+  <div class="field"><label>Full Name</label><input id="s-name" value="Sarah Johnson" oninput="render()"></div>
+  <div class="field"><label>Job Title</label><input id="s-title" value="Senior Product Designer" oninput="render()"></div>
+  <div class="field"><label>Company</label><input id="s-company" value="Watermelons Studio" oninput="render()"></div>
+
+  <div class="section-title">Contact</div>
+  <div class="row">
+    <div class="field"><label>Email</label><input id="s-email" value="sarah@watermelons.studio" oninput="render()"></div>
+    <div class="field"><label>Phone</label><input id="s-phone" value="+1 555 123 4567" oninput="render()"></div>
+  </div>
+  <div class="row">
+    <div class="field"><label>Website</label><input id="s-website" value="watermelons.studio" oninput="render()"></div>
+    <div class="field"><label>Address</label><input id="s-address" value="New York, NY" oninput="render()"></div>
+  </div>
+
+  <div class="section-title">Social Media</div>
+  <div class="row">
+    <div class="field"><label>LinkedIn</label><input id="s-linkedin" value="linkedin.com/in/sarah" oninput="render()"></div>
+    <div class="field"><label>Twitter/X</label><input id="s-twitter" value="@sarahj" oninput="render()"></div>
+  </div>
+  <div class="row">
+    <div class="field"><label>Instagram</label><input id="s-instagram" value="@sarahdesigns" oninput="render()"></div>
+    <div class="field"><label>GitHub</label><input id="s-github" value="" oninput="render()"></div>
+  </div>
+
+  <div class="actions">
+    <button class="btn-copy" onclick="copySignature()">Copy HTML Signature</button>
+  </div>
+</div>
+</div>
+
+<div class="preview-area">
+  <div class="preview-label">Preview</div>
+  <div class="sig-wrap"><div id="sig-output"></div></div>
+  <div class="preview-label" id="copy-msg" style="color:#16a34a;opacity:0;transition:opacity 0.3s">Copied! Paste in your email client.</div>
+</div>
+</div>
+
+<script>
+let sigColor='#1a1a1a',sigLayout='horizontal',sigPhoto=null;
+
+function setColor(c,el){sigColor=c;document.querySelectorAll('.theme-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');render();}
+function setLayout(l,el){sigLayout=l;document.querySelectorAll('.layout-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');render();}
+function handleSigPhoto(input){const f=input.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{sigPhoto=e.target.result;document.getElementById('sig-photo-prev').innerHTML='<img src="'+sigPhoto+'">';render();};r.readAsDataURL(f);}
+
+function v(id){return document.getElementById(id).value.trim();}
+
+function render(){
+  const name=v('s-name'),title=v('s-title'),company=v('s-company');
+  const email=v('s-email'),phone=v('s-phone'),website=v('s-website'),address=v('s-address');
+  const linkedin=v('s-linkedin'),twitter=v('s-twitter'),instagram=v('s-instagram'),github=v('s-github');
+  const photoHtml=sigPhoto?`<img src="${sigPhoto}" style="width:70px;height:70px;border-radius:50%;object-fit:cover;display:block" alt="${name}">`:'';
+
+  let socials='';
+  if(linkedin)socials+=`<a href="https://${linkedin}" style="display:inline-block;width:24px;height:24px;border-radius:50%;background:${sigColor};color:#fff;text-align:center;line-height:24px;font-size:10px;font-weight:700;text-decoration:none;margin-right:4px">in</a>`;
+  if(twitter)socials+=`<a href="https://twitter.com/${twitter.replace('@','')}" style="display:inline-block;width:24px;height:24px;border-radius:50%;background:${sigColor};color:#fff;text-align:center;line-height:24px;font-size:10px;font-weight:700;text-decoration:none;margin-right:4px">X</a>`;
+  if(instagram)socials+=`<a href="https://instagram.com/${instagram.replace('@','')}" style="display:inline-block;width:24px;height:24px;border-radius:50%;background:${sigColor};color:#fff;text-align:center;line-height:24px;font-size:10px;font-weight:700;text-decoration:none;margin-right:4px">IG</a>`;
+  if(github)socials+=`<a href="https://github.com/${github}" style="display:inline-block;width:24px;height:24px;border-radius:50%;background:${sigColor};color:#fff;text-align:center;line-height:24px;font-size:10px;font-weight:700;text-decoration:none">GH</a>`;
+
+  const info=`
+    <div style="font-family:Arial,Helvetica,sans-serif">
+      <div style="font-size:16px;font-weight:700;color:#1a1a1a;margin-bottom:2px">${name}</div>
+      <div style="font-size:12px;color:${sigColor};margin-bottom:8px">${title}${company?' | '+company:''}</div>
+      <div style="font-size:12px;color:#555;line-height:1.8">
+        ${phone?'<div>'+phone+'</div>':''}
+        ${email?'<div><a href="mailto:'+email+'" style="color:'+sigColor+';text-decoration:none">'+email+'</a></div>':''}
+        ${website?'<div><a href="https://'+website+'" style="color:'+sigColor+';text-decoration:none">'+website+'</a></div>':''}
+        ${address?'<div style="color:#999">'+address+'</div>':''}
+      </div>
+      ${socials?'<div style="margin-top:10px">'+socials+'</div>':''}
+    </div>`;
+
+  if(sigLayout==='horizontal'){
+    document.getElementById('sig-output').innerHTML=`
+      <div style="display:flex;gap:16px;align-items:flex-start;font-family:Arial,Helvetica,sans-serif">
+        ${photoHtml?'<div>'+photoHtml+'</div>':''}
+        ${photoHtml?'<div style="width:2px;align-self:stretch;background:'+sigColor+';flex-shrink:0"></div>':''}
+        ${info}
+      </div>`;
+  } else {
+    document.getElementById('sig-output').innerHTML=`
+      <div style="font-family:Arial,Helvetica,sans-serif">
+        <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
+          ${photoHtml}
+          <div><div style="font-size:16px;font-weight:700;color:#1a1a1a">${name}</div><div style="font-size:12px;color:${sigColor}">${title}${company?' | '+company:''}</div></div>
+        </div>
+        <div style="height:2px;background:${sigColor};margin-bottom:12px"></div>
+        <div style="font-size:12px;color:#555;line-height:1.8">
+          ${[phone,email?'<a href="mailto:'+email+'" style="color:'+sigColor+';text-decoration:none">'+email+'</a>':'',website?'<a href="https://'+website+'" style="color:'+sigColor+';text-decoration:none">'+website+'</a>':'',address].filter(Boolean).join(' &bull; ')}
+        </div>
+        ${socials?'<div style="margin-top:10px">'+socials+'</div>':''}
+      </div>`;
+  }
+}
+
+function copySignature(){
+  const html=document.getElementById('sig-output').innerHTML;
+  const blob=new Blob([html],{type:'text/html'});
+  navigator.clipboard.write([new ClipboardItem({'text/html':blob,'text/plain':new Blob([html],{type:'text/plain'})})]).then(()=>{
+    const msg=document.getElementById('copy-msg');msg.style.opacity='1';setTimeout(()=>msg.style.opacity='0',2000);
+  }).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=html;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+    const msg=document.getElementById('copy-msg');msg.style.opacity='1';setTimeout(()=>msg.style.opacity='0',2000);
+  });
+}
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,1876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Portfolio Site Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #f5f5f3;
+    --card: #ffffff;
+    --heading: #1a1a1a;
+    --text: #555555;
+    --muted: #999999;
+    --border: #e8e8e6;
+    --accent: #1a1a1a;
+    --accent-soft: #f0efec;
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.04);
+    --radius: 14px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    font-family: 'Sora', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    height: 100%;
+    overflow: hidden;
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .app {
+    display: grid;
+    grid-template-columns: 420px 1fr;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  /* ---------- SIDEBAR EDITOR ---------- */
+  .editor {
+    background: var(--card);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .editor::-webkit-scrollbar { width: 6px; }
+  .editor::-webkit-scrollbar-track { background: transparent; }
+  .editor::-webkit-scrollbar-thumb { background: #dcdcd9; border-radius: 3px; }
+
+  .editor-head {
+    padding: 24px 24px 16px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--card);
+    z-index: 10;
+  }
+
+  .editor-head h1 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--heading);
+    letter-spacing: -0.01em;
+  }
+
+  .editor-head p {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .head-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .head-actions button {
+    flex: 1;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--heading);
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .head-actions button:hover {
+    background: #ecebe7;
+  }
+
+  .head-actions button.primary {
+    background: var(--heading);
+    color: #fff;
+    border-color: var(--heading);
+  }
+
+  .head-actions button.primary:hover {
+    background: #000;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 4px;
+    padding: 12px 16px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+  }
+
+  .tabs::-webkit-scrollbar { display: none; }
+
+  .tab {
+    flex-shrink: 0;
+    padding: 8px 14px;
+    border-radius: 8px;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .tab:hover { background: rgba(0,0,0,0.04); }
+
+  .tab.active {
+    background: var(--card);
+    color: var(--heading);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+  }
+
+  .panel {
+    padding: 20px 24px 40px;
+    display: none;
+  }
+
+  .panel.active { display: block; }
+
+  .field {
+    margin-bottom: 16px;
+  }
+
+  .field label {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--heading);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .field input[type="text"],
+  .field input[type="email"],
+  .field input[type="tel"],
+  .field input[type="url"],
+  .field input[type="color"],
+  .field textarea,
+  .field select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--heading);
+    background: var(--bg);
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  .field input:focus,
+  .field textarea:focus,
+  .field select:focus {
+    outline: none;
+    border-color: var(--heading);
+    background: #fff;
+  }
+
+  .field textarea {
+    resize: vertical;
+    min-height: 80px;
+    font-family: inherit;
+  }
+
+  .field input[type="color"] {
+    padding: 4px;
+    height: 38px;
+    cursor: pointer;
+  }
+
+  .field input[type="file"] {
+    display: none;
+  }
+
+  .file-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .file-btn:hover {
+    background: #ecebe7;
+    border-color: var(--heading);
+  }
+
+  .photo-preview {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 12px;
+    border: 1px solid var(--border);
+  }
+
+  .photo-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--heading);
+    margin: 24px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .section-title:first-child { margin-top: 0; }
+
+  .item-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 12px;
+    position: relative;
+  }
+
+  .item-card .field { margin-bottom: 10px; }
+  .item-card .field:last-child { margin-bottom: 0; }
+
+  .item-card .remove-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: all 0.15s;
+  }
+
+  .item-card .remove-btn:hover {
+    background: #fee;
+    color: #c33;
+  }
+
+  .add-btn {
+    width: 100%;
+    padding: 10px;
+    background: transparent;
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .add-btn:hover {
+    background: var(--bg);
+    border-color: var(--heading);
+    color: var(--heading);
+  }
+
+  .theme-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .theme-option {
+    padding: 10px 8px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    cursor: pointer;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text);
+    transition: all 0.15s;
+  }
+
+  .theme-option:hover { border-color: var(--heading); }
+
+  .theme-option.active {
+    background: var(--heading);
+    color: #fff;
+    border-color: var(--heading);
+  }
+
+  .theme-preview {
+    width: 100%;
+    height: 32px;
+    border-radius: 4px;
+    margin-bottom: 6px;
+    border: 1px solid rgba(0,0,0,0.06);
+  }
+
+  /* ---------- PREVIEW ---------- */
+  .preview {
+    overflow: hidden;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .preview-toolbar {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--card);
+  }
+
+  .preview-label {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .preview-dots {
+    display: flex;
+    gap: 6px;
+  }
+
+  .preview-dots span {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #e0dfdc;
+  }
+
+  .preview-dots span:nth-child(1) { background: #ff5f57; }
+  .preview-dots span:nth-child(2) { background: #ffbd2e; }
+  .preview-dots span:nth-child(3) { background: #28c940; }
+
+  .preview-frame {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+  }
+
+  .preview-frame::-webkit-scrollbar { width: 8px; }
+  .preview-frame::-webkit-scrollbar-track { background: transparent; }
+  .preview-frame::-webkit-scrollbar-thumb { background: #d5d4d0; border-radius: 4px; }
+
+  /* ---------- PORTFOLIO STYLES (MINIMAL / DEFAULT) ---------- */
+  .portfolio {
+    --p-bg: #f5f5f3;
+    --p-card: #ffffff;
+    --p-heading: #1a1a1a;
+    --p-text: #555555;
+    --p-muted: #999999;
+    --p-border: #e8e8e6;
+    --p-accent: #1a1a1a;
+
+    background: var(--p-bg);
+    color: var(--p-text);
+    font-family: 'Sora', sans-serif;
+    min-height: 100%;
+  }
+
+  .portfolio.theme-dark {
+    --p-bg: #0e0e0f;
+    --p-card: #1a1a1c;
+    --p-heading: #ffffff;
+    --p-text: #a8a8a8;
+    --p-muted: #666666;
+    --p-border: #262628;
+    --p-accent: #ffffff;
+  }
+
+  .portfolio.theme-creative {
+    --p-bg: #fef9f2;
+    --p-card: #ffffff;
+    --p-heading: #222034;
+    --p-text: #555c70;
+    --p-muted: #9c9cac;
+    --p-border: #f0e8d8;
+    --p-accent: #ff6b35;
+  }
+
+  .p-container {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 0 48px;
+  }
+
+  /* Hero */
+  .p-hero {
+    padding: 100px 0 80px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 40px;
+    align-items: center;
+  }
+
+  .p-hero-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--p-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 20px;
+  }
+
+  .p-hero-title {
+    font-size: 56px;
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--p-heading);
+    margin-bottom: 24px;
+  }
+
+  .portfolio.theme-creative .p-hero-title {
+    font-weight: 800;
+  }
+
+  .p-hero-tagline {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--p-text);
+    margin-bottom: 32px;
+    max-width: 560px;
+  }
+
+  .p-hero-cta {
+    display: flex;
+    gap: 12px;
+  }
+
+  .p-btn {
+    padding: 14px 24px;
+    border-radius: 50px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: transform 0.2s;
+    cursor: pointer;
+    border: none;
+  }
+
+  .p-btn:hover { transform: translateY(-1px); }
+
+  .p-btn.primary {
+    background: var(--p-accent);
+    color: var(--p-bg);
+  }
+
+  .portfolio.theme-dark .p-btn.primary { color: #0e0e0f; }
+
+  .p-btn.secondary {
+    background: transparent;
+    color: var(--p-heading);
+    border: 1px solid var(--p-border);
+  }
+
+  .p-hero-photo {
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--p-border);
+  }
+
+  .portfolio.theme-creative .p-hero-photo {
+    border-radius: 24px;
+    transform: rotate(-2deg);
+  }
+
+  .p-hero-photo-placeholder {
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: var(--p-card);
+    border: 1px solid var(--p-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    color: var(--p-muted);
+  }
+
+  /* Section */
+  .p-section {
+    padding: 72px 0;
+    border-top: 1px solid var(--p-border);
+  }
+
+  .p-section-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--p-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    margin-bottom: 16px;
+  }
+
+  .p-section-title {
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--p-heading);
+    margin-bottom: 36px;
+    line-height: 1.1;
+  }
+
+  /* About */
+  .p-about-text {
+    font-size: 17px;
+    line-height: 1.75;
+    color: var(--p-text);
+    max-width: 720px;
+    margin-bottom: 32px;
+    white-space: pre-wrap;
+  }
+
+  .p-skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .p-skill {
+    padding: 8px 16px;
+    background: var(--p-card);
+    border: 1px solid var(--p-border);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--p-heading);
+  }
+
+  .portfolio.theme-creative .p-skill {
+    background: var(--p-accent);
+    color: #fff;
+    border-color: var(--p-accent);
+  }
+
+  /* Projects */
+  .p-projects {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .p-project {
+    background: var(--p-card);
+    border: 1px solid var(--p-border);
+    border-radius: 16px;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .p-project:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.06);
+  }
+
+  .p-project-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    background: var(--p-bg);
+  }
+
+  .p-project-img-placeholder {
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(135deg, #eee, #ddd);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--p-muted);
+    font-size: 14px;
+  }
+
+  .portfolio.theme-dark .p-project-img-placeholder {
+    background: linear-gradient(135deg, #222, #333);
+  }
+
+  .portfolio.theme-creative .p-project-img-placeholder {
+    background: linear-gradient(135deg, #ffb4a2, #ff6b35);
+  }
+
+  .p-project-body {
+    padding: 24px;
+  }
+
+  .p-project-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--p-heading);
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+
+  .p-project-desc {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--p-text);
+    margin-bottom: 16px;
+  }
+
+  .p-project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .p-project-tag {
+    font-size: 11px;
+    padding: 4px 10px;
+    background: var(--p-bg);
+    color: var(--p-muted);
+    border-radius: 50px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* Experience / Education */
+  .p-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .p-timeline-item {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--p-border);
+  }
+
+  .p-timeline-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .p-timeline-period {
+    font-size: 13px;
+    color: var(--p-muted);
+    font-weight: 500;
+  }
+
+  .p-timeline-role {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--p-heading);
+    margin-bottom: 4px;
+  }
+
+  .p-timeline-company {
+    font-size: 14px;
+    color: var(--p-muted);
+    margin-bottom: 10px;
+  }
+
+  .p-timeline-desc {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--p-text);
+  }
+
+  /* Contact */
+  .p-contact {
+    background: var(--p-card);
+    border: 1px solid var(--p-border);
+    border-radius: 24px;
+    padding: 56px 48px;
+    text-align: center;
+  }
+
+  .portfolio.theme-creative .p-contact {
+    background: var(--p-accent);
+    color: #fff;
+    border: none;
+  }
+
+  .portfolio.theme-creative .p-contact .p-section-label,
+  .portfolio.theme-creative .p-contact .p-section-title,
+  .portfolio.theme-creative .p-contact .p-contact-email {
+    color: #fff;
+  }
+
+  .p-contact .p-section-title {
+    margin-bottom: 16px;
+  }
+
+  .p-contact-email {
+    display: inline-block;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--p-heading);
+    text-decoration: none;
+    margin-bottom: 16px;
+    letter-spacing: -0.01em;
+  }
+
+  .p-contact-email:hover { text-decoration: underline; }
+
+  .p-contact-phone {
+    font-size: 14px;
+    color: var(--p-muted);
+    margin-bottom: 32px;
+  }
+
+  .p-socials {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .p-social {
+    color: var(--p-heading);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 20px;
+    border: 1px solid var(--p-border);
+    border-radius: 50px;
+    transition: all 0.2s;
+  }
+
+  .portfolio.theme-creative .p-socials .p-social {
+    color: #fff;
+    border-color: rgba(255,255,255,0.4);
+  }
+
+  .p-social:hover {
+    background: var(--p-heading);
+    color: var(--p-bg);
+  }
+
+  .portfolio.theme-creative .p-social:hover {
+    background: #fff;
+    color: var(--p-accent);
+  }
+
+  /* Footer */
+  .p-footer {
+    padding: 40px 0;
+    text-align: center;
+    font-size: 12px;
+    color: var(--p-muted);
+    border-top: 1px solid var(--p-border);
+    margin-top: 40px;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: #1a1a1a;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s ease;
+    z-index: 9999;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  }
+
+  .toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+
+  @media (max-width: 1100px) {
+    .app { grid-template-columns: 380px 1fr; }
+    .p-hero { grid-template-columns: 1fr; }
+    .p-hero-photo, .p-hero-photo-placeholder { width: 160px; height: 160px; }
+    .p-hero-title { font-size: 44px; }
+    .p-projects { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- ============ EDITOR ============ -->
+  <aside class="editor">
+    <div class="editor-head">
+      <h1>Portfolio Studio</h1>
+      <p>Build and export your personal site</p>
+      <div class="head-actions">
+        <button id="btn-reset">Reset</button>
+        <button id="btn-demo">Load Demo</button>
+        <button id="btn-export" class="primary">Download HTML</button>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="theme">Theme</button>
+      <button class="tab" data-tab="hero">Hero</button>
+      <button class="tab" data-tab="about">About</button>
+      <button class="tab" data-tab="projects">Projects</button>
+      <button class="tab" data-tab="experience">Experience</button>
+      <button class="tab" data-tab="education">Education</button>
+      <button class="tab" data-tab="contact">Contact</button>
+    </div>
+
+    <!-- THEME -->
+    <div class="panel active" data-panel="theme">
+      <div class="section-title">Theme Variant</div>
+      <div class="theme-options" id="theme-options">
+        <div class="theme-option active" data-theme="minimal">
+          <div class="theme-preview" style="background:linear-gradient(135deg,#f5f5f3 50%,#1a1a1a 50%)"></div>
+          Minimal
+        </div>
+        <div class="theme-option" data-theme="dark">
+          <div class="theme-preview" style="background:linear-gradient(135deg,#0e0e0f 50%,#ffffff 50%)"></div>
+          Dark
+        </div>
+        <div class="theme-option" data-theme="creative">
+          <div class="theme-preview" style="background:linear-gradient(135deg,#fef9f2 50%,#ff6b35 50%)"></div>
+          Creative
+        </div>
+      </div>
+
+      <div class="section-title">Custom Colors</div>
+      <div class="field">
+        <label>Background</label>
+        <input type="color" id="color-bg" value="#f5f5f3" />
+      </div>
+      <div class="field">
+        <label>Card Background</label>
+        <input type="color" id="color-card" value="#ffffff" />
+      </div>
+      <div class="field">
+        <label>Heading Color</label>
+        <input type="color" id="color-heading" value="#1a1a1a" />
+      </div>
+      <div class="field">
+        <label>Text Color</label>
+        <input type="color" id="color-text" value="#555555" />
+      </div>
+      <div class="field">
+        <label>Accent Color</label>
+        <input type="color" id="color-accent" value="#1a1a1a" />
+      </div>
+    </div>
+
+    <!-- HERO -->
+    <div class="panel" data-panel="hero">
+      <div class="field">
+        <label>Photo</label>
+        <div class="photo-row">
+          <img id="photo-preview" class="photo-preview" alt="" />
+          <label class="file-btn" for="photo-input">Upload photo</label>
+        </div>
+        <input type="file" id="photo-input" accept="image/*" />
+      </div>
+      <div class="field">
+        <label>Name</label>
+        <input type="text" id="hero-name" placeholder="Your name" />
+      </div>
+      <div class="field">
+        <label>Title / Role</label>
+        <input type="text" id="hero-title" placeholder="Product Designer" />
+      </div>
+      <div class="field">
+        <label>Tagline</label>
+        <textarea id="hero-tagline" placeholder="A short one-liner about you"></textarea>
+      </div>
+      <div class="field">
+        <label>Primary CTA Label</label>
+        <input type="text" id="hero-cta1-label" placeholder="View Work" />
+      </div>
+      <div class="field">
+        <label>Primary CTA Link</label>
+        <input type="text" id="hero-cta1-link" placeholder="#projects" />
+      </div>
+      <div class="field">
+        <label>Secondary CTA Label</label>
+        <input type="text" id="hero-cta2-label" placeholder="Contact Me" />
+      </div>
+      <div class="field">
+        <label>Secondary CTA Link</label>
+        <input type="text" id="hero-cta2-link" placeholder="#contact" />
+      </div>
+    </div>
+
+    <!-- ABOUT -->
+    <div class="panel" data-panel="about">
+      <div class="field">
+        <label>Bio</label>
+        <textarea id="about-bio" rows="8" placeholder="Tell your story..."></textarea>
+      </div>
+      <div class="field">
+        <label>Skills (comma separated)</label>
+        <textarea id="about-skills" rows="3" placeholder="Design, Figma, Prototyping"></textarea>
+      </div>
+    </div>
+
+    <!-- PROJECTS -->
+    <div class="panel" data-panel="projects">
+      <div id="projects-list"></div>
+      <button class="add-btn" id="btn-add-project">+ Add Project</button>
+    </div>
+
+    <!-- EXPERIENCE -->
+    <div class="panel" data-panel="experience">
+      <div id="experience-list"></div>
+      <button class="add-btn" id="btn-add-experience">+ Add Experience</button>
+    </div>
+
+    <!-- EDUCATION -->
+    <div class="panel" data-panel="education">
+      <div id="education-list"></div>
+      <button class="add-btn" id="btn-add-education">+ Add Education</button>
+    </div>
+
+    <!-- CONTACT -->
+    <div class="panel" data-panel="contact">
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="contact-email" placeholder="hello@you.com" />
+      </div>
+      <div class="field">
+        <label>Phone</label>
+        <input type="tel" id="contact-phone" placeholder="+1 555 555 5555" />
+      </div>
+      <div class="field">
+        <label>LinkedIn</label>
+        <input type="url" id="contact-linkedin" placeholder="https://linkedin.com/in/you" />
+      </div>
+      <div class="field">
+        <label>GitHub</label>
+        <input type="url" id="contact-github" placeholder="https://github.com/you" />
+      </div>
+      <div class="field">
+        <label>Twitter</label>
+        <input type="url" id="contact-twitter" placeholder="https://twitter.com/you" />
+      </div>
+      <div class="field">
+        <label>Dribbble</label>
+        <input type="url" id="contact-dribbble" placeholder="https://dribbble.com/you" />
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ PREVIEW ============ -->
+  <main class="preview">
+    <div class="preview-toolbar">
+      <div class="preview-dots">
+        <span></span><span></span><span></span>
+      </div>
+      <div class="preview-label">Live Preview</div>
+      <div style="width:56px"></div>
+    </div>
+    <div class="preview-frame">
+      <div class="portfolio theme-minimal" id="portfolio"></div>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast">Saved</div>
+
+<script>
+'use strict';
+
+/* ============================================================
+   DEFAULT & DEMO DATA
+============================================================ */
+const DEMO_DATA = {
+  theme: 'minimal',
+  colors: {
+    bg: '#f5f5f3',
+    card: '#ffffff',
+    heading: '#1a1a1a',
+    text: '#555555',
+    accent: '#1a1a1a'
+  },
+  hero: {
+    name: 'Amelia Waters',
+    title: 'Independent Product Designer',
+    tagline: 'I help startups shape meaningful digital products through thoughtful interfaces, systems, and interaction design. Previously at Figma, Linear, and Stripe.',
+    photo: '',
+    cta1: { label: 'View Projects', link: '#projects' },
+    cta2: { label: 'Get in Touch', link: '#contact' }
+  },
+  about: {
+    bio: "I'm a product designer with nine years of experience building software people love. I started my career as a web developer before moving into design, which gives me a unique appreciation for what makes interfaces both beautiful and technically sound.\n\nCurrently based in Lisbon, I work with ambitious teams across fintech, productivity, and developer tools. When I'm not pushing pixels, you'll find me experimenting with pottery or exploring the coast on my bicycle.",
+    skills: ['Product Design', 'Figma', 'Design Systems', 'Prototyping', 'User Research', 'Webflow', 'HTML/CSS', 'Framer']
+  },
+  projects: [
+    {
+      title: 'Horizon Banking App',
+      desc: 'Redesigned core flows for a neobank serving 1.2M users. Simplified onboarding, unified transfer patterns, and introduced a new design system.',
+      img: '',
+      link: '#',
+      tags: ['Fintech', 'Mobile', 'Design System']
+    },
+    {
+      title: 'Poplin Editor',
+      desc: 'A collaborative writing tool for remote teams. Designed the rich-text interface, comment threads, and real-time presence system.',
+      img: '',
+      link: '#',
+      tags: ['SaaS', 'Collaboration', 'Web']
+    },
+    {
+      title: 'Tidal Analytics',
+      desc: 'Dashboard and reporting suite for a growth analytics company. Tackled complex data visualization and filtering workflows.',
+      img: '',
+      link: '#',
+      tags: ['Data Viz', 'B2B', 'Dashboard']
+    },
+    {
+      title: 'Lantern OS',
+      desc: 'Conceptual operating system exploring ambient computing and focus modes. A self-initiated exploration project.',
+      img: '',
+      link: '#',
+      tags: ['Concept', 'OS Design']
+    }
+  ],
+  experience: [
+    {
+      company: 'Freelance / Studio',
+      role: 'Independent Product Designer',
+      period: '2022 - Present',
+      desc: 'Working with early and growth-stage startups on core product design, design systems, and brand identity.'
+    },
+    {
+      company: 'Linear',
+      role: 'Senior Product Designer',
+      period: '2020 - 2022',
+      desc: 'Led design for the roadmap and cycles experience. Collaborated on the Linear Method and brand system.'
+    },
+    {
+      company: 'Figma',
+      role: 'Product Designer',
+      period: '2018 - 2020',
+      desc: 'Designed features across FigJam, comments, and file browser. Worked closely with engineering on interaction details.'
+    },
+    {
+      company: 'Stripe',
+      role: 'Product Design Intern',
+      period: '2017',
+      desc: 'Contributed to Stripe Dashboard improvements and internal developer tools.'
+    }
+  ],
+  education: [
+    {
+      school: 'Royal College of Art',
+      degree: 'MA, Digital Direction',
+      period: '2016 - 2018'
+    },
+    {
+      school: 'University of Porto',
+      degree: 'BA, Communication Design',
+      period: '2012 - 2016'
+    }
+  ],
+  contact: {
+    email: 'hello@ameliawaters.design',
+    phone: '+351 912 345 678',
+    linkedin: 'https://linkedin.com/in/ameliawaters',
+    github: 'https://github.com/ameliawaters',
+    twitter: 'https://twitter.com/ameliawaters',
+    dribbble: 'https://dribbble.com/ameliawaters'
+  }
+};
+
+const EMPTY_DATA = {
+  theme: 'minimal',
+  colors: {
+    bg: '#f5f5f3',
+    card: '#ffffff',
+    heading: '#1a1a1a',
+    text: '#555555',
+    accent: '#1a1a1a'
+  },
+  hero: {
+    name: 'Your Name',
+    title: 'Your Title',
+    tagline: 'A short tagline introducing yourself.',
+    photo: '',
+    cta1: { label: 'View Work', link: '#projects' },
+    cta2: { label: 'Contact', link: '#contact' }
+  },
+  about: {
+    bio: 'Write a short bio here.',
+    skills: []
+  },
+  projects: [],
+  experience: [],
+  education: [],
+  contact: {
+    email: '',
+    phone: '',
+    linkedin: '',
+    github: '',
+    twitter: '',
+    dribbble: ''
+  }
+};
+
+const STORAGE_KEY = 'portfolio-studio-data-v1';
+
+/* ============================================================
+   STATE
+============================================================ */
+let state = loadState();
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      return Object.assign({}, DEMO_DATA, JSON.parse(raw));
+    }
+  } catch (e) {
+    console.warn('Failed to load state', e);
+  }
+  return JSON.parse(JSON.stringify(DEMO_DATA));
+}
+
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (e) {
+    console.warn('Failed to save state', e);
+  }
+}
+
+/* ============================================================
+   HELPERS
+============================================================ */
+function escapeHtml(str) {
+  if (str == null) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function showToast(message) {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 1800);
+}
+
+/* ============================================================
+   RENDER EDITOR FIELDS (populate inputs from state)
+============================================================ */
+function populateEditor() {
+  // Colors
+  document.getElementById('color-bg').value = state.colors.bg;
+  document.getElementById('color-card').value = state.colors.card;
+  document.getElementById('color-heading').value = state.colors.heading;
+  document.getElementById('color-text').value = state.colors.text;
+  document.getElementById('color-accent').value = state.colors.accent;
+
+  // Theme
+  document.querySelectorAll('.theme-option').forEach(el => {
+    el.classList.toggle('active', el.dataset.theme === state.theme);
+  });
+
+  // Hero
+  document.getElementById('hero-name').value = state.hero.name || '';
+  document.getElementById('hero-title').value = state.hero.title || '';
+  document.getElementById('hero-tagline').value = state.hero.tagline || '';
+  document.getElementById('hero-cta1-label').value = state.hero.cta1.label || '';
+  document.getElementById('hero-cta1-link').value = state.hero.cta1.link || '';
+  document.getElementById('hero-cta2-label').value = state.hero.cta2.label || '';
+  document.getElementById('hero-cta2-link').value = state.hero.cta2.link || '';
+  const photoPreview = document.getElementById('photo-preview');
+  if (state.hero.photo) {
+    photoPreview.src = state.hero.photo;
+    photoPreview.style.display = 'block';
+  } else {
+    photoPreview.src = '';
+    photoPreview.style.display = 'none';
+  }
+
+  // About
+  document.getElementById('about-bio').value = state.about.bio || '';
+  document.getElementById('about-skills').value = (state.about.skills || []).join(', ');
+
+  // Contact
+  document.getElementById('contact-email').value = state.contact.email || '';
+  document.getElementById('contact-phone').value = state.contact.phone || '';
+  document.getElementById('contact-linkedin').value = state.contact.linkedin || '';
+  document.getElementById('contact-github').value = state.contact.github || '';
+  document.getElementById('contact-twitter').value = state.contact.twitter || '';
+  document.getElementById('contact-dribbble').value = state.contact.dribbble || '';
+
+  // Dynamic lists
+  renderProjectsEditor();
+  renderExperienceEditor();
+  renderEducationEditor();
+}
+
+/* ===== Projects Editor ===== */
+function renderProjectsEditor() {
+  const list = document.getElementById('projects-list');
+  list.innerHTML = '';
+  state.projects.forEach((p, idx) => {
+    const card = document.createElement('div');
+    card.className = 'item-card';
+    card.innerHTML = `
+      <button class="remove-btn" data-remove-project="${idx}" title="Remove">&times;</button>
+      <div class="field">
+        <label>Title</label>
+        <input type="text" data-project="title" data-idx="${idx}" value="${escapeHtml(p.title)}" />
+      </div>
+      <div class="field">
+        <label>Description</label>
+        <textarea data-project="desc" data-idx="${idx}" rows="3">${escapeHtml(p.desc)}</textarea>
+      </div>
+      <div class="field">
+        <label>Project Image</label>
+        ${p.img ? `<img src="${escapeHtml(p.img)}" style="width:100%;max-height:120px;object-fit:cover;border-radius:6px;margin-bottom:8px;border:1px solid var(--border);" />` : ''}
+        <label class="file-btn" for="project-img-${idx}">${p.img ? 'Replace image' : 'Upload image'}</label>
+        <input type="file" id="project-img-${idx}" accept="image/*" data-project-img="${idx}" style="display:none" />
+      </div>
+      <div class="field">
+        <label>Link</label>
+        <input type="text" data-project="link" data-idx="${idx}" value="${escapeHtml(p.link)}" />
+      </div>
+      <div class="field">
+        <label>Tags (comma separated)</label>
+        <input type="text" data-project="tags" data-idx="${idx}" value="${escapeHtml((p.tags||[]).join(', '))}" />
+      </div>
+    `;
+    list.appendChild(card);
+  });
+}
+
+/* ===== Experience Editor ===== */
+function renderExperienceEditor() {
+  const list = document.getElementById('experience-list');
+  list.innerHTML = '';
+  state.experience.forEach((e, idx) => {
+    const card = document.createElement('div');
+    card.className = 'item-card';
+    card.innerHTML = `
+      <button class="remove-btn" data-remove-experience="${idx}" title="Remove">&times;</button>
+      <div class="field">
+        <label>Company</label>
+        <input type="text" data-experience="company" data-idx="${idx}" value="${escapeHtml(e.company)}" />
+      </div>
+      <div class="field">
+        <label>Role</label>
+        <input type="text" data-experience="role" data-idx="${idx}" value="${escapeHtml(e.role)}" />
+      </div>
+      <div class="field">
+        <label>Period</label>
+        <input type="text" data-experience="period" data-idx="${idx}" value="${escapeHtml(e.period)}" />
+      </div>
+      <div class="field">
+        <label>Description</label>
+        <textarea data-experience="desc" data-idx="${idx}" rows="3">${escapeHtml(e.desc)}</textarea>
+      </div>
+    `;
+    list.appendChild(card);
+  });
+}
+
+/* ===== Education Editor ===== */
+function renderEducationEditor() {
+  const list = document.getElementById('education-list');
+  list.innerHTML = '';
+  state.education.forEach((e, idx) => {
+    const card = document.createElement('div');
+    card.className = 'item-card';
+    card.innerHTML = `
+      <button class="remove-btn" data-remove-education="${idx}" title="Remove">&times;</button>
+      <div class="field">
+        <label>School</label>
+        <input type="text" data-education="school" data-idx="${idx}" value="${escapeHtml(e.school)}" />
+      </div>
+      <div class="field">
+        <label>Degree</label>
+        <input type="text" data-education="degree" data-idx="${idx}" value="${escapeHtml(e.degree)}" />
+      </div>
+      <div class="field">
+        <label>Period</label>
+        <input type="text" data-education="period" data-idx="${idx}" value="${escapeHtml(e.period)}" />
+      </div>
+    `;
+    list.appendChild(card);
+  });
+}
+
+/* ============================================================
+   RENDER PORTFOLIO PREVIEW
+============================================================ */
+function renderPortfolio() {
+  const el = document.getElementById('portfolio');
+  el.className = 'portfolio theme-' + state.theme;
+  el.innerHTML = buildPortfolioHTML(state, { inline: false });
+  applyColors(el);
+}
+
+function applyColors(el) {
+  el.style.setProperty('--p-bg', state.colors.bg);
+  el.style.setProperty('--p-card', state.colors.card);
+  el.style.setProperty('--p-heading', state.colors.heading);
+  el.style.setProperty('--p-text', state.colors.text);
+  el.style.setProperty('--p-accent', state.colors.accent);
+}
+
+function buildPortfolioHTML(s, opts) {
+  const photoHtml = s.hero.photo
+    ? `<img src="${escapeHtml(s.hero.photo)}" class="p-hero-photo" alt="${escapeHtml(s.hero.name)}" />`
+    : `<div class="p-hero-photo-placeholder">${escapeHtml((s.hero.name || '?').charAt(0))}</div>`;
+
+  const skillsHtml = (s.about.skills || []).length
+    ? `<div class="p-skills">${s.about.skills.map(sk => `<span class="p-skill">${escapeHtml(sk)}</span>`).join('')}</div>`
+    : '';
+
+  const projectsHtml = (s.projects || []).map(p => {
+    const imgHtml = p.img
+      ? `<img src="${escapeHtml(p.img)}" class="p-project-img" alt="${escapeHtml(p.title)}" />`
+      : `<div class="p-project-img-placeholder">${escapeHtml(p.title || 'Project')}</div>`;
+    const tagsHtml = (p.tags || []).map(t => `<span class="p-project-tag">${escapeHtml(t)}</span>`).join('');
+    const href = p.link || '#';
+    return `
+      <a href="${escapeHtml(href)}" class="p-project" target="_blank" rel="noopener">
+        ${imgHtml}
+        <div class="p-project-body">
+          <div class="p-project-title">${escapeHtml(p.title)}</div>
+          <div class="p-project-desc">${escapeHtml(p.desc)}</div>
+          <div class="p-project-tags">${tagsHtml}</div>
+        </div>
+      </a>
+    `;
+  }).join('');
+
+  const experienceHtml = (s.experience || []).map(e => `
+    <div class="p-timeline-item">
+      <div class="p-timeline-period">${escapeHtml(e.period)}</div>
+      <div>
+        <div class="p-timeline-role">${escapeHtml(e.role)}</div>
+        <div class="p-timeline-company">${escapeHtml(e.company)}</div>
+        <div class="p-timeline-desc">${escapeHtml(e.desc)}</div>
+      </div>
+    </div>
+  `).join('');
+
+  const educationHtml = (s.education || []).map(e => `
+    <div class="p-timeline-item">
+      <div class="p-timeline-period">${escapeHtml(e.period)}</div>
+      <div>
+        <div class="p-timeline-role">${escapeHtml(e.degree)}</div>
+        <div class="p-timeline-company">${escapeHtml(e.school)}</div>
+      </div>
+    </div>
+  `).join('');
+
+  const socials = [
+    { label: 'LinkedIn', url: s.contact.linkedin },
+    { label: 'GitHub', url: s.contact.github },
+    { label: 'Twitter', url: s.contact.twitter },
+    { label: 'Dribbble', url: s.contact.dribbble }
+  ].filter(x => x.url);
+
+  const socialsHtml = socials.length
+    ? `<div class="p-socials">${socials.map(x => `<a href="${escapeHtml(x.url)}" class="p-social" target="_blank" rel="noopener">${escapeHtml(x.label)}</a>`).join('')}</div>`
+    : '';
+
+  return `
+    <div class="p-container">
+
+      <section class="p-hero" id="hero">
+        <div>
+          <div class="p-hero-name">${escapeHtml(s.hero.name)}</div>
+          <h1 class="p-hero-title">${escapeHtml(s.hero.title)}</h1>
+          <p class="p-hero-tagline">${escapeHtml(s.hero.tagline)}</p>
+          <div class="p-hero-cta">
+            ${s.hero.cta1 && s.hero.cta1.label ? `<a href="${escapeHtml(s.hero.cta1.link || '#')}" class="p-btn primary">${escapeHtml(s.hero.cta1.label)}</a>` : ''}
+            ${s.hero.cta2 && s.hero.cta2.label ? `<a href="${escapeHtml(s.hero.cta2.link || '#')}" class="p-btn secondary">${escapeHtml(s.hero.cta2.label)}</a>` : ''}
+          </div>
+        </div>
+        ${photoHtml}
+      </section>
+
+      ${s.about.bio || skillsHtml ? `
+      <section class="p-section" id="about">
+        <div class="p-section-label">About</div>
+        <h2 class="p-section-title">A little about me</h2>
+        <p class="p-about-text">${escapeHtml(s.about.bio)}</p>
+        ${skillsHtml}
+      </section>
+      ` : ''}
+
+      ${projectsHtml ? `
+      <section class="p-section" id="projects">
+        <div class="p-section-label">Work</div>
+        <h2 class="p-section-title">Selected Projects</h2>
+        <div class="p-projects">${projectsHtml}</div>
+      </section>
+      ` : ''}
+
+      ${experienceHtml ? `
+      <section class="p-section" id="experience">
+        <div class="p-section-label">Experience</div>
+        <h2 class="p-section-title">Where I've worked</h2>
+        <div class="p-timeline">${experienceHtml}</div>
+      </section>
+      ` : ''}
+
+      ${educationHtml ? `
+      <section class="p-section" id="education">
+        <div class="p-section-label">Education</div>
+        <h2 class="p-section-title">Background</h2>
+        <div class="p-timeline">${educationHtml}</div>
+      </section>
+      ` : ''}
+
+      <section class="p-section" id="contact">
+        <div class="p-contact">
+          <div class="p-section-label">Get in touch</div>
+          <h2 class="p-section-title">Let's work together</h2>
+          ${s.contact.email ? `<a href="mailto:${escapeHtml(s.contact.email)}" class="p-contact-email">${escapeHtml(s.contact.email)}</a>` : ''}
+          ${s.contact.phone ? `<div class="p-contact-phone">${escapeHtml(s.contact.phone)}</div>` : ''}
+          ${socialsHtml}
+        </div>
+      </section>
+
+      <footer class="p-footer">
+        &copy; ${new Date().getFullYear()} ${escapeHtml(s.hero.name)}. Built with Portfolio Studio.
+      </footer>
+    </div>
+  `;
+}
+
+/* ============================================================
+   EXPORT STANDALONE HTML
+============================================================ */
+function buildStandaloneHTML() {
+  const s = state;
+  const bodyHtml = buildPortfolioHTML(s, { inline: true });
+
+  // Inline CSS used by portfolio
+  const portfolioCss = `
+:root {
+  --p-bg: ${s.colors.bg};
+  --p-card: ${s.colors.card};
+  --p-heading: ${s.colors.heading};
+  --p-text: ${s.colors.text};
+  --p-muted: #999999;
+  --p-border: #e8e8e6;
+  --p-accent: ${s.colors.accent};
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  font-family: 'Sora', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--p-bg);
+  color: var(--p-text);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
+}
+.portfolio { min-height: 100vh; }
+.portfolio.theme-dark {
+  --p-bg: #0e0e0f;
+  --p-card: #1a1a1c;
+  --p-heading: #ffffff;
+  --p-text: #a8a8a8;
+  --p-muted: #666666;
+  --p-border: #262628;
+  --p-accent: #ffffff;
+}
+.portfolio.theme-creative {
+  --p-bg: #fef9f2;
+  --p-card: #ffffff;
+  --p-heading: #222034;
+  --p-text: #555c70;
+  --p-muted: #9c9cac;
+  --p-border: #f0e8d8;
+  --p-accent: #ff6b35;
+}
+body { background: var(--p-bg); }
+.p-container { max-width: 980px; margin: 0 auto; padding: 0 48px; }
+.p-hero { padding: 120px 0 100px; display: grid; grid-template-columns: 1fr auto; gap: 60px; align-items: center; }
+.p-hero-name { font-size: 14px; font-weight: 500; color: var(--p-muted); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 20px; }
+.p-hero-title { font-size: 64px; font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; color: var(--p-heading); margin-bottom: 24px; }
+.portfolio.theme-creative .p-hero-title { font-weight: 800; }
+.p-hero-tagline { font-size: 19px; line-height: 1.6; color: var(--p-text); margin-bottom: 32px; max-width: 560px; }
+.p-hero-cta { display: flex; gap: 12px; }
+.p-btn { padding: 14px 28px; border-radius: 50px; font-family: inherit; font-size: 15px; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: transform 0.2s; cursor: pointer; border: none; }
+.p-btn:hover { transform: translateY(-2px); }
+.p-btn.primary { background: var(--p-accent); color: var(--p-bg); }
+.portfolio.theme-dark .p-btn.primary { color: #0e0e0f; }
+.p-btn.secondary { background: transparent; color: var(--p-heading); border: 1px solid var(--p-border); }
+.p-hero-photo { width: 240px; height: 240px; border-radius: 50%; object-fit: cover; border: 1px solid var(--p-border); }
+.portfolio.theme-creative .p-hero-photo { border-radius: 24px; transform: rotate(-2deg); }
+.p-hero-photo-placeholder { width: 240px; height: 240px; border-radius: 50%; background: var(--p-card); border: 1px solid var(--p-border); display: flex; align-items: center; justify-content: center; font-size: 72px; color: var(--p-muted); font-weight: 300; }
+.p-section { padding: 80px 0; border-top: 1px solid var(--p-border); }
+.p-section-label { font-size: 12px; font-weight: 600; color: var(--p-muted); text-transform: uppercase; letter-spacing: 0.18em; margin-bottom: 16px; }
+.p-section-title { font-size: 42px; font-weight: 700; letter-spacing: -0.02em; color: var(--p-heading); margin-bottom: 40px; line-height: 1.1; }
+.p-about-text { font-size: 18px; line-height: 1.75; color: var(--p-text); max-width: 720px; margin-bottom: 32px; white-space: pre-wrap; }
+.p-skills { display: flex; flex-wrap: wrap; gap: 10px; }
+.p-skill { padding: 10px 18px; background: var(--p-card); border: 1px solid var(--p-border); border-radius: 50px; font-size: 14px; font-weight: 500; color: var(--p-heading); }
+.portfolio.theme-creative .p-skill { background: var(--p-accent); color: #fff; border-color: var(--p-accent); }
+.p-projects { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+.p-project { background: var(--p-card); border: 1px solid var(--p-border); border-radius: 20px; overflow: hidden; text-decoration: none; color: inherit; display: block; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+.p-project:hover { transform: translateY(-4px); box-shadow: 0 24px 48px rgba(0,0,0,0.08); }
+.p-project-img { width: 100%; height: 240px; object-fit: cover; background: var(--p-bg); }
+.p-project-img-placeholder { width: 100%; height: 240px; background: linear-gradient(135deg, #eee, #ddd); display: flex; align-items: center; justify-content: center; color: var(--p-muted); font-size: 18px; font-weight: 500; }
+.portfolio.theme-dark .p-project-img-placeholder { background: linear-gradient(135deg, #222, #333); }
+.portfolio.theme-creative .p-project-img-placeholder { background: linear-gradient(135deg, #ffb4a2, #ff6b35); color: #fff; }
+.p-project-body { padding: 28px; }
+.p-project-title { font-size: 22px; font-weight: 600; color: var(--p-heading); margin-bottom: 10px; letter-spacing: -0.01em; }
+.p-project-desc { font-size: 15px; line-height: 1.65; color: var(--p-text); margin-bottom: 18px; }
+.p-project-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.p-project-tag { font-size: 11px; padding: 5px 11px; background: var(--p-bg); color: var(--p-muted); border-radius: 50px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
+.p-timeline { display: flex; flex-direction: column; gap: 32px; }
+.p-timeline-item { display: grid; grid-template-columns: 180px 1fr; gap: 32px; padding-bottom: 32px; border-bottom: 1px solid var(--p-border); }
+.p-timeline-item:last-child { border-bottom: none; padding-bottom: 0; }
+.p-timeline-period { font-size: 14px; color: var(--p-muted); font-weight: 500; }
+.p-timeline-role { font-size: 20px; font-weight: 600; color: var(--p-heading); margin-bottom: 4px; }
+.p-timeline-company { font-size: 15px; color: var(--p-muted); margin-bottom: 12px; }
+.p-timeline-desc { font-size: 15px; line-height: 1.65; color: var(--p-text); }
+.p-contact { background: var(--p-card); border: 1px solid var(--p-border); border-radius: 28px; padding: 72px 48px; text-align: center; }
+.portfolio.theme-creative .p-contact { background: var(--p-accent); color: #fff; border: none; }
+.portfolio.theme-creative .p-contact .p-section-label, .portfolio.theme-creative .p-contact .p-section-title, .portfolio.theme-creative .p-contact .p-contact-email { color: #fff; }
+.p-contact .p-section-title { margin-bottom: 16px; }
+.p-contact-email { display: inline-block; font-size: 32px; font-weight: 600; color: var(--p-heading); text-decoration: none; margin-bottom: 16px; letter-spacing: -0.01em; }
+.p-contact-email:hover { text-decoration: underline; }
+.p-contact-phone { font-size: 15px; color: var(--p-muted); margin-bottom: 36px; }
+.p-socials { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+.p-social { color: var(--p-heading); text-decoration: none; font-size: 14px; font-weight: 500; padding: 12px 22px; border: 1px solid var(--p-border); border-radius: 50px; transition: all 0.2s; }
+.portfolio.theme-creative .p-socials .p-social { color: #fff; border-color: rgba(255,255,255,0.4); }
+.p-social:hover { background: var(--p-heading); color: var(--p-bg); }
+.portfolio.theme-creative .p-social:hover { background: #fff; color: var(--p-accent); }
+.p-footer { padding: 48px 0; text-align: center; font-size: 13px; color: var(--p-muted); border-top: 1px solid var(--p-border); margin-top: 40px; }
+@media (max-width: 820px) {
+  .p-container { padding: 0 28px; }
+  .p-hero { grid-template-columns: 1fr; gap: 32px; padding: 80px 0 60px; }
+  .p-hero-photo, .p-hero-photo-placeholder { width: 180px; height: 180px; }
+  .p-hero-title { font-size: 44px; }
+  .p-section { padding: 56px 0; }
+  .p-section-title { font-size: 32px; }
+  .p-projects { grid-template-columns: 1fr; gap: 20px; }
+  .p-timeline-item { grid-template-columns: 1fr; gap: 8px; }
+  .p-contact { padding: 48px 28px; }
+  .p-contact-email { font-size: 22px; }
+}
+`.trim();
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>${escapeHtml(s.hero.name || 'Portfolio')} &mdash; ${escapeHtml(s.hero.title || 'Portfolio')}</title>
+<meta name="description" content="${escapeHtml(s.hero.tagline || '')}" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+${portfolioCss}
+</style>
+</head>
+<body>
+<div class="portfolio theme-${escapeHtml(s.theme)}">
+${bodyHtml}
+</div>
+</body>
+</html>`;
+}
+
+function exportHTML() {
+  const html = buildStandaloneHTML();
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const filename = (state.hero.name || 'portfolio').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '.html';
+  a.href = url;
+  a.download = filename || 'portfolio.html';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  showToast('Portfolio downloaded');
+}
+
+/* ============================================================
+   EVENT BINDINGS
+============================================================ */
+
+// Tabs
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.querySelector(`.panel[data-panel="${t.dataset.tab}"]`).classList.add('active');
+  });
+});
+
+// Theme
+document.querySelectorAll('.theme-option').forEach(opt => {
+  opt.addEventListener('click', () => {
+    state.theme = opt.dataset.theme;
+
+    // If theme changes, also update colors to theme defaults
+    if (state.theme === 'minimal') {
+      state.colors = { bg: '#f5f5f3', card: '#ffffff', heading: '#1a1a1a', text: '#555555', accent: '#1a1a1a' };
+    } else if (state.theme === 'dark') {
+      state.colors = { bg: '#0e0e0f', card: '#1a1a1c', heading: '#ffffff', text: '#a8a8a8', accent: '#ffffff' };
+    } else if (state.theme === 'creative') {
+      state.colors = { bg: '#fef9f2', card: '#ffffff', heading: '#222034', text: '#555c70', accent: '#ff6b35' };
+    }
+
+    saveAndRender();
+  });
+});
+
+// Colors
+['bg', 'card', 'heading', 'text', 'accent'].forEach(key => {
+  document.getElementById('color-' + key).addEventListener('input', (e) => {
+    state.colors[key] = e.target.value;
+    saveAndRender();
+  });
+});
+
+// Hero fields
+function bindInput(id, setter) {
+  document.getElementById(id).addEventListener('input', (e) => {
+    setter(e.target.value);
+    saveAndRender();
+  });
+}
+
+bindInput('hero-name', v => state.hero.name = v);
+bindInput('hero-title', v => state.hero.title = v);
+bindInput('hero-tagline', v => state.hero.tagline = v);
+bindInput('hero-cta1-label', v => state.hero.cta1.label = v);
+bindInput('hero-cta1-link', v => state.hero.cta1.link = v);
+bindInput('hero-cta2-label', v => state.hero.cta2.label = v);
+bindInput('hero-cta2-link', v => state.hero.cta2.link = v);
+
+// Photo upload
+document.getElementById('photo-input').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    state.hero.photo = ev.target.result;
+    saveAndRender();
+  };
+  reader.readAsDataURL(file);
+});
+
+// About
+bindInput('about-bio', v => state.about.bio = v);
+document.getElementById('about-skills').addEventListener('input', (e) => {
+  state.about.skills = e.target.value.split(',').map(s => s.trim()).filter(Boolean);
+  saveAndRender();
+});
+
+// Contact
+bindInput('contact-email', v => state.contact.email = v);
+bindInput('contact-phone', v => state.contact.phone = v);
+bindInput('contact-linkedin', v => state.contact.linkedin = v);
+bindInput('contact-github', v => state.contact.github = v);
+bindInput('contact-twitter', v => state.contact.twitter = v);
+bindInput('contact-dribbble', v => state.contact.dribbble = v);
+
+// Projects - delegation
+document.getElementById('projects-list').addEventListener('input', (e) => {
+  const t = e.target;
+  if (t.dataset.project) {
+    const idx = parseInt(t.dataset.idx, 10);
+    const key = t.dataset.project;
+    if (key === 'tags') {
+      state.projects[idx].tags = t.value.split(',').map(s => s.trim()).filter(Boolean);
+    } else {
+      state.projects[idx][key] = t.value;
+    }
+    // For title/description/link/tags changes, re-render only portfolio, not editor (to preserve focus)
+    renderPortfolio();
+    saveState();
+  }
+});
+
+document.getElementById('projects-list').addEventListener('change', (e) => {
+  const t = e.target;
+  if (t.dataset.projectImg !== undefined) {
+    const idx = parseInt(t.dataset.projectImg, 10);
+    const file = t.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      state.projects[idx].img = ev.target.result;
+      saveAndRender();
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+document.getElementById('projects-list').addEventListener('click', (e) => {
+  const t = e.target;
+  if (t.dataset.removeProject !== undefined) {
+    const idx = parseInt(t.dataset.removeProject, 10);
+    state.projects.splice(idx, 1);
+    saveAndRender();
+  }
+});
+
+document.getElementById('btn-add-project').addEventListener('click', () => {
+  state.projects.push({
+    title: 'New Project',
+    desc: 'A short description of this project.',
+    img: '',
+    link: '#',
+    tags: []
+  });
+  saveAndRender();
+});
+
+// Experience - delegation
+document.getElementById('experience-list').addEventListener('input', (e) => {
+  const t = e.target;
+  if (t.dataset.experience) {
+    const idx = parseInt(t.dataset.idx, 10);
+    state.experience[idx][t.dataset.experience] = t.value;
+    renderPortfolio();
+    saveState();
+  }
+});
+
+document.getElementById('experience-list').addEventListener('click', (e) => {
+  const t = e.target;
+  if (t.dataset.removeExperience !== undefined) {
+    const idx = parseInt(t.dataset.removeExperience, 10);
+    state.experience.splice(idx, 1);
+    saveAndRender();
+  }
+});
+
+document.getElementById('btn-add-experience').addEventListener('click', () => {
+  state.experience.push({
+    company: 'Company Name',
+    role: 'Your Role',
+    period: '2023 - Present',
+    desc: 'What you worked on.'
+  });
+  saveAndRender();
+});
+
+// Education - delegation
+document.getElementById('education-list').addEventListener('input', (e) => {
+  const t = e.target;
+  if (t.dataset.education) {
+    const idx = parseInt(t.dataset.idx, 10);
+    state.education[idx][t.dataset.education] = t.value;
+    renderPortfolio();
+    saveState();
+  }
+});
+
+document.getElementById('education-list').addEventListener('click', (e) => {
+  const t = e.target;
+  if (t.dataset.removeEducation !== undefined) {
+    const idx = parseInt(t.dataset.removeEducation, 10);
+    state.education.splice(idx, 1);
+    saveAndRender();
+  }
+});
+
+document.getElementById('btn-add-education').addEventListener('click', () => {
+  state.education.push({
+    school: 'School Name',
+    degree: 'Degree',
+    period: '2015 - 2019'
+  });
+  saveAndRender();
+});
+
+// Header buttons
+document.getElementById('btn-reset').addEventListener('click', () => {
+  if (!confirm('Reset all data? This cannot be undone.')) return;
+  state = JSON.parse(JSON.stringify(EMPTY_DATA));
+  saveState();
+  populateEditor();
+  renderPortfolio();
+  showToast('Portfolio reset');
+});
+
+document.getElementById('btn-demo').addEventListener('click', () => {
+  state = JSON.parse(JSON.stringify(DEMO_DATA));
+  saveState();
+  populateEditor();
+  renderPortfolio();
+  showToast('Demo loaded');
+});
+
+document.getElementById('btn-export').addEventListener('click', exportHTML);
+
+function saveAndRender() {
+  saveState();
+  populateEditor();
+  renderPortfolio();
+}
+
+/* ============================================================
+   INITIAL RENDER
+============================================================ */
+populateEditor();
+renderPortfolio();
+
+</script>
+</body>
+</html>

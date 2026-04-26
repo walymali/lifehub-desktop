@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>LifeHub - Admin Dashboard</title>
+<meta name="description" content="LifeHub — 43 productivity tools in one place. Invoicing, CRM, planning, design, AI-powered tools.">
+<meta name="theme-color" content="#f59e0b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="LifeHub">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<script src="i18n.js" data-default-locale="en"></script>
+<!-- Firebase SDK (CDN) -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="firebase-auth.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#f5f5f3;--surface:#fff;--card:#fff;--border:rgba(0,0,0,0.06);--heading:#1a1a1a;--text:#555;--text2:#999;--text3:#bbb;--accent:#1a1a1a;--green:#16a34a;--amber:#d97706;--red:#dc2626;--blue:#2563eb;--purple:#9333ea}
+body{font-family:'Sora',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex}
+/* Sidebar */
+.sidebar{width:240px;background:var(--surface);border-right:1px solid var(--border);padding:24px 16px;position:fixed;top:0;left:0;bottom:0;overflow-y:auto;scrollbar-width:thin}
+/* RTL support — flip sidebar to right + Arabic font */
+html[dir="rtl"] .sidebar{left:auto;right:0;border-right:none;border-left:1px solid var(--border)}
+html[dir="rtl"] .main{margin-left:0;margin-right:240px}
+html[dir="rtl"] body, html[dir="rtl"] input, html[dir="rtl"] button{font-family:'Tajawal','Sora',system-ui,sans-serif}
+html[dir="rtl"] .nav-btn{text-align:right}
+html[dir="rtl"] .nav-btn span:first-child{margin-left:8px;margin-right:0}
+html[dir="rtl"] .count{margin-right:auto;margin-left:0}
+@media(max-width:900px){html[dir="rtl"] .main{margin-right:0}}
+/* Language switcher active state */
+button[id^="lang-"].active{background:var(--heading) !important;color:#fff !important;border-color:var(--heading) !important}
+.logo{font-size:1.1rem;font-weight:700;color:var(--heading);letter-spacing:-0.02em;padding:0 10px;margin-bottom:4px;display:flex;align-items:center;gap:10px}
+.logo::before{content:'';width:10px;height:10px;background:var(--accent);border-radius:50%}
+.tagline{font-size:0.62rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.12em;padding:0 10px;margin-bottom:28px}
+.nav-section{margin-bottom:20px}
+.nav-label{font-size:0.58rem;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.1em;padding:0 10px;margin-bottom:8px}
+.nav-btn{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;border:none;background:transparent;color:var(--text);font-size:0.8rem;font-weight:500;cursor:pointer;font-family:inherit;border-radius:10px;transition:all 0.2s;text-align:left}
+.nav-btn:hover{background:rgba(0,0,0,0.03);color:var(--heading)}
+.nav-btn.active{background:var(--heading);color:#fff}
+.nav-btn .count{margin-left:auto;font-size:0.62rem;padding:2px 8px;background:rgba(0,0,0,0.05);border-radius:99px;color:var(--text2);font-weight:600}
+.nav-btn.active .count{background:rgba(255,255,255,0.15);color:#fff}
+/* Main */
+.main{margin-left:240px;flex:1;padding:28px 32px;min-height:100vh}
+.main-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;flex-wrap:wrap;gap:12px}
+.main-header h1{font-size:1.6rem;font-weight:700;color:var(--heading);letter-spacing:-0.02em}
+.main-header .sub{color:var(--text2);font-size:0.82rem;margin-top:2px}
+.main-actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{padding:9px 18px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:0.74rem;font-weight:500;cursor:pointer;font-family:inherit;border-radius:10px;transition:all 0.2s}
+.btn:hover{background:var(--heading);color:#fff;border-color:var(--heading)}
+.btn.primary{background:var(--heading);color:#fff;border-color:var(--heading)}
+.btn.primary:hover{background:#333}
+/* Warning banner */
+.warning{background:#fef3c7;border:1px solid #fcd34d;color:#92400e;padding:14px 18px;border-radius:12px;margin-bottom:20px;font-size:0.8rem;display:none}
+.warning.show{display:block}
+.warning strong{display:block;margin-bottom:3px;color:#78350f}
+/* Views */
+.view{display:none}.view.active{display:block}
+/* Tools Grid View */
+.search-bar{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.search-input{flex:1;min-width:240px;padding:12px 18px;background:var(--card);border:1px solid var(--border);border-radius:12px;color:var(--heading);font-family:inherit;font-size:0.85rem}
+.search-input:focus{outline:none;border-color:var(--heading)}
+.chips{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap}
+.chip{padding:8px 16px;border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:99px;cursor:pointer;font-size:0.72rem;font-weight:500;font-family:inherit;transition:all 0.2s;display:flex;align-items:center;gap:6px}
+.chip:hover{border-color:rgba(0,0,0,0.15)}
+.chip.active{background:var(--heading);color:#fff;border-color:var(--heading)}
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.tool-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;transition:all 0.25s;cursor:default;position:relative;box-shadow:0 1px 3px rgba(0,0,0,0.03)}
+.tool-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.1)}
+.tool-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px}
+.tool-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;background:var(--bg)}
+.tool-info{flex:1;min-width:0}
+.tool-name{font-size:0.92rem;font-weight:600;color:var(--heading);margin-bottom:2px;letter-spacing:-0.01em}
+.tool-cat{font-size:0.62rem;color:var(--text2);text-transform:uppercase;letter-spacing:0.08em}
+.tool-desc{font-size:0.74rem;color:var(--text2);line-height:1.6;margin-bottom:14px;min-height:36px}
+.tool-stats{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.tool-stat{font-size:0.62rem;padding:3px 9px;background:var(--bg);color:var(--text);border-radius:99px;font-weight:500;display:flex;align-items:center;gap:4px}
+.tool-stat.pro{background:#fef3c7;color:#92400e}
+.tool-stat.active{background:#dcfce7;color:#166534}
+.tool-actions{display:flex;gap:6px}
+.tool-actions .btn{flex:1;padding:10px;font-size:0.72rem;text-align:center}
+/* Analytics */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.03)}
+.kpi .num{font-size:1.8rem;font-weight:700;color:var(--heading);line-height:1;letter-spacing:-0.02em}
+.kpi .lbl{font-size:0.6rem;color:var(--text2);text-transform:uppercase;letter-spacing:0.1em;margin-top:5px}
+.kpi .trend{font-size:0.65rem;color:var(--green);margin-top:4px}
+.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.chart-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;box-shadow:0 1px 3px rgba(0,0,0,0.03)}
+.chart-box h3{font-size:0.78rem;font-weight:600;color:var(--heading);margin-bottom:16px}
+.bar-item{display:flex;align-items:center;gap:12px;margin-bottom:10px;font-size:0.76rem}
+.bar-item .b-name{min-width:120px;color:var(--heading);font-weight:500}
+.bar-item .b-bar{flex:1;height:10px;background:var(--bg);border-radius:99px;overflow:hidden}
+.bar-item .b-fill{height:100%;background:var(--accent);border-radius:99px;transition:width 0.6s}
+.bar-item .b-val{min-width:40px;text-align:right;color:var(--text2);font-weight:600;font-size:0.72rem}
+.timeline-chart{display:flex;align-items:flex-end;gap:2px;height:120px;padding:10px 0;margin-top:8px}
+.tl-bar{flex:1;background:var(--heading);border-radius:2px 2px 0 0;min-height:2px;position:relative;transition:all 0.3s}
+.tl-bar:hover{background:var(--blue)}
+.donut-wrap{display:flex;align-items:center;gap:24px}
+.donut{width:140px;height:140px;border-radius:50%;flex-shrink:0}
+.donut-legend{flex:1}
+.donut-item{display:flex;align-items:center;gap:8px;font-size:0.74rem;margin-bottom:6px}
+.donut-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+/* Pro Manager */
+.pro-table{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.03)}
+.pro-row{display:grid;grid-template-columns:2fr 1fr 2fr auto;gap:16px;align-items:center;padding:14px 20px;border-bottom:1px solid var(--border);font-size:0.78rem}
+.pro-row:last-child{border-bottom:none}
+.pro-row.header{background:var(--bg);font-size:0.62rem;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.08em}
+.pro-row.active-license{background:#f0fdf4}
+.pro-tool-name{color:var(--heading);font-weight:500;display:flex;align-items:center;gap:8px}
+.status-badge{font-size:0.6rem;padding:3px 9px;border-radius:99px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em}
+.status-free{background:var(--bg);color:var(--text2)}
+.status-active{background:#dcfce7;color:#166534}
+.status-revoked{background:#fee2e2;color:#991b1b}
+.license-key{font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--text);background:var(--bg);padding:4px 10px;border-radius:6px;overflow-x:auto}
+.pro-actions{display:flex;gap:6px}
+.pro-actions .btn{padding:6px 12px;font-size:0.66rem}
+.btn-danger{background:#fef2f2;color:#dc2626;border-color:#fecaca}
+.btn-danger:hover{background:#dc2626;color:#fff;border-color:#dc2626}
+/* Modal */
+.modal{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center}
+.modal.show{display:flex}
+.modal-bg{position:absolute;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px)}
+.modal-body{position:relative;background:var(--card);border-radius:20px;padding:32px;max-width:480px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.2)}
+.modal-body h2{font-size:1.1rem;font-weight:700;color:var(--heading);margin-bottom:6px}
+.modal-body p{font-size:0.82rem;color:var(--text2);margin-bottom:18px}
+.modal-close{position:absolute;top:14px;right:14px;width:32px;height:32px;border:none;background:var(--bg);border-radius:50%;cursor:pointer;color:var(--text2);font-size:1rem}
+.modal-field{margin-bottom:14px}
+.modal-field label{display:block;font-size:0.68rem;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px}
+.modal-field input,.modal-field select{width:100%;padding:11px 14px;background:var(--bg);border:1px solid var(--border);border-radius:10px;color:var(--heading);font-family:inherit;font-size:0.84rem}
+.modal-field input:focus{outline:none;border-color:var(--heading)}
+.feature-check{display:flex;align-items:center;gap:8px;padding:8px 0;font-size:0.78rem}
+.feature-check input{width:auto}
+.generated-key{padding:16px;background:#f0fdf4;border:1px solid #86efac;border-radius:12px;margin:14px 0;font-family:'JetBrains Mono',monospace;font-size:0.88rem;font-weight:600;color:#166534;text-align:center;letter-spacing:0.08em}
+/* Settings */
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.setting-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,0.03)}
+.setting-card h3{font-size:0.88rem;font-weight:600;color:var(--heading);margin-bottom:8px}
+.setting-card p{font-size:0.76rem;color:var(--text2);margin-bottom:14px;line-height:1.6}
+.setting-card .btn{margin-right:6px}
+/* Toast */
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--heading);color:#fff;padding:12px 24px;border-radius:99px;font-size:0.82rem;z-index:10001;animation:slideUp 0.3s;box-shadow:0 4px 16px rgba(0,0,0,0.2)}
+@keyframes slideUp{from{opacity:0;transform:translate(-50%,20px)}to{opacity:1;transform:translate(-50%,0)}}
+.empty{text-align:center;padding:60px 20px;color:var(--text2)}
+.empty-icon{font-size:3rem;margin-bottom:10px;opacity:0.3}
+/* Responsive */
+@media(max-width:900px){.sidebar{position:fixed;transform:translateX(-100%);transition:transform 0.3s;z-index:100}.sidebar.open{transform:translateX(0)}.main{margin-left:0;padding:20px}.kpis{grid-template-columns:1fr 1fr}.chart-row{grid-template-columns:1fr}.settings-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="logo" data-i18n="app.name">LifeHub</div>
+  <div class="tagline" data-i18n="sidebar.adminDashboard">Admin Dashboard</div>
+
+  <div class="nav-section">
+    <div class="nav-label" data-i18n="sidebar.main">Main</div>
+    <button class="nav-btn active" onclick="switchView('tools',this)">
+      <span>🧰</span><span data-i18n="nav.tools">Tools</span><span class="count" id="nav-tools-count">0</span>
+    </button>
+    <button class="nav-btn" onclick="switchView('analytics',this)">
+      <span>📊</span><span data-i18n="nav.analytics">Analytics</span>
+    </button>
+    <button class="nav-btn" onclick="switchView('pro',this)">
+      <span>✨</span><span data-i18n="nav.proManager">Pro Manager</span><span class="count" id="nav-pro-count">0</span>
+    </button>
+    <button class="nav-btn" onclick="switchView('settings',this)">
+      <span>⚙️</span><span data-i18n="nav.settings">Settings</span>
+    </button>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label" data-i18n="sidebar.quickStats">Quick Stats</div>
+    <div style="padding:10px 12px;font-size:0.68rem;color:var(--text2);line-height:1.7">
+      <div><span data-i18n="sidebar.totalOpens">Total Opens</span>: <strong id="q-opens" style="color:var(--heading)">0</strong></div>
+      <div><span data-i18n="sidebar.activeToday">Active Today</span>: <strong id="q-active" style="color:var(--heading)">0</strong></div>
+      <div><span data-i18n="sidebar.proLicenses">Pro Licenses</span>: <strong id="q-pro" style="color:var(--heading)">0</strong></div>
+    </div>
+  </div>
+
+  <!-- Language switcher -->
+  <div class="nav-section">
+    <div class="nav-label" data-i18n="settings.language">Language</div>
+    <div style="display:flex;gap:6px;padding:0 8px">
+      <button onclick="LifeHubI18n && LifeHubI18n.setLocale('en')" id="lang-en" style="flex:1;padding:6px 0;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:8px;font-size:0.68rem;cursor:pointer;font-family:inherit">EN</button>
+      <button onclick="LifeHubI18n && LifeHubI18n.setLocale('ar')" id="lang-ar" style="flex:1;padding:6px 0;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:8px;font-size:0.68rem;cursor:pointer;font-family:inherit">العربية</button>
+    </div>
+  </div>
+
+  <!-- Profile Widget -->
+  <div id="profile-widget" style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
+    <div id="profile-signed-out" style="display:block">
+      <button class="nav-btn" onclick="openLoginModal()" style="background:var(--heading);color:#fff">
+        <span>☁️</span><span data-i18n="nav.signIn">Sign In / Sync</span>
+      </button>
+      <p style="font-size:0.62rem;color:var(--text2);margin-top:6px;padding:0 10px;line-height:1.5" data-i18n="sidebar.localOnly">Local-only mode. Sign in to sync across devices.</p>
+    </div>
+    <div id="profile-signed-in" style="display:none">
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg);border-radius:10px">
+        <div id="profile-avatar" style="width:32px;height:32px;border-radius:50%;background:var(--heading);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:700;flex-shrink:0">U</div>
+        <div style="flex:1;min-width:0;overflow:hidden">
+          <div id="profile-name" style="font-size:0.78rem;font-weight:600;color:var(--heading);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">User</div>
+          <div style="font-size:0.6rem;color:var(--green);display:flex;align-items:center;gap:4px"><span style="width:5px;height:5px;background:var(--green);border-radius:50%"></span>Synced</div>
+        </div>
+      </div>
+      <button class="nav-btn" onclick="handleSignOut()" style="margin-top:6px;font-size:0.72rem">
+        <span>🚪</span><span data-i18n="nav.signOut">Sign Out</span>
+      </button>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="warning" id="origin-warning">
+    <strong>⚠️ Origin Warning</strong>
+    You're viewing this via <code>file://</code>. Analytics won't aggregate across tools. Run <code>python3 -m http.server 8000</code> from <code>/Users/walysmac/</code> and visit <code>http://localhost:8000/dashboard/</code>
+  </div>
+
+  <!-- ═══ TOOLS VIEW ═══ -->
+  <div class="view active" id="view-tools">
+    <div class="main-header">
+      <div>
+        <h1 data-i18n="tools.heading">Tools</h1>
+        <p class="sub">Your collection of <span id="total-tools">0</span> tools</p>
+      </div>
+      <div class="main-actions">
+        <button class="btn" onclick="openAll()" data-i18n="tools.refreshCounts">Refresh Counts</button>
+      </div>
+    </div>
+
+    <div class="search-bar">
+      <input type="text" class="search-input" id="search" placeholder="Search tools..." data-i18n-placeholder="tools.search" oninput="renderTools()">
+    </div>
+
+    <div class="chips" id="category-chips"></div>
+    <div class="tools-grid" id="tools-grid"></div>
+  </div>
+
+  <!-- ═══ ANALYTICS VIEW ═══ -->
+  <div class="view" id="view-analytics">
+    <div class="main-header">
+      <div>
+        <h1>Analytics</h1>
+        <p class="sub">How you're using your tools</p>
+      </div>
+      <div class="main-actions">
+        <button class="btn btn-danger" onclick="clearAnalytics()">Clear Analytics</button>
+      </div>
+    </div>
+
+    <div class="kpis" id="kpis"></div>
+
+    <div class="chart-row">
+      <div class="chart-box">
+        <h3>Top 10 Most Used Tools</h3>
+        <div id="top-tools"></div>
+      </div>
+      <div class="chart-box">
+        <h3>Activity (Last 30 Days)</h3>
+        <div class="timeline-chart" id="timeline"></div>
+        <div style="display:flex;justify-content:space-between;font-size:0.62rem;color:var(--text3);margin-top:6px">
+          <span>30d ago</span><span>Today</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-box">
+      <h3>Category Distribution</h3>
+      <div class="donut-wrap">
+        <div class="donut" id="donut"></div>
+        <div class="donut-legend" id="donut-legend"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ PRO MANAGER VIEW ═══ -->
+  <div class="view" id="view-pro">
+    <div class="main-header">
+      <div>
+        <h1>Pro Manager</h1>
+        <p class="sub">Generate and manage license keys</p>
+      </div>
+      <div class="main-actions">
+        <button class="btn primary" onclick="openGenerateModal()">+ Generate License</button>
+      </div>
+    </div>
+
+    <div class="pro-table" id="pro-table"></div>
+  </div>
+
+  <!-- ═══ SETTINGS VIEW ═══ -->
+  <div class="view" id="view-settings">
+    <div class="main-header">
+      <div>
+        <h1>Settings</h1>
+        <p class="sub">Manage your data and preferences</p>
+      </div>
+    </div>
+
+    <div class="settings-grid">
+      <div class="setting-card">
+        <h3>📤 Export Data</h3>
+        <p>Download a complete backup of all analytics, licenses, and sessions as a JSON file.</p>
+        <button class="btn primary" onclick="exportAll()">Export JSON</button>
+      </div>
+
+      <div class="setting-card">
+        <h3>📥 Import Data</h3>
+        <p>Restore from a previous backup. This will merge with existing data.</p>
+        <button class="btn" onclick="document.getElementById('import-file').click()">Import JSON</button>
+        <input type="file" id="import-file" accept=".json" style="display:none" onchange="importAll(this)">
+      </div>
+
+      <div class="setting-card">
+        <h3>☁️ Cloud Sync (Future)</h3>
+        <p>Set a cloud endpoint to sync analytics across devices. Leave empty for local-only.</p>
+        <input type="text" id="cloud-url" placeholder="https://your-endpoint.com/track" style="width:100%;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:10px;font-family:inherit;font-size:0.78rem;margin-bottom:10px">
+        <button class="btn primary" onclick="saveCloud()">Save Endpoint</button>
+      </div>
+
+      <div class="setting-card">
+        <h3>🔄 Reset All Data</h3>
+        <p>Permanently delete all analytics, licenses, and sessions. This cannot be undone.</p>
+        <button class="btn btn-danger" onclick="resetAll()">Reset Everything</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Generate License Modal -->
+<div class="modal" id="gen-modal">
+  <div class="modal-bg" onclick="closeModal()"></div>
+  <div class="modal-body">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <h2>Generate License Key</h2>
+    <p>Create a Pro license for a tool</p>
+    <div class="modal-field">
+      <label>Tool</label>
+      <select id="gen-tool"></select>
+    </div>
+    <div class="modal-field">
+      <label>Tier</label>
+      <select id="gen-tier">
+        <option value="pro">Pro (all features)</option>
+        <option value="lifetime">Lifetime Pro</option>
+      </select>
+    </div>
+    <div id="gen-features" style="margin-bottom:14px"></div>
+    <div id="gen-result"></div>
+    <button class="btn primary" onclick="generateLicense()" style="width:100%;padding:12px">Generate Key</button>
+  </div>
+</div>
+
+<script>
+// ── State ──
+const STORAGE_KEY = 'lifehub:v1';
+let config = null;
+let currentView = 'tools';
+let activeCategory = 'all';
+
+// ── i18n: highlight active language button + re-apply on locale change ──
+function syncLangButtons() {
+  if (!window.LifeHubI18n) return;
+  const cur = window.LifeHubI18n.getLocale();
+  ['en','ar'].forEach(l => {
+    const b = document.getElementById('lang-' + l);
+    if (b) b.classList.toggle('active', l === cur);
+  });
+}
+if (window.LifeHubI18n) {
+  window.LifeHubI18n.onChange(syncLangButtons);
+  // First sync after page load — i18n.js bootstraps async
+  document.addEventListener('DOMContentLoaded', syncLangButtons);
+}
+
+// ── Storage ──
+function loadStore() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return { tools:{}, sessions:[], licenses:{}, global:{cloudEndpoint:'',version:1} };
+    return JSON.parse(raw);
+  } catch(e) { return { tools:{}, sessions:[], licenses:{}, global:{cloudEndpoint:'',version:1} }; }
+}
+function saveStore(s) { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }
+
+// ── Load config ──
+async function loadConfig() {
+  try {
+    const response = await fetch('config.json');
+    config = await response.json();
+  } catch(e) {
+    // Fallback: fetch may fail on file://
+    console.warn('Failed to fetch config.json, using embedded fallback');
+    config = { version:1, tools:[], categories:[] };
+    showOriginWarning();
+  }
+  renderAll();
+}
+
+function showOriginWarning() {
+  // Suppress when running inside the LifeHub Desktop wrapper — file:// is expected there.
+  if (window.LIFEHUB_DESKTOP && window.LIFEHUB_DESKTOP.isDesktop) return;
+  if (location.protocol === 'file:') {
+    document.getElementById('origin-warning').classList.add('show');
+  }
+}
+
+// ── Views ──
+function switchView(view, btn) {
+  currentView = view;
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + view).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  if (view === 'analytics') renderAnalytics();
+  if (view === 'pro') renderProManager();
+  if (view === 'settings') {
+    const store = loadStore();
+    document.getElementById('cloud-url').value = store.global.cloudEndpoint || '';
+  }
+}
+
+// ── Categories chips ──
+function renderCategories() {
+  const el = document.getElementById('category-chips');
+  if (!config || !config.categories) return;
+  el.innerHTML = config.categories.map(c => {
+    const count = c.id === 'all' ? config.tools.length : config.tools.filter(t => t.category === c.id).length;
+    return `<button class="chip ${activeCategory === c.id ? 'active' : ''}" onclick="setCategory('${c.id}')"><span>${c.icon}</span><span>${c.name}</span><span style="opacity:0.6">${count}</span></button>`;
+  }).join('');
+}
+
+function setCategory(cat) {
+  activeCategory = cat;
+  renderCategories();
+  renderTools();
+}
+
+// ── Tools grid ──
+function renderTools() {
+  const grid = document.getElementById('tools-grid');
+  if (!config) return;
+  const search = document.getElementById('search').value.toLowerCase();
+  const store = loadStore();
+
+  let tools = config.tools;
+  if (activeCategory !== 'all') tools = tools.filter(t => t.category === activeCategory);
+  if (search) tools = tools.filter(t => t.name.toLowerCase().includes(search) || t.description.toLowerCase().includes(search));
+
+  document.getElementById('total-tools').textContent = config.tools.length;
+
+  if (!tools.length) {
+    grid.innerHTML = '<div class="empty"><div class="empty-icon">🔍</div><div>No tools match your search</div></div>';
+    return;
+  }
+
+  grid.innerHTML = tools.map(tool => {
+    const stats = store.tools[tool.id] || { opens: 0, timeSpent: 0 };
+    const license = store.licenses[tool.id];
+    const hasLicense = license && !license.revoked;
+    const isActive = stats.opens > 0;
+    return `<div class="tool-card">
+      <div class="tool-head">
+        <div class="tool-icon" style="background:${tool.color}15;color:${tool.color}">${tool.icon}</div>
+        <div class="tool-info">
+          <div class="tool-name">${tool.name}</div>
+          <div class="tool-cat">${tool.category}</div>
+        </div>
+      </div>
+      <div class="tool-desc">${tool.description}</div>
+      <div class="tool-stats">
+        ${isActive ? `<span class="tool-stat active">${stats.opens} opens</span>` : '<span class="tool-stat">Never opened</span>'}
+        ${hasLicense ? '<span class="tool-stat pro">✨ Pro</span>' : ''}
+        ${stats.timeSpent ? `<span class="tool-stat">${formatTime(stats.timeSpent)}</span>` : ''}
+      </div>
+      <div class="tool-actions">
+        <button class="btn primary" onclick="openTool('${tool.path}','${tool.id}')">Open Tool</button>
+        <button class="btn" onclick="showToolDetails('${tool.id}')" title="Details">ℹ️</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openTool(path, toolId) {
+  // Track click from dashboard
+  const store = loadStore();
+  if (!store.tools[toolId]) {
+    const cfgTool = config.tools.find(t => t.id === toolId);
+    store.tools[toolId] = { opens: 0, timeSpent: 0, events: {}, name: cfgTool?.name || toolId, category: cfgTool?.category || 'utility' };
+  }
+  store.tools[toolId].lastSeen = Date.now();
+  if (!store.tools[toolId].firstSeen) store.tools[toolId].firstSeen = Date.now();
+  saveStore(store);
+  window.open(path, '_blank');
+}
+
+function showToolDetails(toolId) {
+  const store = loadStore();
+  const stats = store.tools[toolId] || { opens: 0, timeSpent: 0, events: {} };
+  const tool = config.tools.find(t => t.id === toolId);
+  const events = Object.keys(stats.events || {}).map(k => `${k}: ${stats.events[k]}`).join('\n') || 'No events tracked yet';
+  alert(`${tool.name}\n\nOpens: ${stats.opens}\nTime spent: ${formatTime(stats.timeSpent || 0)}\nFirst seen: ${stats.firstSeen ? new Date(stats.firstSeen).toLocaleDateString() : 'Never'}\nLast seen: ${stats.lastSeen ? new Date(stats.lastSeen).toLocaleDateString() : 'Never'}\n\nEvents:\n${events}`);
+}
+
+function formatTime(ms) {
+  if (!ms) return '0m';
+  const mins = Math.floor(ms / 60000);
+  if (mins < 60) return mins + 'm';
+  const hrs = Math.floor(mins / 60);
+  return hrs + 'h ' + (mins % 60) + 'm';
+}
+
+// ── Analytics ──
+function renderAnalytics() {
+  const store = loadStore();
+  const tools = Object.keys(store.tools).map(id => ({ id, ...store.tools[id] }));
+  const totalOpens = tools.reduce((s,t) => s + (t.opens || 0), 0);
+  const activeTools = tools.filter(t => t.lastSeen && (Date.now() - t.lastSeen) < 30*86400000).length;
+  const totalTime = tools.reduce((s,t) => s + (t.timeSpent || 0), 0);
+  const topTool = tools.sort((a,b) => (b.opens || 0) - (a.opens || 0))[0];
+  const topName = topTool ? (topTool.name || topTool.id) : '-';
+
+  document.getElementById('kpis').innerHTML = `
+    <div class="kpi"><div class="num">${totalOpens}</div><div class="lbl">Total Opens</div></div>
+    <div class="kpi"><div class="num">${activeTools}</div><div class="lbl">Active Tools (30d)</div></div>
+    <div class="kpi"><div class="num">${formatTime(totalTime)}</div><div class="lbl">Time Spent</div></div>
+    <div class="kpi"><div class="num" style="font-size:1rem;font-weight:700">${topName}</div><div class="lbl">Most Used</div></div>`;
+
+  // Top 10 chart
+  const top = tools.sort((a,b) => (b.opens || 0) - (a.opens || 0)).slice(0, 10);
+  const max = top[0] ? top[0].opens : 1;
+  document.getElementById('top-tools').innerHTML = top.length ? top.map(t => `<div class="bar-item"><span class="b-name">${t.name || t.id}</span><div class="b-bar"><div class="b-fill" style="width:${(t.opens||0)/max*100}%"></div></div><span class="b-val">${t.opens || 0}</span></div>`).join('') : '<div class="empty"><div class="empty-icon">📊</div><div>No usage data yet</div></div>';
+
+  // Timeline (last 30 days)
+  const days = [];
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const dayStart = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+    const dayEnd = dayStart + 86400000;
+    const count = (store.sessions || []).filter(s => s.start >= dayStart && s.start < dayEnd).length;
+    days.push(count);
+  }
+  const maxDay = Math.max(...days, 1);
+  document.getElementById('timeline').innerHTML = days.map(d => `<div class="tl-bar" style="height:${d/maxDay*100}%" title="${d} sessions"></div>`).join('');
+
+  // Donut (category distribution)
+  const cats = {};
+  tools.forEach(t => { const c = t.category || 'utility'; cats[c] = (cats[c] || 0) + (t.opens || 0); });
+  const totalCat = Object.values(cats).reduce((s,v) => s + v, 0);
+  const catColors = { productivity:'#16a34a', finance:'#6366f1', design:'#ec4899', tools:'#0891b2', content:'#f59e0b', landing:'#9333ea', utility:'#6b7280' };
+  if (totalCat > 0) {
+    let angle = 0;
+    const gradients = Object.entries(cats).map(([c,v]) => {
+      const pct = v/totalCat*360;
+      const g = `${catColors[c]||'#888'} ${angle}deg ${angle+pct}deg`;
+      angle += pct;
+      return g;
+    }).join(', ');
+    document.getElementById('donut').style.background = `conic-gradient(${gradients})`;
+    document.getElementById('donut-legend').innerHTML = Object.entries(cats).map(([c,v]) => `<div class="donut-item"><div class="donut-dot" style="background:${catColors[c]||'#888'}"></div><span style="flex:1">${c}</span><strong style="color:var(--heading)">${v}</strong></div>`).join('');
+  } else {
+    document.getElementById('donut').style.background = '#f5f5f3';
+    document.getElementById('donut-legend').innerHTML = '<div style="color:var(--text2);font-size:0.78rem">No data yet</div>';
+  }
+}
+
+// ── Pro Manager ──
+function renderProManager() {
+  if (!config) return;
+  const store = loadStore();
+  const html = ['<div class="pro-row header"><div>Tool</div><div>Status</div><div>License Key</div><div>Actions</div></div>'];
+  config.tools.forEach(tool => {
+    const license = store.licenses[tool.id];
+    const status = !license ? 'free' : (license.revoked ? 'revoked' : 'active');
+    const rowClass = status === 'active' ? 'active-license' : '';
+    html.push(`<div class="pro-row ${rowClass}">
+      <div class="pro-tool-name"><span>${tool.icon}</span>${tool.name}</div>
+      <div><span class="status-badge status-${status}">${status}</span></div>
+      <div>${license ? `<code class="license-key">${license.key}</code>` : '<span style="color:var(--text3);font-size:0.72rem">No license</span>'}</div>
+      <div class="pro-actions">
+        ${!license || license.revoked ? `<button class="btn primary" onclick="quickGenerate('${tool.id}')">Generate</button>` : `<button class="btn" onclick="copyKey('${license.key}')">Copy</button><button class="btn btn-danger" onclick="revokeLicense('${tool.id}')">Revoke</button>`}
+      </div>
+    </div>`);
+  });
+  document.getElementById('pro-table').innerHTML = html.join('');
+}
+
+function generateKey(toolId) {
+  const prefix = toolId.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,3).padEnd(3,'X');
+  const rand = (n) => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    const arr = crypto.getRandomValues(new Uint8Array(n));
+    return Array.from(arr).map(b => chars[b % chars.length]).join('');
+  };
+  return `LH-${prefix}-${rand(4)}-${rand(4)}`;
+}
+
+function quickGenerate(toolId) {
+  const store = loadStore();
+  const tool = config.tools.find(t => t.id === toolId);
+  const key = generateKey(toolId);
+  store.licenses[toolId] = {
+    key: key,
+    tier: 'pro',
+    features: tool.proFeatures || ['*'],
+    issuedAt: Date.now(),
+    revoked: false
+  };
+  saveStore(store);
+  renderProManager();
+  navigator.clipboard.writeText(key).catch(()=>{});
+  showToast('✓ Key generated and copied: ' + key);
+}
+
+function copyKey(key) {
+  navigator.clipboard.writeText(key).then(() => showToast('✓ Copied: ' + key));
+}
+
+function revokeLicense(toolId) {
+  if (!confirm('Revoke this license? The tool will lose Pro features.')) return;
+  const store = loadStore();
+  if (store.licenses[toolId]) {
+    store.licenses[toolId].revoked = true;
+    saveStore(store);
+    renderProManager();
+    renderAll();
+    showToast('License revoked');
+  }
+}
+
+function openGenerateModal() {
+  const modal = document.getElementById('gen-modal');
+  const sel = document.getElementById('gen-tool');
+  sel.innerHTML = config.tools.map(t => `<option value="${t.id}">${t.icon} ${t.name}</option>`).join('');
+  sel.onchange = renderGenFeatures;
+  renderGenFeatures();
+  document.getElementById('gen-result').innerHTML = '';
+  modal.classList.add('show');
+}
+
+function renderGenFeatures() {
+  const toolId = document.getElementById('gen-tool').value;
+  const tool = config.tools.find(t => t.id === toolId);
+  const features = tool.proFeatures || [];
+  document.getElementById('gen-features').innerHTML = `<label style="font-size:0.68rem;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;display:block">Features</label>` + features.map(f => `<div class="feature-check"><input type="checkbox" checked value="${f}" class="feat-cb"><span>${f}</span></div>`).join('');
+}
+
+function generateLicense() {
+  const toolId = document.getElementById('gen-tool').value;
+  const tier = document.getElementById('gen-tier').value;
+  const features = Array.from(document.querySelectorAll('.feat-cb:checked')).map(cb => cb.value);
+  const key = generateKey(toolId);
+  const store = loadStore();
+  store.licenses[toolId] = { key, tier, features: features.length ? features : ['*'], issuedAt: Date.now(), revoked: false };
+  saveStore(store);
+  document.getElementById('gen-result').innerHTML = `<div class="generated-key">${key}</div><p style="text-align:center;font-size:0.72rem;color:var(--text2)">Copy this key and share it with the tool</p>`;
+  navigator.clipboard.writeText(key).catch(()=>{});
+  renderProManager();
+  renderAll();
+  showToast('✓ License generated & copied');
+}
+
+function closeModal() {
+  document.getElementById('gen-modal').classList.remove('show');
+}
+
+// ── Settings ──
+function exportAll() {
+  const store = loadStore();
+  const blob = new Blob([JSON.stringify(store, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `lifehub-backup-${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  showToast('✓ Exported backup');
+}
+
+function importAll(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      const current = loadStore();
+      const merged = {
+        tools: { ...current.tools, ...(data.tools || {}) },
+        sessions: [...(current.sessions || []), ...(data.sessions || [])].slice(-500),
+        licenses: { ...current.licenses, ...(data.licenses || {}) },
+        global: { ...current.global, ...(data.global || {}) }
+      };
+      saveStore(merged);
+      renderAll();
+      showToast('✓ Imported and merged');
+    } catch(err) {
+      showToast('✕ Invalid file');
+    }
+  };
+  reader.readAsText(file);
+}
+
+function saveCloud() {
+  const url = document.getElementById('cloud-url').value.trim();
+  const store = loadStore();
+  store.global.cloudEndpoint = url;
+  saveStore(store);
+  showToast('✓ Cloud endpoint saved');
+}
+
+function clearAnalytics() {
+  if (!confirm('Clear all analytics data? Licenses will be kept.')) return;
+  const store = loadStore();
+  store.tools = {};
+  store.sessions = [];
+  saveStore(store);
+  renderAll();
+  showToast('Analytics cleared');
+}
+
+function resetAll() {
+  if (!confirm('Delete ALL data including licenses? This cannot be undone.')) return;
+  if (!confirm('Are you REALLY sure? Type yes in the next prompt.')) return;
+  const confirm2 = prompt('Type "DELETE" to confirm:');
+  if (confirm2 !== 'DELETE') return;
+  localStorage.removeItem(STORAGE_KEY);
+  renderAll();
+  showToast('All data deleted');
+}
+
+// ── Toast ──
+function showToast(msg) {
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+// ── Render all ──
+function renderAll() {
+  if (!config) return;
+  renderCategories();
+  renderTools();
+  updateQuickStats();
+  if (currentView === 'analytics') renderAnalytics();
+  if (currentView === 'pro') renderProManager();
+}
+
+function updateQuickStats() {
+  const store = loadStore();
+  const tools = Object.values(store.tools);
+  const totalOpens = tools.reduce((s,t) => s + (t.opens || 0), 0);
+  const activeToday = tools.filter(t => t.lastSeen && (Date.now() - t.lastSeen) < 86400000).length;
+  const proLicenses = Object.values(store.licenses || {}).filter(l => !l.revoked).length;
+  document.getElementById('q-opens').textContent = totalOpens;
+  document.getElementById('q-active').textContent = activeToday;
+  document.getElementById('q-pro').textContent = proLicenses;
+  document.getElementById('nav-tools-count').textContent = config.tools.length;
+  document.getElementById('nav-pro-count').textContent = proLicenses;
+}
+
+function openAll() {
+  renderAll();
+  showToast('✓ Refreshed');
+}
+
+// ── Init ──
+showOriginWarning();
+loadConfig();
+
+// Auto-refresh every 5 seconds
+setInterval(() => {
+  if (currentView === 'tools') renderTools();
+  if (currentView === 'analytics') renderAnalytics();
+  updateQuickStats();
+}, 5000);
+
+// ═══ Auth UI ═══
+function openLoginModal() {
+  if (!window.LifeHubAuth || !LifeHubAuth.isConfigured()) {
+    alert('⚠️ Firebase not configured yet.\n\nPlease follow the setup guide in FIREBASE_SETUP.md to enable cloud sync.\n\nUntil then, the app works perfectly in local-only mode.');
+    return;
+  }
+  const modal = document.getElementById('login-modal');
+  modal.classList.add('show');
+  setTimeout(() => document.getElementById('auth-email').focus(), 100);
+}
+
+function closeLoginModal() {
+  document.getElementById('login-modal').classList.remove('show');
+  document.getElementById('auth-error').textContent = '';
+}
+
+function switchAuthMode(mode) {
+  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('auth-mode').value = mode;
+  document.getElementById('auth-name-field').style.display = mode === 'signup' ? 'block' : 'none';
+  document.getElementById('auth-submit').textContent = mode === 'signup' ? 'Create Account' : 'Sign In';
+  document.getElementById('auth-error').textContent = '';
+}
+
+async function submitAuth(e) {
+  e.preventDefault();
+  const mode = document.getElementById('auth-mode').value;
+  const email = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value;
+  const name = document.getElementById('auth-name').value.trim();
+  const errorEl = document.getElementById('auth-error');
+  errorEl.textContent = '';
+  try {
+    if (mode === 'signup') {
+      await LifeHubAuth.signUp(email, password, name);
+    } else {
+      await LifeHubAuth.signIn(email, password);
+    }
+    closeLoginModal();
+    showToast('✓ Signed in successfully');
+  } catch(err) {
+    errorEl.textContent = err.message || 'Authentication failed';
+  }
+}
+
+async function signInGoogle() {
+  try {
+    await LifeHubAuth.signInWithGoogle();
+    closeLoginModal();
+    showToast('✓ Signed in with Google');
+  } catch(err) {
+    document.getElementById('auth-error').textContent = err.message || 'Google sign-in failed';
+  }
+}
+
+async function handleSignOut() {
+  if (!confirm('Sign out? Your data will remain on this device.')) return;
+  await LifeHubAuth.signOut();
+  showToast('Signed out');
+  updateAuthUI(null);
+}
+
+function updateAuthUI(user) {
+  const signedOut = document.getElementById('profile-signed-out');
+  const signedIn = document.getElementById('profile-signed-in');
+  if (user) {
+    signedOut.style.display = 'none';
+    signedIn.style.display = 'block';
+    const displayName = user.displayName || user.email.split('@')[0];
+    document.getElementById('profile-name').textContent = displayName;
+    document.getElementById('profile-avatar').textContent = displayName[0].toUpperCase();
+  } else {
+    signedOut.style.display = 'block';
+    signedIn.style.display = 'none';
+  }
+}
+
+// Listen to auth changes
+function initAuthListener() {
+  if (window.LifeHubAuth) {
+    LifeHubAuth.onAuthChange(updateAuthUI);
+  } else {
+    // Wait for auth SDK to load
+    setTimeout(initAuthListener, 500);
+  }
+}
+initAuthListener();
+</script>
+
+<!-- ═══ Login Modal ═══ -->
+<div class="modal" id="login-modal">
+  <div class="modal-bg" onclick="closeLoginModal()"></div>
+  <div class="modal-body" style="max-width:420px">
+    <button class="modal-close" onclick="closeLoginModal()">×</button>
+    <h2 style="text-align:center;margin-bottom:4px">☁️ Cloud Sync</h2>
+    <p style="text-align:center;margin-bottom:20px">Sign in to sync your data across devices</p>
+
+    <div style="display:flex;gap:4px;background:var(--bg);border-radius:10px;padding:4px;margin-bottom:18px">
+      <button class="auth-tab active" onclick="switchAuthMode('signin')" style="flex:1;padding:9px;border:none;border-radius:8px;background:var(--card);color:var(--heading);font-weight:600;font-size:0.78rem;cursor:pointer;font-family:inherit">Sign In</button>
+      <button class="auth-tab" onclick="switchAuthMode('signup')" style="flex:1;padding:9px;border:none;border-radius:8px;background:transparent;color:var(--text2);font-weight:600;font-size:0.78rem;cursor:pointer;font-family:inherit">Sign Up</button>
+    </div>
+    <style>
+      .auth-tab.active { background:var(--card)!important; color:var(--heading)!important; }
+      .auth-tab:not(.active) { background:transparent!important; color:var(--text2)!important; }
+    </style>
+
+    <form onsubmit="submitAuth(event)">
+      <input type="hidden" id="auth-mode" value="signin">
+      <div class="modal-field" id="auth-name-field" style="display:none">
+        <label>Full Name</label>
+        <input type="text" id="auth-name" placeholder="John Doe">
+      </div>
+      <div class="modal-field">
+        <label>Email</label>
+        <input type="email" id="auth-email" required placeholder="you@example.com">
+      </div>
+      <div class="modal-field">
+        <label>Password</label>
+        <input type="password" id="auth-password" required minlength="6" placeholder="At least 6 characters">
+      </div>
+      <div id="auth-error" style="color:var(--red);font-size:0.75rem;margin-bottom:10px;min-height:18px"></div>
+      <button type="submit" id="auth-submit" class="btn primary" style="width:100%;padding:12px;margin-bottom:10px">Sign In</button>
+    </form>
+
+    <div style="text-align:center;font-size:0.68rem;color:var(--text2);margin:10px 0">— or —</div>
+    <button class="btn" onclick="signInGoogle()" style="width:100%;padding:12px">
+      <span style="display:inline-flex;align-items:center;gap:8px;justify-content:center;width:100%">
+        <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571.001-.001.002-.001.003-.002l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg>
+        Continue with Google
+      </span>
+    </button>
+    <p style="text-align:center;font-size:0.68rem;color:var(--text3);margin-top:14px">All your data is encrypted and synced privately to your account.</p>
+  </div>
+</div>
+
+<script>
+// ── PWA: Register the service worker (skip in Desktop wrapper — file:// can't host SW) ──
+(function() {
+	if (location.protocol === 'file:') return;
+	if (window.LIFEHUB_DESKTOP && window.LIFEHUB_DESKTOP.isDesktop) return;
+	if (!('serviceWorker' in navigator)) return;
+	window.addEventListener('load', function() {
+		navigator.serviceWorker.register('/dashboard/sw.js', { scope: '/' })
+			.then(function(reg) {
+				// Listen for updates → notify the user via a toast (optional)
+				reg.addEventListener('updatefound', function() {
+					var nw = reg.installing;
+					if (!nw) return;
+					nw.addEventListener('statechange', function() {
+						if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+							console.log('[LifeHub] New version available — reload to update');
+						}
+					});
+				});
+			})
+			.catch(function(err) {
+				console.warn('[LifeHub] SW register failed:', err);
+			});
+	});
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+out/
+build/icon.iconset/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment / secrets
+.env
+.env.local
+.env.production
+.env.*.local
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Electron-builder cache
+.electron-cache/
+.electron-builder-cache/
+
+# Auth files (never commit!)
+*.p12
+*.pem
+*.key
+notarization-secrets.json

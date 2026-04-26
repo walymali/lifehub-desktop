@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QR Code Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Sora',system-ui,sans-serif;background:#f5f5f3;color:#555;min-height:100vh;display:flex;align-items:center;justify-content:center}
+.app{max-width:800px;width:100%;margin:40px auto;padding:0 24px}
+.card{background:#fff;border-radius:20px;border:1px solid rgba(0,0,0,0.06);box-shadow:0 2px 10px rgba(0,0,0,0.04);overflow:hidden}
+.header{text-align:center;padding:40px 32px 24px}
+.header h1{font-size:1.8rem;font-weight:700;color:#1a1a1a;letter-spacing:-0.03em;margin-bottom:6px}
+.header p{font-size:0.85rem;color:#999}
+.body{padding:0 32px 32px;display:grid;grid-template-columns:1fr 280px;gap:32px;align-items:start}
+/* Left */
+.tabs{display:flex;gap:4px;background:#f5f5f3;border-radius:12px;padding:3px;margin-bottom:20px}
+.tab-btn{flex:1;padding:9px;border:none;border-radius:10px;background:transparent;color:#999;font-size:0.72rem;font-weight:500;cursor:pointer;font-family:inherit;transition:all 0.2s}
+.tab-btn.active{background:#1a1a1a;color:#fff}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:0.7rem;font-weight:500;color:#888;margin-bottom:4px}
+.field input,.field textarea,.field select{width:100%;padding:10px 14px;background:#f5f5f3;border:1px solid rgba(0,0,0,0.06);border-radius:10px;color:#1a1a1a;font-family:inherit;font-size:0.85rem}
+.field input:focus,.field textarea:focus{outline:none;border-color:#1a1a1a}
+.field textarea{resize:vertical;min-height:60px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.section-title{font-size:0.62rem;font-weight:600;color:#999;text-transform:uppercase;letter-spacing:0.1em;margin:20px 0 10px;padding-top:14px;border-top:1px solid rgba(0,0,0,0.06)}
+.colors{display:flex;gap:8px;align-items:center}
+.colors input[type="color"]{width:36px;height:36px;border:2px solid rgba(0,0,0,0.08);border-radius:10px;cursor:pointer;padding:0;background:none;-webkit-appearance:none}
+.colors input[type="color"]::-webkit-color-swatch-wrapper{padding:2px}
+.colors input[type="color"]::-webkit-color-swatch{border:none;border-radius:6px}
+.colors label{font-size:0.72rem;color:#888}
+/* Right */
+.preview{text-align:center;background:#f5f5f3;border-radius:16px;padding:32px 24px;position:sticky;top:24px}
+.preview-label{font-size:0.68rem;color:#999;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:16px;font-weight:500}
+#qr-canvas{margin:0 auto;background:#fff;border-radius:12px;padding:16px;border:1px solid rgba(0,0,0,0.06)}
+#qr-canvas img,#qr-canvas canvas{display:block;margin:0 auto}
+.download-btns{display:flex;gap:8px;margin-top:16px;justify-content:center}
+.dl-btn{padding:10px 20px;border-radius:10px;border:none;font-size:0.75rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.2s}
+.dl-btn.primary{background:#1a1a1a;color:#fff}
+.dl-btn.primary:hover{background:#333}
+.dl-btn.secondary{background:#fff;border:1px solid rgba(0,0,0,0.1);color:#555}
+.dl-btn.secondary:hover{border-color:#1a1a1a}
+.qr-size{font-size:0.65rem;color:#bbb;margin-top:10px}
+@media(max-width:700px){.body{grid-template-columns:1fr}.preview{position:static}}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="card">
+  <div class="header">
+    <h1>QR Code Generator</h1>
+    <p>Generate QR codes for URLs, text, WiFi, email, and more.</p>
+  </div>
+  <div class="body">
+    <div class="left">
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('url',this)">URL</button>
+        <button class="tab-btn" onclick="switchTab('text',this)">Text</button>
+        <button class="tab-btn" onclick="switchTab('wifi',this)">WiFi</button>
+        <button class="tab-btn" onclick="switchTab('email',this)">Email</button>
+        <button class="tab-btn" onclick="switchTab('phone',this)">Phone</button>
+      </div>
+
+      <div class="tab-content active" id="tab-url">
+        <div class="field"><label>Website URL</label><input type="url" id="qr-url" value="https://watermelons.studio" oninput="generateQR()"></div>
+      </div>
+      <div class="tab-content" id="tab-text">
+        <div class="field"><label>Text Content</label><textarea id="qr-text" placeholder="Enter any text..." oninput="generateQR()">Hello! Scan this QR code.</textarea></div>
+      </div>
+      <div class="tab-content" id="tab-wifi">
+        <div class="field"><label>Network Name (SSID)</label><input id="qr-ssid" placeholder="MyWiFi" oninput="generateQR()"></div>
+        <div class="row">
+          <div class="field"><label>Password</label><input id="qr-wifipass" placeholder="password123" oninput="generateQR()"></div>
+          <div class="field"><label>Security</label><select id="qr-wifisec" onchange="generateQR()"><option>WPA</option><option>WEP</option><option>None</option></select></div>
+        </div>
+      </div>
+      <div class="tab-content" id="tab-email">
+        <div class="field"><label>Email Address</label><input id="qr-email" placeholder="hello@example.com" oninput="generateQR()"></div>
+        <div class="field"><label>Subject</label><input id="qr-subject" placeholder="Hello!" oninput="generateQR()"></div>
+        <div class="field"><label>Body</label><textarea id="qr-body" placeholder="Message..." oninput="generateQR()"></textarea></div>
+      </div>
+      <div class="tab-content" id="tab-phone">
+        <div class="field"><label>Phone Number</label><input id="qr-phone" placeholder="+1 555 123 4567" oninput="generateQR()"></div>
+      </div>
+
+      <div class="section-title">Customize</div>
+      <div class="row">
+        <div class="colors"><input type="color" id="qr-fg" value="#000000" oninput="generateQR()"><label>Foreground</label></div>
+        <div class="colors"><input type="color" id="qr-bg" value="#ffffff" oninput="generateQR()"><label>Background</label></div>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <div class="field"><label>Size</label><select id="qr-size" onchange="generateQR()"><option value="6">Small (150px)</option><option value="8" selected>Medium (200px)</option><option value="12">Large (300px)</option><option value="16">XL (400px)</option></select></div>
+        <div class="field"><label>Error Correction</label><select id="qr-ec" onchange="generateQR()"><option value="L">Low (7%)</option><option value="M" selected>Medium (15%)</option><option value="Q">Quartile (25%)</option><option value="H">High (30%)</option></select></div>
+      </div>
+    </div>
+
+    <div class="preview">
+      <div class="preview-label">Preview</div>
+      <div id="qr-canvas"></div>
+      <div class="download-btns">
+        <button class="dl-btn primary" onclick="downloadQR('png')">Download PNG</button>
+        <button class="dl-btn secondary" onclick="downloadQR('svg')">SVG</button>
+      </div>
+      <div class="qr-size" id="qr-info">200 x 200 px</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+let currentTab='url';
+function switchTab(id,btn){currentTab=id;document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.getElementById('tab-'+id).classList.add('active');btn.classList.add('active');generateQR();}
+
+function getQRData(){
+  switch(currentTab){
+    case'url':return document.getElementById('qr-url').value||'https://example.com';
+    case'text':return document.getElementById('qr-text').value||'Hello';
+    case'wifi':{const s=document.getElementById('qr-ssid').value;const p=document.getElementById('qr-wifipass').value;const t=document.getElementById('qr-wifisec').value;return`WIFI:T:${t};S:${s};P:${p};;`;}
+    case'email':{const e=document.getElementById('qr-email').value;const s=document.getElementById('qr-subject').value;const b=document.getElementById('qr-body').value;return`mailto:${e}?subject=${encodeURIComponent(s)}&body=${encodeURIComponent(b)}`;}
+    case'phone':return`tel:${document.getElementById('qr-phone').value}`;
+  }
+}
+
+function generateQR(){
+  const data=getQRData();
+  const ec=document.getElementById('qr-ec').value;
+  const cellSize=parseInt(document.getElementById('qr-size').value);
+  const fg=document.getElementById('qr-fg').value;
+  const bg=document.getElementById('qr-bg').value;
+
+  try{
+    const qr=qrcode(0,ec);
+    qr.addData(data);
+    qr.make();
+
+    const count=qr.getModuleCount();
+    const size=count*cellSize;
+    const canvas=document.createElement('canvas');
+    canvas.width=size;canvas.height=size;
+    const ctx=canvas.getContext('2d');
+    ctx.fillStyle=bg;ctx.fillRect(0,0,size,size);
+    ctx.fillStyle=fg;
+    for(let r=0;r<count;r++){for(let c=0;c<count;c++){if(qr.isDark(r,c)){ctx.fillRect(c*cellSize,r*cellSize,cellSize,cellSize);}}}
+
+    document.getElementById('qr-canvas').innerHTML='';
+    document.getElementById('qr-canvas').appendChild(canvas);
+    document.getElementById('qr-info').textContent=`${size} x ${size} px`;
+    window._qrCanvas=canvas;
+    window._qrSvg=qr.createSvgTag({cellSize,margin:0}).replace('stroke="none"','stroke="none" fill="'+fg+'"');
+  }catch(e){document.getElementById('qr-canvas').innerHTML='<p style="color:#e74c3c;font-size:0.8rem">Too much data. Try shorter text.</p>';}
+}
+
+function downloadQR(format){
+  if(format==='png'&&window._qrCanvas){
+    const a=document.createElement('a');a.download='qrcode.png';a.href=window._qrCanvas.toDataURL('image/png');a.click();
+  }else if(format==='svg'&&window._qrSvg){
+    const blob=new Blob([window._qrSvg],{type:'image/svg+xml'});
+    const a=document.createElement('a');a.download='qrcode.svg';a.href=URL.createObjectURL(blob);a.click();
+  }
+}
+
+generateQR();
+</script>
+</body>
+</html>

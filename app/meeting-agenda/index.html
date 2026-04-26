@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meeting Agenda Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #f5f5f3;
+  --card: #ffffff;
+  --heading: #1a1a1a;
+  --text: #3a3a3a;
+  --muted: #8a8a8a;
+  --border: #e8e8e6;
+  --accent: #1a1a1a;
+  --accent-light: #f0f0ee;
+  --danger: #c0392b;
+  --danger-light: #fdf0ef;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-lg: 0 4px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.08);
+}
+
+body {
+  font-family: 'Sora', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.app-header {
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.app-header h1 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--heading);
+  letter-spacing: -0.3px;
+}
+
+.app-header .subtitle {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 400;
+  margin-left: 12px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Buttons */
+.btn {
+  font-family: 'Sora', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.btn:hover {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.btn-primary:hover {
+  background: #333;
+  border-color: #333;
+}
+
+.btn-danger {
+  color: var(--danger);
+  border-color: transparent;
+  background: transparent;
+  padding: 4px 8px;
+}
+
+.btn-danger:hover {
+  background: var(--danger-light);
+}
+
+.btn-sm {
+  font-size: 11px;
+  padding: 5px 10px;
+}
+
+.btn svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+/* Layout */
+.app-layout {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  height: calc(100vh - 57px);
+}
+
+/* Sidebar */
+.sidebar {
+  width: 420px;
+  min-width: 420px;
+  background: var(--card);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* Preview */
+.preview-pane {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px;
+  background: var(--bg);
+}
+
+.preview-pane::-webkit-scrollbar { width: 6px; }
+.preview-pane::-webkit-scrollbar-track { background: transparent; }
+.preview-pane::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* Section */
+.section {
+  margin-bottom: 24px;
+}
+
+.section-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+/* Form fields */
+.field {
+  margin-bottom: 14px;
+}
+
+.field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--heading);
+  margin-bottom: 5px;
+}
+
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+  font-family: 'Sora', sans-serif;
+  font-size: 13px;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  color: var(--text);
+  transition: border-color 0.15s ease;
+}
+
+.field input:focus,
+.field textarea:focus,
+.field select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.field-row {
+  display: flex;
+  gap: 10px;
+}
+
+.field-row .field { flex: 1; }
+
+/* Template selector */
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.template-btn {
+  font-family: 'Sora', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 10px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: center;
+}
+
+.template-btn:hover {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+.template-btn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* Attendees */
+.attendee-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.attendee-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  padding: 4px 10px;
+  background: var(--accent-light);
+  border-radius: 20px;
+  color: var(--text);
+}
+
+.attendee-tag button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--muted);
+  padding: 0;
+  line-height: 1;
+  margin-left: 2px;
+}
+
+.attendee-tag button:hover {
+  color: var(--danger);
+}
+
+.add-attendee-row {
+  display: flex;
+  gap: 8px;
+}
+
+.add-attendee-row input { flex: 1; }
+
+/* Agenda items */
+.agenda-item-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-bottom: 10px;
+  position: relative;
+  transition: box-shadow 0.15s ease;
+}
+
+.agenda-item-card:hover {
+  box-shadow: var(--shadow);
+}
+
+.agenda-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.agenda-item-number {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  background: var(--card);
+  border: 1px solid var(--border);
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.agenda-item-card .field { margin-bottom: 10px; }
+.agenda-item-card .field:last-child { margin-bottom: 0; }
+
+/* Duration summary */
+.duration-bar {
+  background: var(--accent-light);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.duration-bar .label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.duration-bar .value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--heading);
+}
+
+/* Divider */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 20px 0;
+}
+
+/* ===== PREVIEW DOCUMENT ===== */
+.preview-doc {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 48px;
+  min-height: 800px;
+}
+
+.preview-doc .doc-header {
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 2px solid var(--heading);
+}
+
+.preview-doc .doc-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--heading);
+  letter-spacing: -0.5px;
+  margin-bottom: 4px;
+}
+
+.preview-doc .doc-subtitle {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.preview-doc .meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 24px;
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.preview-doc .meta-item {
+  font-size: 13px;
+}
+
+.preview-doc .meta-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--muted);
+  margin-bottom: 3px;
+}
+
+.preview-doc .meta-value {
+  color: var(--heading);
+  font-weight: 400;
+}
+
+.preview-doc .attendees-section {
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.preview-doc .attendees-section h3 {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.preview-doc .attendees-list {
+  font-size: 13px;
+  color: var(--heading);
+  line-height: 1.8;
+}
+
+.preview-doc .agenda-section h2 {
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--heading);
+  margin-bottom: 16px;
+}
+
+.preview-doc .agenda-row {
+  display: flex;
+  align-items: flex-start;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.preview-doc .agenda-row:last-child {
+  border-bottom: none;
+}
+
+.preview-doc .agenda-num {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  width: 28px;
+  flex-shrink: 0;
+  padding-top: 1px;
+}
+
+.preview-doc .agenda-content {
+  flex: 1;
+}
+
+.preview-doc .agenda-topic {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--heading);
+  margin-bottom: 3px;
+}
+
+.preview-doc .agenda-presenter {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.preview-doc .agenda-notes {
+  font-size: 12px;
+  color: var(--text);
+  margin-top: 6px;
+  padding: 8px 10px;
+  background: var(--accent-light);
+  border-radius: var(--radius-sm);
+  line-height: 1.5;
+}
+
+.preview-doc .agenda-duration {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  white-space: nowrap;
+  padding-left: 16px;
+  padding-top: 1px;
+}
+
+.preview-doc .total-row {
+  display: flex;
+  justify-content: flex-end;
+  padding: 14px 0;
+  margin-top: 4px;
+  border-top: 2px solid var(--heading);
+}
+
+.preview-doc .total-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--heading);
+  margin-right: 16px;
+}
+
+.preview-doc .total-value {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--heading);
+}
+
+.preview-doc .doc-footer {
+  margin-top: 40px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* Print styles */
+@media print {
+  body { background: #fff; }
+  .app-header, .sidebar { display: none !important; }
+  .app-layout { display: block; }
+  .preview-pane {
+    padding: 0;
+    overflow: visible;
+    background: #fff;
+  }
+  .preview-doc {
+    box-shadow: none;
+    border-radius: 0;
+    padding: 24px 0;
+    max-width: 100%;
+  }
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .app-layout { flex-direction: column; height: auto; }
+  .sidebar { width: 100%; min-width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
+  .preview-pane { padding: 20px; }
+  .template-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--heading);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 500;
+  z-index: 999;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: all 0.25s ease;
+  pointer-events: none;
+}
+
+.toast.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="app-header">
+  <div style="display:flex;align-items:baseline;">
+    <h1>Meeting Agenda</h1>
+    <span class="subtitle">Generator</span>
+  </div>
+  <div class="header-actions">
+    <button class="btn" onclick="copyAsText()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+      Copy as Text
+    </button>
+    <button class="btn btn-primary" onclick="printAgenda()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      Print / PDF
+    </button>
+  </div>
+</header>
+
+<!-- Layout -->
+<div class="app-layout">
+
+  <!-- Sidebar Editor -->
+  <aside class="sidebar" id="sidebar">
+
+    <!-- Templates -->
+    <div class="section">
+      <div class="section-label">Template</div>
+      <div class="template-grid" id="templateGrid"></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Meeting Details -->
+    <div class="section">
+      <div class="section-label">Meeting Details</div>
+      <div class="field">
+        <label>Meeting Title</label>
+        <input type="text" id="meetingTitle" placeholder="e.g. Weekly Team Sync" oninput="render()">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Date</label>
+          <input type="date" id="meetingDate" oninput="render()">
+        </div>
+        <div class="field">
+          <label>Time</label>
+          <input type="time" id="meetingTime" oninput="render()">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Location</label>
+          <input type="text" id="meetingLocation" placeholder="e.g. Room 4B / Zoom" oninput="render()">
+        </div>
+        <div class="field">
+          <label>Organizer</label>
+          <input type="text" id="meetingOrganizer" placeholder="e.g. Sarah Chen" oninput="render()">
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Attendees -->
+    <div class="section">
+      <div class="section-label">Attendees</div>
+      <div class="attendee-list" id="attendeeList"></div>
+      <div class="add-attendee-row">
+        <input type="text" id="attendeeInput" placeholder="Add attendee name" onkeydown="if(event.key==='Enter')addAttendee()">
+        <button class="btn btn-sm" onclick="addAttendee()">Add</button>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Duration -->
+    <div class="duration-bar">
+      <span class="label">Total Duration</span>
+      <span class="value" id="totalDuration">0 min</span>
+    </div>
+
+    <!-- Agenda Items -->
+    <div class="section">
+      <div class="section-label">Agenda Items</div>
+      <div id="agendaItemsContainer"></div>
+      <button class="btn" onclick="addAgendaItem()" style="width:100%;justify-content:center;margin-top:4px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add Agenda Item
+      </button>
+    </div>
+
+  </aside>
+
+  <!-- Live Preview -->
+  <main class="preview-pane">
+    <div class="preview-doc" id="previewDoc"></div>
+  </main>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== STATE =====
+let state = {
+  title: '',
+  date: '',
+  time: '',
+  location: '',
+  organizer: '',
+  attendees: [],
+  items: [],
+  template: ''
+};
+
+// ===== TEMPLATES =====
+const templates = {
+  standup: {
+    label: 'Standup',
+    title: 'Daily Standup',
+    time: '09:00',
+    location: 'Zoom',
+    organizer: 'Sarah Chen',
+    attendees: ['Sarah Chen', 'Marcus Rivera', 'Priya Patel', 'James O\'Brien', 'Aiko Tanaka'],
+    items: [
+      { topic: 'Yesterday\'s Progress', duration: 5, presenter: 'All', notes: 'Each team member shares what they accomplished' },
+      { topic: 'Today\'s Plan', duration: 5, presenter: 'All', notes: 'What each person will be working on today' },
+      { topic: 'Blockers & Dependencies', duration: 5, presenter: 'All', notes: 'Any impediments or help needed from others' }
+    ]
+  },
+  planning: {
+    label: 'Planning',
+    title: 'Sprint Planning',
+    time: '10:00',
+    location: 'Conference Room A',
+    organizer: 'Marcus Rivera',
+    attendees: ['Marcus Rivera', 'Sarah Chen', 'Priya Patel', 'James O\'Brien', 'Aiko Tanaka', 'Dev Kapoor'],
+    items: [
+      { topic: 'Sprint Review', duration: 10, presenter: 'Marcus Rivera', notes: 'Review completed vs. planned items from last sprint' },
+      { topic: 'Velocity & Capacity', duration: 10, presenter: 'Marcus Rivera', notes: 'Team availability and estimated capacity for next sprint' },
+      { topic: 'Backlog Grooming', duration: 20, presenter: 'Sarah Chen', notes: 'Review and prioritize backlog items' },
+      { topic: 'Story Estimation', duration: 20, presenter: 'All', notes: 'Point estimation for selected stories' },
+      { topic: 'Sprint Goal & Commitment', duration: 10, presenter: 'Marcus Rivera', notes: 'Agree on sprint goal and committed items' },
+      { topic: 'Action Items & Wrap-up', duration: 5, presenter: 'Marcus Rivera', notes: '' }
+    ]
+  },
+  retro: {
+    label: 'Retro',
+    title: 'Sprint Retrospective',
+    time: '14:00',
+    location: 'Conference Room B',
+    organizer: 'Priya Patel',
+    attendees: ['Priya Patel', 'Sarah Chen', 'Marcus Rivera', 'James O\'Brien', 'Aiko Tanaka'],
+    items: [
+      { topic: 'Icebreaker', duration: 5, presenter: 'Priya Patel', notes: 'Quick warm-up question' },
+      { topic: 'What Went Well', duration: 15, presenter: 'All', notes: 'Celebrate wins and positive outcomes from the sprint' },
+      { topic: 'What Could Improve', duration: 15, presenter: 'All', notes: 'Identify areas for improvement without blame' },
+      { topic: 'Action Items', duration: 10, presenter: 'All', notes: 'Vote on top improvements and assign owners' },
+      { topic: 'Shout-outs', duration: 5, presenter: 'All', notes: 'Recognize individual contributions' }
+    ]
+  },
+  client: {
+    label: 'Client',
+    title: 'Client Project Review',
+    time: '11:00',
+    location: 'Boardroom / Google Meet',
+    organizer: 'James O\'Brien',
+    attendees: ['James O\'Brien', 'Sarah Chen', 'Client: Emily Watson', 'Client: Tom Bradley'],
+    items: [
+      { topic: 'Welcome & Introductions', duration: 5, presenter: 'James O\'Brien', notes: '' },
+      { topic: 'Project Status Update', duration: 15, presenter: 'Sarah Chen', notes: 'Current progress against milestones and timeline' },
+      { topic: 'Deliverables Review', duration: 20, presenter: 'Sarah Chen', notes: 'Walk through completed work and gather feedback' },
+      { topic: 'Open Issues & Risks', duration: 10, presenter: 'James O\'Brien', notes: 'Address outstanding concerns and risk mitigation' },
+      { topic: 'Budget & Timeline Check', duration: 5, presenter: 'James O\'Brien', notes: 'Review budget spend and any schedule adjustments' },
+      { topic: 'Next Steps & Action Items', duration: 5, presenter: 'James O\'Brien', notes: 'Agree on deliverables and deadlines for next cycle' }
+    ]
+  },
+  brainstorm: {
+    label: 'Brainstorm',
+    title: 'Product Brainstorming Session',
+    time: '13:00',
+    location: 'Creative Space / Miro',
+    organizer: 'Aiko Tanaka',
+    attendees: ['Aiko Tanaka', 'Sarah Chen', 'Marcus Rivera', 'Dev Kapoor', 'Priya Patel'],
+    items: [
+      { topic: 'Problem Framing', duration: 10, presenter: 'Aiko Tanaka', notes: 'Define the problem space and constraints clearly' },
+      { topic: 'Inspiration & Research Share', duration: 10, presenter: 'All', notes: 'Share relevant examples, data, and user insights' },
+      { topic: 'Silent Ideation', duration: 10, presenter: 'All', notes: 'Individual brainstorming using sticky notes or digital board' },
+      { topic: 'Idea Sharing & Grouping', duration: 15, presenter: 'All', notes: 'Present ideas and cluster into themes' },
+      { topic: 'Dot Voting & Prioritization', duration: 10, presenter: 'All', notes: 'Each person gets 3 votes for their favorite concepts' },
+      { topic: 'Next Steps', duration: 5, presenter: 'Aiko Tanaka', notes: 'Assign owners for top ideas to develop further' }
+    ]
+  }
+};
+
+// ===== TEMPLATE RENDERING =====
+function renderTemplateButtons() {
+  const grid = document.getElementById('templateGrid');
+  grid.innerHTML = '';
+  Object.entries(templates).forEach(([key, tmpl]) => {
+    const btn = document.createElement('button');
+    btn.className = 'template-btn' + (state.template === key ? ' active' : '');
+    btn.textContent = tmpl.label;
+    btn.onclick = () => applyTemplate(key);
+    grid.appendChild(btn);
+  });
+}
+
+function applyTemplate(key) {
+  const tmpl = templates[key];
+  state.template = key;
+  state.title = tmpl.title;
+  state.time = tmpl.time;
+  state.location = tmpl.location;
+  state.organizer = tmpl.organizer;
+  state.attendees = [...tmpl.attendees];
+  state.items = tmpl.items.map(it => ({ ...it }));
+
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  state.date = `${yyyy}-${mm}-${dd}`;
+
+  syncFieldsFromState();
+  renderAttendees();
+  renderAgendaItems();
+  renderTemplateButtons();
+  render();
+}
+
+function syncFieldsFromState() {
+  document.getElementById('meetingTitle').value = state.title;
+  document.getElementById('meetingDate').value = state.date;
+  document.getElementById('meetingTime').value = state.time;
+  document.getElementById('meetingLocation').value = state.location;
+  document.getElementById('meetingOrganizer').value = state.organizer;
+}
+
+// ===== ATTENDEES =====
+function renderAttendees() {
+  const list = document.getElementById('attendeeList');
+  list.innerHTML = '';
+  state.attendees.forEach((name, i) => {
+    const tag = document.createElement('span');
+    tag.className = 'attendee-tag';
+    tag.innerHTML = `${esc(name)}<button onclick="removeAttendee(${i})">&times;</button>`;
+    list.appendChild(tag);
+  });
+}
+
+function addAttendee() {
+  const input = document.getElementById('attendeeInput');
+  const name = input.value.trim();
+  if (name) {
+    state.attendees.push(name);
+    input.value = '';
+    renderAttendees();
+    render();
+  }
+}
+
+function removeAttendee(i) {
+  state.attendees.splice(i, 1);
+  renderAttendees();
+  render();
+}
+
+// ===== AGENDA ITEMS =====
+function renderAgendaItems() {
+  const container = document.getElementById('agendaItemsContainer');
+  container.innerHTML = '';
+  state.items.forEach((item, i) => {
+    const card = document.createElement('div');
+    card.className = 'agenda-item-card';
+    card.innerHTML = `
+      <div class="agenda-item-header">
+        <span class="agenda-item-number">${i + 1}</span>
+        <button class="btn btn-danger btn-sm" onclick="removeAgendaItem(${i})">&times; Remove</button>
+      </div>
+      <div class="field">
+        <label>Topic</label>
+        <input type="text" value="${esc(item.topic)}" oninput="updateItem(${i},'topic',this.value)" placeholder="e.g. Project status update">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Duration (min)</label>
+          <input type="number" min="1" value="${item.duration}" oninput="updateItem(${i},'duration',parseInt(this.value)||0)">
+        </div>
+        <div class="field">
+          <label>Presenter</label>
+          <input type="text" value="${esc(item.presenter)}" oninput="updateItem(${i},'presenter',this.value)" placeholder="e.g. Sarah Chen">
+        </div>
+      </div>
+      <div class="field">
+        <label>Notes</label>
+        <textarea rows="2" oninput="updateItem(${i},'notes',this.value)" placeholder="Additional context or talking points">${esc(item.notes)}</textarea>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function addAgendaItem() {
+  state.items.push({ topic: '', duration: 5, presenter: '', notes: '' });
+  renderAgendaItems();
+  render();
+  // Scroll to bottom of sidebar
+  const sidebar = document.getElementById('sidebar');
+  sidebar.scrollTop = sidebar.scrollHeight;
+}
+
+function removeAgendaItem(i) {
+  state.items.splice(i, 1);
+  renderAgendaItems();
+  render();
+}
+
+function updateItem(i, field, value) {
+  state.items[i][field] = value;
+  render();
+}
+
+// ===== READ STATE FROM FIELDS =====
+function readState() {
+  state.title = document.getElementById('meetingTitle').value;
+  state.date = document.getElementById('meetingDate').value;
+  state.time = document.getElementById('meetingTime').value;
+  state.location = document.getElementById('meetingLocation').value;
+  state.organizer = document.getElementById('meetingOrganizer').value;
+}
+
+// ===== RENDER PREVIEW =====
+function render() {
+  readState();
+
+  const totalMin = state.items.reduce((sum, it) => sum + (it.duration || 0), 0);
+  const hours = Math.floor(totalMin / 60);
+  const mins = totalMin % 60;
+  const durationStr = hours > 0 ? `${hours}h ${mins}m` : `${totalMin} min`;
+  document.getElementById('totalDuration').textContent = durationStr;
+
+  // Format date
+  let dateStr = '';
+  if (state.date) {
+    const d = new Date(state.date + 'T00:00:00');
+    dateStr = d.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  }
+
+  // Format time
+  let timeStr = '';
+  if (state.time) {
+    const [h, m] = state.time.split(':');
+    const hour = parseInt(h);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const h12 = hour % 12 || 12;
+    timeStr = `${h12}:${m} ${ampm}`;
+  }
+
+  // Compute end time
+  let endTimeStr = '';
+  if (state.time && totalMin > 0) {
+    const [h, m] = state.time.split(':').map(Number);
+    const startMin = h * 60 + m;
+    const endMin = startMin + totalMin;
+    const endH = Math.floor(endMin / 60) % 24;
+    const endM = endMin % 60;
+    const ampm = endH >= 12 ? 'PM' : 'AM';
+    const h12 = endH % 12 || 12;
+    endTimeStr = ` - ${h12}:${String(endM).padStart(2, '0')} ${ampm}`;
+  }
+
+  // Build agenda rows
+  let agendaHTML = '';
+  let runningTime = state.time ? (() => {
+    const [h, m] = state.time.split(':').map(Number);
+    return h * 60 + m;
+  })() : null;
+
+  state.items.forEach((item, i) => {
+    let timeLabel = '';
+    if (runningTime !== null) {
+      const rH = Math.floor(runningTime / 60) % 24;
+      const rM = runningTime % 60;
+      const ampm = rH >= 12 ? 'PM' : 'AM';
+      const h12 = rH % 12 || 12;
+      timeLabel = `${h12}:${String(rM).padStart(2, '0')} ${ampm}`;
+      runningTime += (item.duration || 0);
+    }
+
+    agendaHTML += `
+      <div class="agenda-row">
+        <span class="agenda-num">${i + 1}.</span>
+        <div class="agenda-content">
+          <div class="agenda-topic">${esc(item.topic) || '<span style="color:var(--muted)">Untitled item</span>'}</div>
+          ${item.presenter ? `<div class="agenda-presenter">${esc(item.presenter)}</div>` : ''}
+          ${item.notes ? `<div class="agenda-notes">${esc(item.notes)}</div>` : ''}
+        </div>
+        <div class="agenda-duration">
+          ${item.duration ? item.duration + ' min' : ''}
+          ${timeLabel ? '<br><span style="font-size:11px;color:#b0b0b0;">' + timeLabel + '</span>' : ''}
+        </div>
+      </div>
+    `;
+  });
+
+  const doc = document.getElementById('previewDoc');
+  doc.innerHTML = `
+    <div class="doc-header">
+      <div class="doc-title">${esc(state.title) || 'Meeting Agenda'}</div>
+      <div class="doc-subtitle">Meeting Agenda</div>
+    </div>
+
+    <div class="meta-grid">
+      <div class="meta-item">
+        <div class="meta-label">Date</div>
+        <div class="meta-value">${dateStr || '--'}</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Time</div>
+        <div class="meta-value">${timeStr ? timeStr + endTimeStr : '--'}</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Location</div>
+        <div class="meta-value">${esc(state.location) || '--'}</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Organizer</div>
+        <div class="meta-value">${esc(state.organizer) || '--'}</div>
+      </div>
+    </div>
+
+    ${state.attendees.length > 0 ? `
+    <div class="attendees-section">
+      <h3>Attendees (${state.attendees.length})</h3>
+      <div class="attendees-list">${state.attendees.map(a => esc(a)).join(', ')}</div>
+    </div>
+    ` : ''}
+
+    <div class="agenda-section">
+      <h2>Agenda</h2>
+      ${agendaHTML || '<p style="color:var(--muted);font-size:13px;">No agenda items yet. Add items in the sidebar.</p>'}
+      ${state.items.length > 0 ? `
+      <div class="total-row">
+        <span class="total-label">Total Duration</span>
+        <span class="total-value">${durationStr}</span>
+      </div>
+      ` : ''}
+    </div>
+
+    <div class="doc-footer">
+      Prepared by ${esc(state.organizer) || 'Organizer'}
+    </div>
+  `;
+}
+
+// ===== HELPERS =====
+function esc(str) {
+  if (!str) return '';
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('visible');
+  setTimeout(() => toast.classList.remove('visible'), 2200);
+}
+
+// ===== COPY AS TEXT =====
+function copyAsText() {
+  readState();
+  const totalMin = state.items.reduce((sum, it) => sum + (it.duration || 0), 0);
+  const hours = Math.floor(totalMin / 60);
+  const mins = totalMin % 60;
+  const durationStr = hours > 0 ? `${hours}h ${mins}m` : `${totalMin} min`;
+
+  let dateStr = state.date || '';
+  if (state.date) {
+    const d = new Date(state.date + 'T00:00:00');
+    dateStr = d.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  }
+
+  let timeStr = '';
+  if (state.time) {
+    const [h, m] = state.time.split(':');
+    const hour = parseInt(h);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const h12 = hour % 12 || 12;
+    timeStr = `${h12}:${m} ${ampm}`;
+  }
+
+  let text = '';
+  text += `${state.title || 'Meeting Agenda'}\n`;
+  text += '='.repeat(40) + '\n\n';
+  text += `Date:      ${dateStr || '--'}\n`;
+  text += `Time:      ${timeStr || '--'}\n`;
+  text += `Location:  ${state.location || '--'}\n`;
+  text += `Organizer: ${state.organizer || '--'}\n`;
+  text += `Duration:  ${durationStr}\n\n`;
+
+  if (state.attendees.length > 0) {
+    text += `Attendees: ${state.attendees.join(', ')}\n\n`;
+  }
+
+  text += '-'.repeat(40) + '\n';
+  text += 'AGENDA\n';
+  text += '-'.repeat(40) + '\n\n';
+
+  state.items.forEach((item, i) => {
+    text += `${i + 1}. ${item.topic || 'Untitled'}`;
+    if (item.duration) text += ` (${item.duration} min)`;
+    text += '\n';
+    if (item.presenter) text += `   Presenter: ${item.presenter}\n`;
+    if (item.notes) text += `   Notes: ${item.notes}\n`;
+    text += '\n';
+  });
+
+  text += '-'.repeat(40) + '\n';
+  text += `Total Duration: ${durationStr}\n`;
+
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('Agenda copied to clipboard');
+  });
+}
+
+// ===== PRINT =====
+function printAgenda() {
+  window.print();
+}
+
+// ===== INIT =====
+renderTemplateButtons();
+applyTemplate('planning');
+</script>
+
+</body>
+</html>

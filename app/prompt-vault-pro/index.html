@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PromptVault Pro - 150+ AI Prompts for Content Creators</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#f5f5f3;--surface:#fff;--border:rgba(0,0,0,0.06);--accent:#1a1a1a;--accent2:#e74c3c;--text:#555;--heading:#1a1a1a}
+body{font-family:'Sora',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
+
+/* Header */
+.hero{text-align:center;padding:100px 24px 70px;background:#fff;border-bottom:1px solid var(--border)}
+.hero h1{font-size:3.5rem;font-weight:700;color:var(--heading);letter-spacing:-0.04em;margin-bottom:16px}
+.hero h1 span{color:var(--accent2)}
+.hero p{font-size:1.05rem;color:var(--text);max-width:520px;margin:0 auto 28px;line-height:1.8}
+.hero-stats{display:flex;justify-content:center;gap:48px;margin-top:36px}
+.hero-stat{text-align:center}
+.hero-stat strong{display:block;font-size:1.8rem;color:var(--heading);font-weight:700}
+.hero-stat span{font-size:0.7rem;color:#999;text-transform:uppercase;letter-spacing:0.12em}
+
+/* TOC */
+.toc{max-width:800px;margin:0 auto;padding:56px 24px}
+.toc h2{font-size:1.4rem;color:var(--heading);margin-bottom:24px;font-weight:600}
+.toc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.toc-item{display:flex;align-items:center;gap:12px;padding:16px 20px;background:#fff;border:1px solid var(--border);border-radius:14px;font-size:0.9rem;color:var(--text);text-decoration:none;transition:all 0.25s}
+.toc-item:hover{border-color:rgba(0,0,0,0.15);box-shadow:0 4px 16px rgba(0,0,0,0.04);transform:translateY(-1px)}
+.toc-num{width:30px;height:30px;background:var(--heading);color:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;flex-shrink:0}
+.toc-count{margin-left:auto;font-size:0.68rem;color:#bbb;font-weight:500}
+
+/* Categories */
+.category{max-width:800px;margin:0 auto;padding:0 24px 56px}
+.category-header{display:flex;align-items:center;gap:14px;padding:18px 22px;background:#fff;border:1px solid var(--border);border-radius:16px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.03)}
+.cat-num{font-size:0.72rem;font-weight:700;color:#fff;background:var(--heading);padding:5px 12px;border-radius:8px}
+.category-header h2{font-size:1.1rem;font-weight:600;color:var(--heading);flex:1}
+.badge{font-size:0.62rem;padding:4px 12px;border-radius:99px;background:var(--bg);color:#999;text-transform:uppercase;letter-spacing:0.06em;font-weight:500}
+
+/* Prompt Cards */
+.prompts{display:flex;flex-direction:column;gap:10px}
+.prompt-card{padding:20px 22px;background:#fff;border:1px solid var(--border);border-radius:14px;transition:all 0.25s}
+.prompt-card:hover{border-color:rgba(0,0,0,0.12);box-shadow:0 4px 16px rgba(0,0,0,0.04)}
+.prompt-card h3{font-size:0.88rem;font-weight:600;color:var(--heading);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.prompt-card h3 .tag{font-size:0.58rem;padding:3px 9px;border-radius:99px;background:rgba(231,76,60,0.08);color:var(--accent2);font-weight:600;text-transform:uppercase;letter-spacing:0.03em}
+.prompt-card p{font-size:0.82rem;color:#666;line-height:1.85;background:var(--bg);padding:14px 16px;border-radius:10px;border-left:3px solid var(--heading);margin-top:8px;font-family:'SF Mono',Monaco,'Courier New',monospace}
+
+/* How to use */
+.how-to{max-width:800px;margin:0 auto;padding:56px 24px;border-top:1px solid var(--border)}
+.how-to h2{font-size:1.4rem;color:var(--heading);margin-bottom:24px;font-weight:600}
+.steps{display:flex;flex-direction:column;gap:10px}
+.step{display:flex;gap:14px;padding:18px;background:#fff;border:1px solid var(--border);border-radius:14px}
+.step-n{width:34px;height:34px;background:var(--heading);color:#fff;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;flex-shrink:0}
+.step p{font-size:0.9rem;color:var(--text)}
+.step strong{color:var(--heading)}
+
+/* Footer */
+.footer{text-align:center;padding:56px 24px;border-top:1px solid var(--border);font-size:0.8rem;color:#bbb}
+
+@media(max-width:600px){.toc-grid{grid-template-columns:1fr}.hero h1{font-size:2.2rem}.hero-stats{flex-direction:column;gap:16px}}
+@media print{body{background:#fff}.prompt-card{break-inside:avoid}}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>Prompt<span>Vault</span> Pro</h1>
+  <p>150+ ready-to-use AI prompts for content creators, marketers, and entrepreneurs. Works with ChatGPT, Claude, and Gemini.</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><strong>150+</strong><span>Prompts</span></div>
+    <div class="hero-stat"><strong>10</strong><span>Categories</span></div>
+    <div class="hero-stat"><strong>3</strong><span>AI Platforms</span></div>
+  </div>
+</div>
+
+<!-- How To Use -->
+<div class="how-to">
+  <h2>How to Use This Pack</h2>
+  <div class="steps">
+    <div class="step"><div class="step-n">1</div><p><strong>Copy any prompt</strong> — Select the prompt text and copy it</p></div>
+    <div class="step"><div class="step-n">2</div><p><strong>Replace [brackets]</strong> — Fill in your specific details where you see [brackets]</p></div>
+    <div class="step"><div class="step-n">3</div><p><strong>Paste into AI</strong> — Use with ChatGPT, Claude, or Gemini for best results</p></div>
+    <div class="step"><div class="step-n">4</div><p><strong>Iterate & refine</strong> — Ask follow-up questions to improve the output</p></div>
+  </div>
+</div>
+
+<!-- Table of Contents -->
+<div class="toc">
+  <h2>Categories</h2>
+  <div class="toc-grid">
+    <a href="#cat1" class="toc-item"><div class="toc-num">01</div>Social Media Posts<div class="toc-count">20</div></a>
+    <a href="#cat2" class="toc-item"><div class="toc-num">02</div>Blog & SEO Writing<div class="toc-count">15</div></a>
+    <a href="#cat3" class="toc-item"><div class="toc-num">03</div>Email Marketing<div class="toc-count">15</div></a>
+    <a href="#cat4" class="toc-item"><div class="toc-num">04</div>Video Scripts<div class="toc-count">15</div></a>
+    <a href="#cat5" class="toc-item"><div class="toc-num">05</div>Ad Copy & Sales<div class="toc-count">15</div></a>
+    <a href="#cat6" class="toc-item"><div class="toc-num">06</div>Brand & Strategy<div class="toc-count">15</div></a>
+    <a href="#cat7" class="toc-item"><div class="toc-num">07</div>Product Descriptions<div class="toc-count">10</div></a>
+    <a href="#cat8" class="toc-item"><div class="toc-num">08</div>Customer Support<div class="toc-count">10</div></a>
+    <a href="#cat9" class="toc-item"><div class="toc-num">09</div>Idea Generation<div class="toc-count">20</div></a>
+    <a href="#cat10" class="toc-item"><div class="toc-num">10</div>Repurposing & Hooks<div class="toc-count">15</div></a>
+  </div>
+</div>
+
+<!-- CATEGORY 1: Social Media -->
+<div class="category" id="cat1">
+  <div class="category-header"><div class="cat-num">01</div><h2>Social Media Posts</h2><div class="badge">20 prompts</div></div>
+  <div class="prompts">
+    <div class="prompt-card"><h3>Viral Twitter/X Thread <span class="tag">High Impact</span></h3><p>Write a 10-tweet thread about [TOPIC] for [TARGET AUDIENCE]. Start with a bold hook that creates curiosity. Each tweet should be under 280 characters. Include actionable tips, data points, and end with a call-to-action. Use short paragraphs and line breaks for readability. Tone: [conversational/professional/witty].</p></div>
+    <div class="prompt-card"><h3>Instagram Carousel Script</h3><p>Create a 10-slide Instagram carousel about [TOPIC]. Slide 1: Hook headline (max 8 words, stop-the-scroll). Slides 2-9: One key point per slide with a short explanation (max 30 words per slide). Slide 10: CTA + summary. Include suggestions for visuals on each slide. Target audience: [AUDIENCE].</p></div>
+    <div class="prompt-card"><h3>LinkedIn Thought Leadership Post</h3><p>Write a LinkedIn post about [TOPIC/INSIGHT] that positions me as an expert in [INDUSTRY]. Start with a provocative opening line. Share a personal story or data point. Include 3-5 actionable takeaways. End with a question to drive comments. Format with line breaks and emojis sparingly. Target: [JOB TITLES].</p></div>
+    <div class="prompt-card"><h3>TikTok/Reels Script (60 seconds)</h3><p>Write a 60-second TikTok script about [TOPIC]. Structure: Hook (first 3 seconds - make them stop scrolling), Problem (10 sec), Solution with 3 quick tips (30 sec), CTA (5 sec). Use casual, energetic tone. Include on-screen text suggestions and transition cues. Target audience: [AUDIENCE].</p></div>
+    <div class="prompt-card"><h3>Engagement Bait Post</h3><p>Create 5 engagement-driving social media posts for [NICHE]. Each should use a different format: 1) Hot take / unpopular opinion, 2) "This vs That" comparison, 3) Fill-in-the-blank, 4) Story-based with plot twist, 5) Myth-busting. Make each one shareable and comment-worthy.</p></div>
+    <div class="prompt-card"><h3>Weekly Content Calendar</h3><p>Create a 7-day social media content calendar for [BRAND/NICHE] on [PLATFORM]. For each day provide: content type, topic idea, caption draft, hashtag set (10-15), and best posting time. Mix educational (40%), entertaining (30%), and promotional (30%) content.</p></div>
+    <div class="prompt-card"><h3>Community Poll / Question Post</h3><p>Write 10 engaging poll or question posts for [NICHE] on [PLATFORM]. Each should spark debate or self-reflection. Include 2-4 answer options for polls. Make them easy to respond to but thought-provoking. Goal: maximize comments and shares.</p></div>
+    <div class="prompt-card"><h3>Before & After Transformation Post</h3><p>Write a before/after transformation post for [PRODUCT/SERVICE]. Start with the "before" pain point (make it relatable). Show the turning point. Reveal the "after" result with specific numbers or outcomes. End with how [PRODUCT] made it possible. Include a CTA.</p></div>
+    <div class="prompt-card"><h3>Trending Audio/Meme Adaptation</h3><p>Give me 5 ways to adapt the trending [MEME/AUDIO/FORMAT] for my [NICHE] brand. For each, provide: the setup, the punchline/reveal, caption text, and hashtags. Make them feel native to the trend while promoting [PRODUCT/MESSAGE].</p></div>
+    <div class="prompt-card"><h3>Story Sequence (5-part)</h3><p>Create a 5-part Instagram/Facebook Story sequence to promote [PRODUCT/OFFER]. Story 1: Attention-grabbing question or statement. Story 2: The problem your audience faces. Story 3: Your solution intro. Story 4: Social proof or quick demo. Story 5: CTA with urgency (swipe up / link). Include sticker suggestions.</p></div>
+    <div class="prompt-card"><h3>Twitter/X Engagement Reply Strategy</h3><p>I want to grow on Twitter/X in the [NICHE] space. Give me 10 witty, valuable reply templates I can use on popular accounts' tweets. Each reply should add value, show expertise, and make people click my profile. Include the type of tweet to reply to.</p></div>
+    <div class="prompt-card"><h3>Pinterest Pin Description</h3><p>Write 10 SEO-optimized Pinterest pin descriptions for [NICHE]. Each should be 150-300 characters, include 3-5 relevant keywords naturally, have a clear CTA, and create curiosity to click. Include suggested pin title for each.</p></div>
+    <div class="prompt-card"><h3>Social Proof / Testimonial Post</h3><p>Turn this customer review into 3 different social media posts: "[PASTE REVIEW]". Version 1: Quote-style with commentary. Version 2: Story format (the customer's journey). Version 3: Results-focused with numbers highlighted. Add relevant emojis and CTAs.</p></div>
+    <div class="prompt-card"><h3>Product Launch Teaser Sequence</h3><p>Create a 5-day social media teaser sequence for launching [PRODUCT]. Day 1: Mysterious hint. Day 2: Behind-the-scenes sneak peek. Day 3: Problem you're solving. Day 4: Feature reveal. Day 5: Launch announcement with offer. Each post should build anticipation.</p></div>
+    <div class="prompt-card"><h3>Hashtag Research & Strategy</h3><p>Research and create a hashtag strategy for [NICHE] on [PLATFORM]. Provide: 10 high-volume hashtags (500K+ posts), 10 medium hashtags (50K-500K), 10 niche/low-competition hashtags (under 50K). Group them into 3 sets I can rotate. Explain the strategy.</p></div>
+    <div class="prompt-card"><h3>User-Generated Content Campaign</h3><p>Design a UGC campaign for [BRAND]. Include: campaign name, hashtag, what users should create, incentive/prize, launch post caption, 5 example prompts to give participants, and a plan to reshare the best content. Make it easy and fun to participate.</p></div>
+    <div class="prompt-card"><h3>Controversial / Debate Post</h3><p>Write a respectful but bold opinion post about [CONTROVERSIAL TOPIC IN NICHE]. Present your stance clearly with 3 supporting arguments. Acknowledge the other side. End with "What do you think?" to drive discussion. Tone: confident but not aggressive.</p></div>
+    <div class="prompt-card"><h3>Collaboration / Shoutout Post</h3><p>Write a collaboration announcement post for [PLATFORM] about partnering with [PARTNER/BRAND]. Highlight what each brings to the table, why this matters for the audience, and what they can expect. Include CTA to follow both accounts. Tone: excited and genuine.</p></div>
+    <div class="prompt-card"><h3>Milestone Celebration Post</h3><p>Write a milestone celebration post for reaching [NUMBER] followers/customers/[METRIC]. Share the journey briefly (where you started, key moments). Thank the community authentically. Share a lesson learned. Include a special offer or giveaway as celebration. Tone: grateful, not boastful.</p></div>
+    <div class="prompt-card"><h3>Day-in-the-Life Content Script</h3><p>Script a "day in the life" video/post for a [JOB TITLE/ROLE] in [INDUSTRY]. Include timestamps, activities, tools used, and insider tips. Make it aspirational but authentic. Include moments of struggle/reality. End with a key takeaway or advice. 60-90 seconds for video.</p></div>
+  </div>
+</div>
+
+<!-- CATEGORY 2: Blog & SEO -->
+<div class="category" id="cat2">
+  <div class="category-header"><div class="cat-num">02</div><h2>Blog & SEO Writing</h2><div class="badge">15 prompts</div></div>
+  <div class="prompts">
+    <div class="prompt-card"><h3>SEO Blog Post (2000 words) <span class="tag">Best Seller</span></h3><p>Write a comprehensive 2000-word blog post targeting the keyword "[KEYWORD]". Include: an engaging H1 title with the keyword, meta description (155 chars), introduction with a hook, 5-7 H2 subheadings, H3s where needed, bullet points, a FAQ section (4 questions), and a conclusion with CTA. Use the keyword naturally 8-12 times. Write for [TARGET AUDIENCE] at a [beginner/intermediate/advanced] level. Tone: [professional/casual/authoritative].</p></div>
+    <div class="prompt-card"><h3>Listicle Post</h3><p>Write a listicle blog post: "[NUMBER] Best [ITEMS] for [AUDIENCE] in 2026". For each item include: name, one-line description, 3 pros, 1 con, price (if applicable), and who it's best for. Add an intro explaining your selection criteria and a comparison table at the end. Target keyword: [KEYWORD].</p></div>
+    <div class="prompt-card"><h3>How-To Tutorial</h3><p>Write a step-by-step tutorial on "[HOW TO DO X]". Include: numbered steps with screenshots suggestions, pro tips in callout boxes, common mistakes to avoid, estimated time for each step, tools/resources needed, and a troubleshooting FAQ at the end. Target keyword: [KEYWORD]. Make it so clear a beginner can follow.</p></div>
+    <div class="prompt-card"><h3>Blog Post Outline Generator</h3><p>Create a detailed outline for a blog post about "[TOPIC]" targeting "[KEYWORD]". Include: 3 title options (with keyword), meta description, intro hook, 6-8 H2 sections with 2-3 bullet points each describing what to cover, internal linking opportunities, CTA placement, and word count estimate per section.</p></div>
+    <div class="prompt-card"><h3>Comparison Post (X vs Y)</h3><p>Write a detailed comparison post: "[PRODUCT A] vs [PRODUCT B]: Which is Better in 2026?" Cover: overview of each, feature-by-feature comparison (make a table), pricing, pros/cons, use cases (who should choose what), and your final verdict. Be balanced but give a clear recommendation. Target keyword: [KEYWORD].</p></div>
+    <div class="prompt-card"><h3>Case Study Blog Post</h3><p>Write a case study blog post about how [CLIENT/COMPANY] achieved [RESULT] using [PRODUCT/METHOD]. Structure: Challenge (what problem they faced), Solution (what was implemented), Results (specific numbers), Key Takeaways (3-5 lessons). Include quotes, data visualizations suggestions, and a CTA.</p></div>
+    <div class="prompt-card"><h3>Pillar Page / Ultimate Guide</h3><p>Create an outline for an ultimate guide on "[BROAD TOPIC]" (5000+ words). Include: table of contents, 10-12 main sections, sub-sections for each, where to link to supporting blog posts, downloadable resource ideas, and FAQ section. This should be the most comprehensive resource on this topic online.</p></div>
+    <div class="prompt-card"><h3>Blog Intro Variations (5 styles)</h3><p>Write 5 different blog post introductions for an article about "[TOPIC]". Style 1: Start with a shocking statistic. Style 2: Open with a personal story. Style 3: Ask a provocative question. Style 4: Paint a future scenario. Style 5: Start with a bold, contrarian statement. Each should be 80-120 words and naturally include "[KEYWORD]".</p></div>
+    <div class="prompt-card"><h3>FAQ Schema Content</h3><p>Write 10 FAQ questions and answers about [TOPIC] optimized for Google's FAQ rich snippets. Each answer should be 50-100 words, include the target keyword naturally, provide genuine value, and be structured for featured snippet potential. Main keyword: [KEYWORD]. Related keywords: [LIST].</p></div>
+    <div class="prompt-card"><h3>Content Update / Refresh</h3><p>I have an existing blog post about [TOPIC] that's losing rankings. Here's the current content: [PASTE CONTENT OR URL]. Analyze it and suggest: 1) Updated statistics/data, 2) New sections to add, 3) Outdated info to remove, 4) Better title options, 5) Internal linking opportunities, 6) Featured snippet optimization.</p></div>
+    <div class="prompt-card"><h3>Roundup / Expert Quotes Post</h3><p>Create a framework for an expert roundup post: "[NUMBER] [EXPERTS] Share Their Top [TOPIC] Tips for 2026". Write: intro, the main question to ask experts, 10 fictional but realistic expert responses with names/titles/companies, key themes summary, and conclusion. Include how to actually reach out to real experts.</p></div>
+    <div class="prompt-card"><h3>News Hijacking / Trend Post</h3><p>Write a blog post connecting [TRENDING NEWS/EVENT] to [YOUR NICHE]. Title should include both the trend and your niche. Explain the news briefly, analyze its impact on [INDUSTRY], provide 3-5 actionable insights for your audience, and include your expert perspective. Speed and relevance are key.</p></div>
+    <div class="prompt-card"><h3>Beginner's Guide</h3><p>Write "The Complete Beginner's Guide to [TOPIC]" for someone who knows nothing about it. Define all jargon, use analogies to explain complex concepts, include a "start here" action plan, recommend beginner resources/tools, and address common fears/misconceptions. 1500-2000 words. Tone: encouraging and patient.</p></div>
+    <div class="prompt-card"><h3>Meta Description Generator</h3><p>Write 5 meta description variations for a blog post titled "[TITLE]" targeting "[KEYWORD]". Each must be: under 155 characters, include the primary keyword, have a clear value proposition, create curiosity or urgency, and include a soft CTA. Rank them by likely click-through rate.</p></div>
+    <div class="prompt-card"><h3>Blog Post Conclusion + CTA</h3><p>Write 3 conclusion variations for a blog post about [TOPIC]. Each should: summarize key takeaways (3 bullet points), reinforce the main message, and include a different CTA: 1) Newsletter signup, 2) Product/service promotion, 3) Related content suggestion. Each conclusion: 100-150 words.</p></div>
+  </div>
+</div>
+
+<!-- CATEGORY 3: Email Marketing -->
+<div class="category" id="cat3">
+  <div class="category-header"><div class="cat-num">03</div><h2>Email Marketing</h2><div class="badge">15 prompts</div></div>
+  <div class="prompts">
+    <div class="prompt-card"><h3>Welcome Email Sequence (5 emails) <span class="tag">Essential</span></h3><p>Write a 5-email welcome sequence for new subscribers to [BRAND/NEWSLETTER]. Email 1 (Day 0): Warm welcome + deliver lead magnet + set expectations. Email 2 (Day 2): Your story / brand mission. Email 3 (Day 4): Best content / quick win. Email 4 (Day 6): Social proof + testimonial. Email 5 (Day 8): Soft pitch for [PRODUCT]. Each email: subject line (5 options), preview text, body (200-300 words), CTA.</p></div>
+    <div class="prompt-card"><h3>Newsletter Issue Template</h3><p>Write a weekly newsletter about [NICHE] in this format: Catchy subject line, one-line personal intro, 1 Main Insight (200 words with actionable takeaway), 3 Quick Links (curated with one-line commentary each), 1 Tool/Resource recommendation, 1 Quote of the week, CTA. Tone: like a smart friend sharing what they learned this week.</p></div>
+    <div class="prompt-card"><h3>Product Launch Email Sequence</h3><p>Write a 4-email launch sequence for [PRODUCT] priced at [PRICE]. Email 1 (3 days before): Problem awareness + teaser. Email 2 (Launch day): Full reveal + benefits + launch offer. Email 3 (Day 2): Social proof + FAQ + objection handling. Email 4 (Last day): Urgency + last chance + bonus. Include subject lines, preview text, and body.</p></div>
+    <div class="prompt-card"><h3>Re-engagement Email (Win-back)</h3><p>Write a re-engagement email for subscribers who haven't opened emails in 60+ days for [BRAND]. Subject line should be intriguing (5 options). Body: acknowledge the silence, remind them why they subscribed, share your best recent content/offer, give an easy way to update preferences, and a clear "stay or go" CTA. Tone: genuine, not desperate.</p></div>
+    <div class="prompt-card"><h3>Cart Abandonment Email</h3><p>Write a 3-email cart abandonment sequence for [ECOMMERCE BRAND]. Email 1 (1 hour): "Forgot something?" + product image + simple CTA. Email 2 (24 hours): Address common objections + review/testimonial + free shipping offer. Email 3 (72 hours): Last chance + scarcity + extra discount. Keep each under 150 words.</p></div>
+    <div class="prompt-card"><h3>Subject Line Generator (20 options)</h3><p>Generate 20 email subject lines for [EMAIL TOPIC/CAMPAIGN]. Include a mix of: curiosity-driven (5), benefit-focused (5), urgency-based (5), and personalized/question-based (5). Each under 50 characters. Mark the top 5 predicted performers. Audience: [TARGET AUDIENCE].</p></div>
+    <div class="prompt-card"><h3>Promotional Offer Email</h3><p>Write a promotional email for [OFFER DETAILS: discount, bundle, limited time, etc.] for [BRAND]. Include: 5 subject lines, preview text, headline, hero section copy, 3 bullet points of value, urgency element, primary CTA button text, and P.S. line. Make it feel exclusive, not salesy.</p></div>
+    <div class="prompt-card"><h3>Webinar/Event Invitation Email</h3><p>Write an invitation email for a [webinar/workshop/event] about [TOPIC]. Include: event name, date/time, what attendees will learn (3-5 points), speaker bio, urgency element (limited spots), registration CTA, and a P.S. with a bonus for registering. Subject line options (5).</p></div>
+    <div class="prompt-card"><h3>Testimonial Request Email</h3><p>Write an email asking customers for a testimonial/review after purchasing [PRODUCT/SERVICE]. Make it easy (provide 3 specific questions to answer). Include: why their feedback matters, how long it takes (2 minutes), what they get in return (discount/feature), and a direct link/CTA. Tone: appreciative and low-pressure.</p></div>
+    <div class="prompt-card"><h3>Cold Outreach Email (B2B)</h3><p>Write a cold outreach email to [TARGET: e.g., marketing managers at SaaS companies] offering [YOUR SERVICE]. Follow the AIDA framework. Keep it under 100 words. Personalization spots: [COMPANY], [RECENT ACHIEVEMENT], [SPECIFIC PAIN POINT]. Include 3 subject line options. No generic flattery. Focus on one specific result you can deliver.</p></div>
+    <div class="prompt-card"><h3>Seasonal Campaign Email</h3><p>Write a [HOLIDAY/SEASON] promotional email for [BRAND]. Theme the copy around [HOLIDAY] without being cliche. Include: themed subject lines (5), festive but on-brand body copy, special offer details, gift-guide style product recommendations (if applicable), and deadline urgency. Keep the holiday references subtle and tasteful.</p></div>
+    <div class="prompt-card"><h3>Survey / Feedback Email</h3><p>Write an email asking subscribers to complete a quick survey about [TOPIC]. Explain why you're asking (to serve them better), how long it takes (2 minutes), what's in it for them (results shared / entry into giveaway), and make the CTA impossible to miss. Include 5 survey questions you'd recommend asking.</p></div>
+    <div class="prompt-card"><h3>Milestone / Anniversary Email</h3><p>Write an email celebrating [BRAND]'s [MILESTONE: 1 year, 10K customers, etc.]. Share the journey (3-4 highlights), thank subscribers genuinely, share a surprising behind-the-scenes fact, and offer a special celebration deal. Include customer impact numbers. Tone: reflective and grateful.</p></div>
+    <div class="prompt-card"><h3>Content Digest / Roundup Email</h3><p>Write a monthly content digest email for [BRAND/BLOG]. Include: catchy intro (2-3 sentences), top 5 pieces of content with thumbnail description and link, 1 community highlight/user story, upcoming events/content preview, and a CTA. Subject line options (5). Format for easy scanning.</p></div>
+    <div class="prompt-card"><h3>Upsell / Cross-sell Email</h3><p>Write an upsell email sent 7 days after someone purchases [PRODUCT A], recommending [PRODUCT B]. Connect the two products naturally. Show how Product B enhances their experience with Product A. Include a special "existing customer" discount. Social proof from customers who bought both. Keep it helpful, not pushy.</p></div>
+  </div>
+</div>
+
+<!-- CATEGORY 4: Video Scripts -->
+<div class="category" id="cat4">
+  <div class="category-header"><div class="cat-num">04</div><h2>Video Scripts & YouTube</h2><div class="badge">15 prompts</div></div>
+  <div class="prompts">
+    <div class="prompt-card"><h3>YouTube Video Script (10 min) <span class="tag">High Impact</span></h3><p>Write a 10-minute YouTube video script about "[TOPIC]". Structure: Hook (0:00-0:30) - pattern interrupt that makes them stay. Intro (0:30-1:00) - what they'll learn and why it matters. Main Content (1:00-8:00) - 5 key points with examples, stories, and B-roll suggestions. CTA (8:00-9:00) - subscribe + related video. Outro (9:00-10:00) - summary + final thought. Include [BRACKET] notes for visual/editing cues.</p></div>
+    <div class="prompt-card"><h3>YouTube Title & Thumbnail Ideas</h3><p>Generate 10 YouTube title and thumbnail concept pairs for a video about [TOPIC]. Each title should: include the keyword, create curiosity gap, be under 60 characters. Each thumbnail concept should: describe the visual, facial expression, text overlay (max 4 words), and color scheme. Rank by predicted CTR.</p></div>
+    <div class="prompt-card"><h3>YouTube Shorts / TikTok Script (60s)</h3><p>Write 5 short-form video scripts (60 seconds each) about [TOPIC] for [PLATFORM]. Each script: Hook (first 2 seconds - text on screen + first words), Body (quick tips or story), Punchline/CTA. Include camera angle notes, text overlay suggestions, and trending sound recommendations. Make them binge-worthy.</p></div>
+    <div class="prompt-card"><h3>Podcast Episode Outline</h3><p>Create a detailed outline for a 30-minute podcast episode about "[TOPIC]". Include: episode title (3 options), intro hook, 4-5 main segments with talking points, transition sentences between segments, listener Q&A section, key takeaway summary, and outro with CTA. Guest interview questions if applicable.</p></div>
+    <div class="prompt-card"><h3>Explainer Video Script (2 min)</h3><p>Write a 2-minute explainer video script for [PRODUCT/CONCEPT]. Follow this structure: Problem (what sucks right now) - 20 sec, Agitation (why it matters) - 15 sec, Solution (introduce your answer) - 30 sec, How it Works (3 simple steps) - 30 sec, Benefits (3 key outcomes) - 15 sec, CTA - 10 sec. Include visual/animation direction notes.</p></div>
+    <div class="prompt-card"><h3>Course Lesson Script</h3><p>Write a script for Lesson [NUMBER] of my course about [COURSE TOPIC]. Lesson title: "[LESSON TITLE]". Duration: 15 minutes. Include: learning objectives (3), recap of previous lesson, main teaching content with examples, practice exercise, key takeaways quiz (3 questions), and preview of next lesson. Make complex concepts simple.</p></div>
+    <div class="prompt-card"><h3>Webinar Presentation Script</h3><p>Write a 45-minute webinar script about "[TOPIC]" for [AUDIENCE]. Structure: Welcome + housekeeping (3 min), Hook + promise (5 min), Content section 1-3 (25 min total, each with a teaching point + example), Q&A (7 min), Pitch for [PRODUCT] (5 min). Include slide suggestions and interaction prompts (polls, questions).</p></div>
+    <div class="prompt-card"><h3>Video Description & Tags (YouTube SEO)</h3><p>Write an SEO-optimized YouTube description for a video titled "[TITLE]" about [TOPIC]. Include: first 2 lines (most important - hook + keyword), timestamps for key sections, 3-paragraph description with keywords, links section, hashtags (5), and 20 relevant tags. Primary keyword: [KEYWORD].</p></div>
+    <div class="prompt-card"><h3>Testimonial Video Questions</h3><p>Create a list of 10 questions to ask a customer in a testimonial video for [PRODUCT/SERVICE]. Questions should elicit: the problem they had before, why they chose you, specific results/numbers, emotional transformation, and who they'd recommend it to. Order them for a natural story arc. Include follow-up probes.</p></div>
+    <div class="prompt-card"><h3>Behind-the-Scenes Video Script</h3><p>Script a behind-the-scenes video showing [PROCESS: e.g., how we make our product, a day at the office, event prep]. Duration: 3-5 minutes. Include: narration, interview snippets with team members (questions to ask), b-roll shot list, music mood suggestions, and moments of authenticity/humor. Goal: humanize the brand.</p></div>
+    <div class="prompt-card"><h3>Product Demo Video Script</h3><p>Write a product demo video script for [PRODUCT] (3 minutes). Structure: Problem hook (15 sec), product intro (15 sec), Feature 1 demo + benefit (30 sec), Feature 2 demo + benefit (30 sec), Feature 3 demo + benefit (30 sec), social proof moment (15 sec), pricing/offer (15 sec), CTA (10 sec). Include screen recording direction notes.</p></div>
+    <div class="prompt-card"><h3>YouTube Community Post Ideas</h3><p>Generate 10 YouTube Community post ideas for a channel about [NICHE]. Mix of: polls (3), image posts (3), text updates (2), and behind-the-scenes (2). Each should drive engagement (comments, votes) and build community. Include specific copy for each post.</p></div>
+    <div class="prompt-card"><h3>Video Hook Variations (10 styles)</h3><p>Write 10 different hooks for the first 5 seconds of a video about [TOPIC]. Styles: 1) Shocking stat, 2) Bold claim, 3) Question, 4) Story start, 5) Myth-bust, 6) Before/after, 7) Warning, 8) Contrarian take, 9) "Stop doing X", 10) Future prediction. Each must make the viewer unable to scroll away.</p></div>
+    <div class="prompt-card"><h3>Tutorial Walkthrough Script</h3><p>Write a step-by-step tutorial video script showing how to [TASK] using [TOOL]. Duration: 8 minutes. For each step: what to click/do, common mistakes to avoid, pro tips, and what the viewer should see on screen. Include intro (why this matters), prerequisites, and end card suggestions. Skill level: [beginner/intermediate].</p></div>
+    <div class="prompt-card"><h3>Animated Explainer Voiceover</h3><p>Write a voiceover script for a 90-second animated explainer about [CONCEPT/PRODUCT]. Use simple, conversational language. Include [VISUAL CUE] brackets describing what should appear on screen for each section. Structure: relatable problem, your solution, 3 benefits, how to get started, CTA. Read speed: ~150 words per minute.</p></div>
+  </div>
+</div>
+
+<!-- CATEGORY 5: Ad Copy -->
+<div class="category" id="cat5">
+  <div class="category-header"><div class="cat-num">05</div><h2>Ad Copy & Sales Pages</h2><div class="badge">15 prompts</div></div>
+  <div class="prompts">
+    <div class="prompt-card"><h3>Facebook/Instagram Ad Copy <span class="tag">Revenue Driver</span></h3><p>Write 5 Facebook/Instagram ad variations for [PRODUCT/SERVICE] targeting [AUDIENCE]. For each: Primary text (3 variations: short/medium/long), Headline (under 40 chars), Description, CTA button text. Use frameworks: 1) PAS (Problem-Agitate-Solve), 2) AIDA, 3) Before-After-Bridge, 4) Social proof lead, 5) Question hook. Include audience targeting suggestions.</p></div>
+    <div class="prompt-card"><h3>Google Ads Copy (Search)</h3><p>Write 5 Google Search ad variations for keyword "[KEYWORD]" promoting [PRODUCT/SERVICE]. For each: 3 Headlines (max 30 chars each), 2 Descriptions (max 90 chars each), Display URL path. Include: unique selling propositions, numbers/stats, CTAs, and ad extensions suggestions (sitelinks, callouts, structured snippets).</p></div>
+    <div class="prompt-card"><h3>Sales Page / Landing Page Copy</h3><p>Write complete sales page copy for [PRODUCT] at [PRICE] targeting [AUDIENCE]. Sections: 1) Headline + subheadline, 2) Problem section (3 pain points), 3) Solution intro, 4) Features vs Benefits (6 items), 5) Social proof (3 testimonial templates), 6) Pricing with anchoring, 7) FAQ (5 objections), 8) Final CTA with guarantee. Use persuasion principles throughout.</p></div>
+    <div class="prompt-card"><h3>Retargeting Ad Sequence</h3><p>Write a 3-stage retargeting ad sequence for [PRODUCT]. Stage 1 (visited site, didn't buy): Remind + social proof ad. Stage 2 (added to cart, abandoned): Urgency + special offer ad. Stage 3 (past customer): Upsell/cross-sell ad. For each: image/video concept, primary text, headline, CTA. Make each stage feel progressively more personal.</p></div>
+    <div class="prompt-card"><h3>Advertorial / Native Ad</h3><p>Write a native ad/advertorial for [PRODUCT] that reads like editorial content. Topic: "[HOW PRODUCT SOLVES PROBLEM]". Format as a news article or personal story. Include: attention-grabbing headline (not salesy), 500-word body that educates while selling, subtle product mentions, data points, and a natural CTA. Platform: [PUBLICATION STYLE].</p></div>
+    <div class="prompt-card"><h3>VSL (Video Sales Letter) Script</h3><p>Write a 5-minute Video Sales Letter script for [PRODUCT] at [PRICE]. Structure: Pattern interrupt hook (30 sec), Story/credibility (1 min), Problem agitation (1 min), Solution reveal (1 min), Proof/testimonials (30 sec), Offer stack + bonuses (30 sec), Close with urgency + guarantee (30 sec). Include visual notes.</p></div>
+    <div class="prompt-card"><h3>Lead Magnet Landing Page</h3><p>Write landing page copy for a free lead magnet: [LEAD MAGNET: e.g., ebook, checklist, template]. Include: headline promising a specific outcome, 3-5 bullet points of what's inside, social proof element, simple opt-in form fields, privacy reassurance, and thank-you page copy. Conversion-optimized, under 200 words total.</p></div>
+    <div class="prompt-card"><h3>A/B Test Headline Variations</h3><p>Generate 10 headline variations for a landing page selling [PRODUCT/SERVICE]. Group them: Benefit-driven (3), Curiosity-driven (3), Social-proof-driven (2), Urgency-driven (2). Each under 15 words. Rank your top 3 picks with reasoning. Include matching subheadline for each.</p></div>
+    <div class="prompt-card"><h3>Pricing Page Copy</h3><p>Write pricing page copy for [PRODUCT/SAAS] with 3 tiers: [TIER NAMES AND PRICES]. For each tier: name, price, tagline, 5-8 feature bullet points, CTA button text. Include: annual vs monthly toggle copy, comparison highlight for the recommended plan, FAQ section (3 pricing objections), and enterprise CTA.</p></div>
+    <div class="prompt-card"><h3>Black Friday / Sale Campaign</h3><p>Write a complete Black Friday campaign for [BRAND] with [DISCOUNT/OFFER]. Include: teaser email (1 week before), announcement email (day of), social media posts (3), website banner copy, pop-up copy, last-chance email, and extended sale email. Consistent messaging across all, but each channel adapted to its format.</p></div>
+    <div class="prompt-card"><h3>Tripwire Offer Page</h3><p>Write copy for a tripwire offer page for [LOW-PRICE PRODUCT: $7-27] shown after someone opts in for [LEAD MAGNET]. Include: "Wait! Special one-time offer" headline, urgency timer reference, 3 reasons to buy now, original price vs special price, "Yes/No" CTA buttons with benefit-focused text, and guarantee.</p></div>
+    <div class="prompt-card"><h3>LinkedIn Ad Copy</h3><p>Write 3 LinkedIn Sponsored Content ad variations for [B2B PRODUCT/SERVICE] targeting [JOB TITLES] at [COMPANY SIZE/INDUSTRY]. For each: intro text (under 150 chars for mobile), body text, CTA. Focus on: business outcomes, ROI metrics, peer comparison ("companies like yours"). Professional tone, not corporate boring.</p></div>
+    <div class="prompt-card"><h3>App Store / Product Hunt Description</h3><p>Write an app store / Product Hunt listing for [PRODUCT]. Include: tagline (under 10 words), subtitle, description (first 3 lines are critical), feature bullets (5), "What's New" section, and 5 keyword suggestions. Also write a Product Hunt tagline, first comment from maker, and 3 hunter description options.</p></div>
+    <div class="prompt-card"><h3>Guarantee / Risk Reversal Copy</h3><p>Write 5 money-back guarantee variations for [PRODUCT]. Each should: name the guarantee (e.g., "30-Day No-Questions Guarantee"), explain what it covers, make the claim bold and confident, address the #1 purchase fear, and make the refund process sound effortless. Make the customer feel buying is risk-free.</p></div>
+    <div class="prompt-card"><h3>Referral Program Copy</h3><p>Write all copy for a referral program for [PRODUCT]. Include: program announcement email, referral page headline + description, sharing message templates (email, social, text), reward explanation, terms summary, reminder email for existing referrers, and thank-you message when referral converts. Make sharing feel natural and rewarding.</p></div>
+  </div>
+</div>
+
+<!-- CATEGORY 6-10: Remaining categories -->
+<div class="category" id="cat6">
+  <div class="category-header"><div class="cat-num">06</div><h2>Brand & Strategy</h2><div class="badge">15 prompts</div></div>
+  <div class="prompts">
+    <div class="prompt-card"><h3>Brand Voice Guidelines</h3><p>Create a brand voice guide for [BRAND] in [INDUSTRY]. Define: brand personality (3 adjectives), tone of voice spectrum (formal to casual, serious to playful), do's and don'ts with examples, vocabulary preferences (words to use / words to avoid), and 3 sample paragraphs written in the brand voice for different contexts (social media, email, website).</p></div>
+    <div class="prompt-card"><h3>Competitor Analysis Framework</h3><p>Analyze my top 3 competitors in [NICHE]: [COMPETITOR 1], [COMPETITOR 2], [COMPETITOR 3]. For each evaluate: positioning, messaging, content strategy, pricing, strengths, weaknesses. Then identify: gaps they're not filling, angles they're missing, and 5 ways I can differentiate [MY BRAND].</p></div>
+    <div class="prompt-card"><h3>Content Strategy (90 days)</h3><p>Create a 90-day content strategy for [BRAND] targeting [AUDIENCE] on [PLATFORMS]. Include: content pillars (4-5 themes), posting frequency per platform, content format mix, monthly themes, 30 specific content ideas, KPIs to track, and tools recommended. Goal: [grow followers / drive sales / build authority].</p></div>
+    <div class="prompt-card"><h3>Ideal Customer Avatar</h3><p>Build a detailed ideal customer avatar for [PRODUCT/SERVICE]. Include: demographics, psychographics (values, fears, aspirations), daily routine, media consumption habits, purchase triggers, objections to buying, where they hang out online, influencers they follow, and 3 "day in the life" scenarios showing their pain points.</p></div>
+    <div class="prompt-card"><h3>Elevator Pitch Generator</h3><p>Create 5 elevator pitch variations for [BUSINESS/PRODUCT]. Versions: 15-second (networking), 30-second (investor), 60-second (detailed), tweet-length, and email one-liner. Each should clearly communicate: what you do, who it's for, what makes you different, and the transformation you deliver.</p></div>
+  </div>
+</div>
+
+<div class="category" id="cat7">
+  <div class="category-header"><div class="cat-num">07</div><h2>Product Descriptions</h2><div class="badge">10 prompts</div></div>
+  <div class="prompts">
+    <div class="prompt-card"><h3>E-commerce Product Description</h3><p>Write a product description for [PRODUCT] sold on [PLATFORM: Shopify/Amazon/Etsy]. Include: SEO-optimized title, bullet-point features (5), benefit-focused description (150 words), size/spec details, and 3 lifestyle use cases. Keywords to include: [LIST]. Tone: [luxury/casual/technical]. Target buyer: [AVATAR].</p></div>
+    <div class="prompt-card"><h3>Amazon Listing (A+ Content)</h3><p>Write a complete Amazon product listing for [PRODUCT]. Include: Title (with keywords, under 200 chars), 5 bullet points (features + benefits, each starting with a CAPS keyword), Product Description (1000 chars with HTML), A+ Content module ideas (5 sections with image + text concepts), and Backend Keywords (250 chars).</p></div>
+    <div class="prompt-card"><h3>SaaS Feature Page</h3><p>Write a feature page for [FEATURE NAME] of [SAAS PRODUCT]. Include: H1 headline (benefit-focused), subheadline, hero section description, 3 sub-features with icons, "How it works" (3 steps), comparison with doing it manually, customer quote, and CTA. Make the technical simple and the benefit tangible.</p></div>
+    <div class="prompt-card"><h3>Digital Product Description (Gumroad/Etsy)</h3><p>Write a compelling product description for [DIGITAL PRODUCT] on [Gumroad/Etsy]. Include: attention-grabbing headline, "What's Inside" section with bullet points, "Who This Is For" section, "What You'll Get" with file format details, preview/sample content description, FAQ (5 common questions), and satisfaction guarantee statement.</p></div>
+    <div class="prompt-card"><h3>Product Comparison Table Copy</h3><p>Create copy for a comparison table showing [YOUR PRODUCT] vs [COMPETITOR 1] vs [COMPETITOR 2]. Categories to compare: [LIST 8-10 FEATURES]. Write the header copy, footnotes, and a summary paragraph explaining why [YOUR PRODUCT] wins. Be factual but strategically highlight your advantages.</p></div>
+  </div>
+</div>
+
+<div class="category" id="cat8">
+  <div class="category-header"><div class="cat-num">08</div><h2>Customer Support</h2><div class="badge">10 prompts</div></div>
+  <div class="prompts">
+    <div class="prompt-card"><h3>Support Response Templates</h3><p>Create 10 customer support response templates for [PRODUCT/SERVICE]. Cover: 1) Order status inquiry, 2) Refund request, 3) Technical issue, 4) Feature request, 5) Billing question, 6) Positive feedback response, 7) Complaint handling, 8) Account access issue, 9) Partnership inquiry, 10) General inquiry. Each: empathetic, solution-focused, under 100 words.</p></div>
+    <div class="prompt-card"><h3>FAQ Page Content</h3><p>Write a comprehensive FAQ page for [PRODUCT/SERVICE] with 15 questions across categories: Getting Started (4), Billing & Pricing (4), Technical/Usage (4), and Account & Support (3). Each answer: 50-100 words, clear and jargon-free, with links to relevant resources where applicable.</p></div>
+    <div class="prompt-card"><h3>Chatbot Scripts</h3><p>Write conversation flows for a customer support chatbot for [PRODUCT]. Create 5 flows: 1) New visitor greeting + product recommendation, 2) Order tracking, 3) Return/refund process, 4) Technical troubleshooting (3 common issues), 5) Escalation to human agent. Include branching logic, quick reply buttons, and fallback responses.</p></div>
+    <div class="prompt-card"><h3>Knowledge Base Article</h3><p>Write a knowledge base article: "How to [COMMON TASK] in [PRODUCT]". Include: clear title, 1-sentence summary, prerequisites, step-by-step instructions with screenshot placeholders, troubleshooting tips (3 common issues), related articles links section, and "Was this helpful?" feedback prompt. Reading level: simple enough for non-technical users.</p></div>
+    <div class="prompt-card"><h3>Crisis Communication Template</h3><p>Write a crisis communication template for [TYPE OF CRISIS: service outage, data breach, PR issue, product recall] for [COMPANY]. Include: initial acknowledgment (social media), detailed status update (email), resolution announcement, and follow-up email. Each should: take responsibility, show empathy, provide clear next steps, and offer compensation if appropriate.</p></div>
+  </div>
+</div>
+
+<div class="category" id="cat9">
+  <div class="category-header"><div class="cat-num">09</div><h2>Idea Generation & Brainstorming</h2><div class="badge">20 prompts</div></div>
+  <div class="prompts">
+    <div class="prompt-card"><h3>30-Day Content Ideas <span class="tag">Time Saver</span></h3><p>Generate 30 content ideas for [NICHE] on [PLATFORM]. For each: title/hook, format (post/video/carousel/story), content pillar it belongs to, and estimated engagement level (low/medium/high). Mix: educational (40%), entertaining (30%), promotional (15%), community (15%). Make them specific and ready to execute, not generic.</p></div>
+    <div class="prompt-card"><h3>Viral Content Brainstorm</h3><p>Give me 10 potentially viral content ideas for [NICHE]. Each should leverage one viral mechanic: 1) Controversy, 2) Relatability, 3) Aspiration, 4) Humor, 5) Shock value, 6) FOMO, 7) Nostalgia, 8) Outrage, 9) Inspiration, 10) Curiosity gap. Explain WHY each could go viral and the best platform for it.</p></div>
+    <div class="prompt-card"><h3>Lead Magnet Ideas (10 options)</h3><p>Generate 10 lead magnet ideas for [BUSINESS/NICHE] targeting [AUDIENCE]. For each: title, format (PDF/video/template/quiz/toolkit), what problem it solves, estimated creation time, and the email sequence topic that naturally follows it. Rank by: 1) perceived value, 2) ease to create, 3) lead quality.</p></div>
+    <div class="prompt-card"><h3>Digital Product Ideas</h3><p>Brainstorm 15 digital products I can create and sell in [NICHE]. For each: product name, format, price range, target buyer, unique angle, estimated creation time, and one-line pitch. Categories: templates (5), courses/guides (5), tools/resources (5). Focus on products with high perceived value and low creation cost.</p></div>
+    <div class="prompt-card"><h3>Podcast Episode Ideas (20)</h3><p>Generate 20 podcast episode ideas for a show about [TOPIC] targeting [AUDIENCE]. For each: episode title, 1-line description, format (solo/interview/roundtable), and 3 key talking points. Mix: trending topics (5), evergreen content (5), controversial takes (5), and practical tutorials (5).</p></div>
+    <div class="prompt-card"><h3>Newsletter Name Ideas</h3><p>Generate 20 newsletter name ideas for a [NICHE] newsletter. For each: the name, a tagline (under 10 words), and why it works. Mix: clever wordplay (5), benefit-driven (5), personality-driven (5), and niche-specific (5). The name should be memorable, available as a domain, and hint at the content.</p></div>
+    <div class="prompt-card"><h3>Course Curriculum Builder</h3><p>Design a complete course curriculum for "[COURSE TOPIC]" for [SKILL LEVEL] learners. Include: course title (3 options), 6-8 modules, 3-5 lessons per module, lesson format (video/text/exercise), estimated duration per lesson, 1 homework assignment per module, and final project. Total course length: [X hours].</p></div>
+    <div class="prompt-card"><h3>Brand Name Generator</h3><p>Generate 20 brand name ideas for a [PRODUCT/SERVICE TYPE] in [INDUSTRY] targeting [AUDIENCE]. For each: the name, .com availability likelihood (check-worthy or likely taken), what it communicates, and a logo concept in 1 sentence. Mix: invented words (5), compound words (5), metaphors (5), and acronyms/abbreviations (5).</p></div>
+    <div class="prompt-card"><h3>Collaboration / Partnership Ideas</h3><p>Suggest 10 collaboration or partnership ideas for [MY BRAND/NICHE]. For each: type of partner, what each side brings, the content/campaign format, expected mutual benefit, and an example outreach message opening line. Think beyond your immediate niche for unexpected but relevant partnerships.</p></div>
+    <div class="prompt-card"><h3>Revenue Stream Ideas</h3><p>Identify 10 potential revenue streams for a [TYPE] creator/business in [NICHE]. For each: the revenue stream, how to start (first step), estimated time to first revenue, income potential (low/medium/high), effort level, and how it complements existing offerings. Rank by: fastest to implement first.</p></div>
+    <div class="prompt-card"><h3>Content Repurposing Map</h3><p>I created a [FORMAT: blog post/video/podcast] about "[TOPIC]". Give me 15 ways to repurpose this single piece of content into other formats: social posts (5 platforms), email content, video clips, infographic concepts, thread ideas, carousel, quote graphics, and more. For each: what to extract and how to adapt it.</p></div>
+    <div class="prompt-card"><h3>Seasonal Content Calendar</h3><p>Create a seasonal content plan for [NICHE] covering all 12 months. For each month: 1 key theme, 2 content ideas tied to holidays/events, 1 evergreen piece to publish, and 1 promotional opportunity. Also identify: 3 "content dead zones" and what to post during them.</p></div>
+    <div class="prompt-card"><h3>Audience Research Questions</h3><p>Generate 20 research questions to ask my audience in [NICHE] to better understand their needs. Group them: Pain points (5), Goals/aspirations (5), Buying behavior (5), Content preferences (5). Format them as: survey questions (multiple choice), interview questions (open-ended), and social media poll questions.</p></div>
+    <div class="prompt-card"><h3>Content Series Ideas</h3><p>Create 5 content series concepts for [NICHE/PLATFORM]. For each: series name, format, frequency (daily/weekly/monthly), number of episodes/posts, recurring structure, and 5 episode ideas. Make each series "bingeable" and build audience anticipation. Include a launch strategy for each series.</p></div>
+    <div class="prompt-card"><h3>Controversial Take Generator</h3><p>Generate 10 respectfully controversial takes/hot opinions in [NICHE] that would spark discussion. For each: the take itself, 2 supporting arguments, the likely counterargument, and your rebuttal. These should be genuinely thought-provoking, not clickbait. Rate each by "spiciness level" (mild/medium/hot) and best platform to share it.</p></div>
+    <div class="prompt-card"><h3>Product Launch Checklist</h3><p>Create a complete product launch checklist for launching [PRODUCT TYPE] in [NICHE]. Organize by: 30 days before (planning), 14 days before (creation), 7 days before (prep), Launch day, and 7 days after (follow-up). Include specific tasks, copy needed, channels to activate, and metrics to track at each stage.</p></div>
+    <div class="prompt-card"><h3>Niche Down Analysis</h3><p>Help me niche down within [BROAD NICHE]. Give me 10 specific sub-niches I could focus on. For each: the sub-niche, estimated audience size, competition level, monetization potential, content angle, and example of someone successful in this sub-niche. Recommend the top 3 with reasoning.</p></div>
+    <div class="prompt-card"><h3>Community Building Ideas</h3><p>Give me 15 ideas to build and engage an online community around [NICHE/BRAND]. Include: free community platform recommendations, 5 recurring engagement activities, 3 exclusive content ideas for members, gamification elements, community guidelines template, and a launch plan to get the first 100 members.</p></div>
+    <div class="prompt-card"><h3>Personal Brand Bio Generator</h3><p>Write my personal brand bio in 5 versions for different platforms: Twitter/X (160 chars), Instagram (150 chars), LinkedIn (2000 chars summary), Website About page (300 words), and speaker/guest bio (100 words). Info about me: [NAME, ROLE, ACHIEVEMENTS, PERSONALITY, MISSION]. Each should feel authentic and compelling for its platform.</p></div>
+    <div class="prompt-card"><h3>Monetization Strategy</h3><p>Create a monetization roadmap for a [NICHE] content creator at [STAGE: beginner/intermediate/established]. For each stage: recommended revenue streams, realistic income targets, tools needed, time investment, and key milestones. Include a "stacking" strategy showing how to layer income streams over 12 months.</p></div>
+  </div>
+</div>
+
+<div class="category" id="cat10">
+  <div class="category-header"><div class="cat-num">10</div><h2>Repurposing & Hooks</h2><div class="badge">15 prompts</div></div>
+  <div class="prompts">
+    <div class="prompt-card"><h3>Blog to Social Media Converter</h3><p>Convert this blog post into social media content: "[PASTE BLOG POST OR SUMMARY]". Create: 3 Twitter/X posts, 1 LinkedIn post, 1 Instagram caption, 1 carousel outline (8 slides), and 5 story ideas. Each should stand alone and drive traffic back to the full post. Adapt tone for each platform.</p></div>
+    <div class="prompt-card"><h3>Hook Writing Formula Pack</h3><p>Write 20 hooks for content about [TOPIC] using these formulas: "Most people [wrong thing]. Here's what works instead." (5 variations), "I [did thing] for [time period]. Here's what happened." (5 variations), "The [number] [thing] that [result]" (5 variations), "[Authority figure] told me [insight]" (5 variations). Each hook should work for any platform.</p></div>
+    <div class="prompt-card"><h3>Podcast to Blog Post Converter</h3><p>Convert this podcast transcript into a blog post: "[PASTE TRANSCRIPT OR KEY POINTS]". Structure: SEO-optimized title, introduction (reference the episode), main points as H2 sections with expanded explanations, key quotes highlighted, actionable takeaways section, and CTA to listen to the full episode. Add context a reader (who didn't listen) would need.</p></div>
+    <div class="prompt-card"><h3>Long-form to Short-form Cutter</h3><p>I have a [10-minute video / 2000-word blog post] about [TOPIC]. Extract 10 standalone short-form content pieces from it. For each: the specific section/quote to use, platform recommendation, format (text/video clip/image), caption, and hashtags. Prioritize the most shareable/surprising moments.</p></div>
+    <div class="prompt-card"><h3>Headline Swipe File (50 templates)</h3><p>Create a swipe file of 50 headline templates I can reuse for any topic. Group by: How-to (10), Listicle (10), Question (10), Curiosity gap (10), and Benefit-driven (10). For each: the template with [FILL IN] blanks and one completed example for [NICHE]. These should be proven, high-CTR formats.</p></div>
+    <div class="prompt-card"><h3>CTA Swipe File (30 options)</h3><p>Write 30 call-to-action variations organized by goal: Email signup (6), Product purchase (6), Content engagement (6), Free trial (6), and Social follow (6). For each: button text, supporting copy (one sentence), and urgency element. Mix: benefit-focused, fear-based, curiosity-driven, and social-proof styles.</p></div>
+    <div class="prompt-card"><h3>Thread to Newsletter Converter</h3><p>Convert this Twitter thread into a newsletter issue: "[PASTE THREAD]". Expand each tweet into a full paragraph with more context and examples. Add: newsletter subject line (5 options), personal intro paragraph, transitions between sections, additional insights not in the thread, and a unique CTA.</p></div>
+    <div class="prompt-card"><h3>Testimonial to Content Converter</h3><p>Turn these customer testimonials into marketing content: "[PASTE 3-5 TESTIMONIALS]". Create: 1 case study outline, 3 social proof social media posts, 5 pull quotes for the website, 1 email featuring customer stories, and ad copy variations using real results mentioned. Maintain authenticity while maximizing impact.</p></div>
+    <div class="prompt-card"><h3>Data to Story Converter</h3><p>Turn these statistics/data points into compelling content: [LIST YOUR DATA/STATS]. For each: 1) Write a social media post that makes the stat shareable, 2) Create an infographic outline, 3) Write a blog intro paragraph using the stat as a hook, 4) Suggest a visual representation idea. Make dry numbers emotional and memorable.</p></div>
+    <div class="prompt-card"><h3>Email to Blog Post Converter</h3><p>Convert this email/newsletter into a full blog post: "[PASTE EMAIL]". Expand the key insights, add an SEO-optimized title and meta description, include additional research/examples, add subheadings for scanability, include internal linking opportunities, and adapt the CTA from email-specific to blog-appropriate.</p></div>
+    <div class="prompt-card"><h3>Opening Line Generator (20 variations)</h3><p>Write 20 opening lines for content about [TOPIC]. Mix: 5 questions, 5 bold statements, 5 statistics, and 5 "imagine this" scenarios. Each should work as the first line of an email, blog post, or social caption. Rate each by attention-grabbing power (1-10). My audience: [AUDIENCE DESCRIPTION].</p></div>
+    <div class="prompt-card"><h3>Content Angle Finder</h3><p>I need to create content about [COMMON TOPIC]. Give me 10 unique angles that haven't been overdone. For each: the angle/perspective, why it's fresh, headline idea, and target audience segment. Think: contrarian takes, unusual comparisons, niche applications, personal experiment formats, or combining [TOPIC] with an unexpected field.</p></div>
+    <div class="prompt-card"><h3>Webinar to Content Suite</h3><p>I hosted a webinar about [TOPIC]. Here are the key points: [LIST 5-8 KEY POINTS]. Repurpose this into: blog post outline, 5 social media posts, email follow-up for attendees, email for no-shows, 3 short video clips concepts, downloadable summary PDF outline, and a lead magnet idea based on the content.</p></div>
+    <div class="prompt-card"><h3>Quote Graphics Generator</h3><p>Create 10 quote-style graphics content for [NICHE]. For each: the quote text (original, not from famous people - write as if from [MY BRAND/NAME]), background color/mood suggestion, typography style suggestion, and caption for posting. Mix: inspirational (3), educational (3), provocative (2), and humorous (2). Each under 25 words.</p></div>
+    <div class="prompt-card"><h3>Content Performance Analyzer</h3><p>I'll share my top 5 performing posts and bottom 5. Top: [LIST WITH METRICS]. Bottom: [LIST WITH METRICS]. Analyze: what patterns explain the performance difference? What hooks, formats, topics, and posting times worked? Give me 10 actionable recommendations to create more top-performing content based on this data.</p></div>
+  </div>
+</div>
+
+<div class="footer">
+  <p>PromptVault Pro &copy; 2026 &mdash; 150+ AI Prompts for Content Creators</p>
+  <p style="margin-top:8px">Works with ChatGPT, Claude, Gemini, and any AI assistant</p>
+</div>
+
+</body>
+</html>

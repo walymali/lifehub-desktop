@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Story Templates Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #f5f5f3;
+  --card: #fff;
+  --heading: #1a1a1a;
+  --text: #555;
+  --accent: #1a1a1a;
+  --border: #e8e8e6;
+  --sidebar-w: 380px;
+}
+
+body {
+  font-family: 'Sora', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ---- Top Bar ---- */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 32px;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.topbar-brand svg { width: 28px; height: 28px; }
+.topbar-brand h1 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--heading);
+  letter-spacing: -0.3px;
+}
+.topbar-brand span {
+  font-size: 11px;
+  font-weight: 500;
+  color: #999;
+  background: #f0f0ee;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+.topbar-actions { display: flex; gap: 8px; }
+.topbar-actions button {
+  font-family: 'Sora', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--heading);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.topbar-actions button:hover { background: #f0f0ee; }
+.topbar-actions .btn-primary {
+  background: var(--heading);
+  color: #fff;
+  border-color: var(--heading);
+}
+.topbar-actions .btn-primary:hover { background: #333; }
+.topbar-actions .btn-gallery {
+  background: transparent;
+  border: 1px solid var(--border);
+}
+
+/* ---- Layout ---- */
+.app-layout {
+  display: flex;
+  height: calc(100vh - 61px);
+}
+
+/* ---- Sidebar ---- */
+.sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: var(--card);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 24px;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: #ddd; border-radius: 4px; }
+
+.sidebar-section {
+  margin-bottom: 24px;
+}
+.sidebar-section h3 {
+  font-size: 11px;
+  font-weight: 700;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+
+/* Template Picker */
+.template-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.category-tab {
+  font-family: 'Sora', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.category-tab.active {
+  background: var(--heading);
+  color: #fff;
+  border-color: var(--heading);
+}
+.category-tab:hover:not(.active) { background: #f5f5f3; }
+
+.template-list {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  margin-top: 10px;
+}
+.template-thumb {
+  aspect-ratio: 9/16;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.2s;
+  position: relative;
+}
+.template-thumb.active { border-color: var(--heading); }
+.template-thumb:hover { transform: scale(1.05); }
+.template-thumb-inner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 6px;
+  font-weight: 600;
+  color: #fff;
+  text-align: center;
+  padding: 4px;
+  line-height: 1.2;
+}
+
+/* Input Groups */
+.input-group {
+  margin-bottom: 16px;
+}
+.input-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--heading);
+  margin-bottom: 6px;
+}
+.input-group input,
+.input-group textarea,
+.input-group select {
+  width: 100%;
+  font-family: 'Sora', sans-serif;
+  font-size: 13px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fafaf9;
+  color: var(--heading);
+  outline: none;
+  transition: border-color 0.2s;
+}
+.input-group input:focus,
+.input-group textarea:focus {
+  border-color: var(--heading);
+}
+.input-group textarea { resize: vertical; min-height: 60px; }
+
+/* Color Palettes */
+.palette-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+.palette-swatch {
+  height: 40px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.palette-swatch.active {
+  border-color: var(--heading);
+  box-shadow: 0 0 0 2px rgba(26,26,26,0.15);
+}
+.palette-swatch:hover { transform: scale(1.05); }
+.palette-swatch-colors {
+  display: flex;
+  height: 100%;
+}
+.palette-swatch-colors span { flex: 1; }
+
+/* Background Type */
+.bg-type-row {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+.bg-type-btn {
+  flex: 1;
+  font-family: 'Sora', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.bg-type-btn.active {
+  background: var(--heading);
+  color: #fff;
+  border-color: var(--heading);
+}
+
+/* Font Size Slider */
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.slider-row input[type="range"] {
+  flex: 1;
+  -webkit-appearance: none;
+  height: 4px;
+  background: var(--border);
+  border-radius: 4px;
+  border: none;
+  padding: 0;
+}
+.slider-row input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  background: var(--heading);
+  border-radius: 50%;
+  cursor: pointer;
+}
+.slider-row .slider-val {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--heading);
+  min-width: 32px;
+  text-align: right;
+}
+
+/* ---- Preview Area ---- */
+.preview-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  background: var(--bg);
+}
+
+.phone-frame {
+  width: 375px;
+  height: 667px;
+  border-radius: 40px;
+  background: #000;
+  padding: 12px;
+  box-shadow:
+    0 0 0 2px #333,
+    0 20px 60px rgba(0,0,0,0.2),
+    0 0 0 14px #1a1a1a;
+  position: relative;
+}
+.phone-frame::before {
+  content: '';
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 28px;
+  background: #000;
+  border-radius: 14px;
+  z-index: 10;
+}
+.phone-screen {
+  width: 100%;
+  height: 100%;
+  border-radius: 30px;
+  overflow: hidden;
+  position: relative;
+}
+.story-canvas {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+
+/* ---- Gallery Modal ---- */
+.gallery-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(8px);
+  z-index: 200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+.gallery-overlay.open { display: flex; }
+.gallery-modal {
+  background: var(--card);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 1100px;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 32px;
+}
+.gallery-modal::-webkit-scrollbar { width: 4px; }
+.gallery-modal::-webkit-scrollbar-thumb { background: #ddd; border-radius: 4px; }
+.gallery-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.gallery-header h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--heading);
+}
+.gallery-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: var(--heading);
+  transition: background 0.2s;
+}
+.gallery-close:hover { background: #f0f0ee; }
+
+.gallery-category {
+  margin-bottom: 28px;
+}
+.gallery-category h3 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--heading);
+  margin-bottom: 12px;
+  text-transform: capitalize;
+}
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+}
+.gallery-item {
+  aspect-ratio: 9/16;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.25s;
+  position: relative;
+  border: 2px solid transparent;
+}
+.gallery-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+}
+.gallery-item.active { border-color: var(--heading); }
+.gallery-item-inner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  text-align: center;
+}
+.gallery-item-name {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 600;
+  padding: 6px;
+  text-align: center;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--heading);
+  color: #fff;
+  font-family: 'Sora', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 12px 24px;
+  border-radius: 12px;
+  z-index: 999;
+  transition: transform 0.3s ease;
+  white-space: nowrap;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* Utility */
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<!-- Top Bar -->
+<div class="topbar">
+  <div class="topbar-brand">
+    <svg viewBox="0 0 28 28" fill="none">
+      <rect width="28" height="28" rx="8" fill="#1a1a1a"/>
+      <rect x="6" y="6" width="16" height="16" rx="5" stroke="#fff" stroke-width="1.8" fill="none"/>
+      <circle cx="14" cy="14" r="4" stroke="#fff" stroke-width="1.8" fill="none"/>
+      <circle cx="19.5" cy="8.5" r="1.2" fill="#fff"/>
+    </svg>
+    <h1>Story Templates Studio</h1>
+    <span>by Watermelons</span>
+  </div>
+  <div class="topbar-actions">
+    <button class="btn-gallery" id="btnGallery">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.4"/><rect x="9" y="1" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.4"/><rect x="1" y="9" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.4"/><rect x="9" y="9" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.4"/></svg>
+      Gallery
+    </button>
+    <button id="btnCopyCSS">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="5" y="1" width="10" height="12" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M3 4H2.5A1.5 1.5 0 001 5.5v8A1.5 1.5 0 002.5 15h7a1.5 1.5 0 001.5-1.5V14" stroke="currentColor" stroke-width="1.3"/></svg>
+      Copy CSS
+    </button>
+    <button class="btn-primary" id="btnDownload">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 1v10M4 8l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M1 12v2a1 1 0 001 1h12a1 1 0 001-1v-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Download
+    </button>
+  </div>
+</div>
+
+<!-- Main Layout -->
+<div class="app-layout">
+  <!-- Sidebar Editor -->
+  <div class="sidebar" id="sidebar">
+    <!-- Template Category Picker -->
+    <div class="sidebar-section">
+      <h3>Template Category</h3>
+      <div class="template-picker" id="categoryTabs"></div>
+      <div class="template-list" id="templateList"></div>
+    </div>
+
+    <!-- Text Fields -->
+    <div class="sidebar-section">
+      <h3>Content</h3>
+      <div class="input-group">
+        <label>Headline</label>
+        <input type="text" id="inputHeadline" placeholder="Enter headline...">
+      </div>
+      <div class="input-group">
+        <label>Subtitle</label>
+        <input type="text" id="inputSubtitle" placeholder="Enter subtitle...">
+      </div>
+      <div class="input-group">
+        <label>Body Text</label>
+        <textarea id="inputBody" placeholder="Enter body text..."></textarea>
+      </div>
+    </div>
+
+    <!-- Color Palette -->
+    <div class="sidebar-section">
+      <h3>Color Palette</h3>
+      <div class="palette-grid" id="paletteGrid"></div>
+    </div>
+
+    <!-- Background -->
+    <div class="sidebar-section">
+      <h3>Background</h3>
+      <div class="bg-type-row" id="bgTypeRow"></div>
+      <div class="input-group" id="bgSolidGroup">
+        <label>Color</label>
+        <input type="color" id="inputBgColor" value="#1a1a1a" style="height:40px;padding:4px;cursor:pointer;">
+      </div>
+      <div class="input-group hidden" id="bgGradientGroup">
+        <label>Gradient Direction</label>
+        <select id="inputGradDir">
+          <option value="to bottom">Top to Bottom</option>
+          <option value="to right">Left to Right</option>
+          <option value="to bottom right">Diagonal</option>
+          <option value="135deg">135 degrees</option>
+        </select>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <div style="flex:1">
+            <label style="font-size:11px;color:#999">Start</label>
+            <input type="color" id="inputGrad1" value="#667eea" style="width:100%;height:36px;padding:2px;cursor:pointer;border-radius:6px;border:1px solid var(--border);">
+          </div>
+          <div style="flex:1">
+            <label style="font-size:11px;color:#999">End</label>
+            <input type="color" id="inputGrad2" value="#764ba2" style="width:100%;height:36px;padding:2px;cursor:pointer;border-radius:6px;border:1px solid var(--border);">
+          </div>
+        </div>
+      </div>
+      <div class="input-group hidden" id="bgImageGroup">
+        <label>Image URL</label>
+        <input type="text" id="inputBgImage" placeholder="https://...">
+      </div>
+    </div>
+
+    <!-- Font Sizes -->
+    <div class="sidebar-section">
+      <h3>Typography</h3>
+      <div class="input-group">
+        <label>Headline Size</label>
+        <div class="slider-row">
+          <input type="range" id="sliderHeadline" min="16" max="60" value="32">
+          <span class="slider-val" id="valHeadline">32px</span>
+        </div>
+      </div>
+      <div class="input-group">
+        <label>Subtitle Size</label>
+        <div class="slider-row">
+          <input type="range" id="sliderSubtitle" min="10" max="36" value="16">
+          <span class="slider-val" id="valSubtitle">16px</span>
+        </div>
+      </div>
+      <div class="input-group">
+        <label>Body Size</label>
+        <div class="slider-row">
+          <input type="range" id="sliderBody" min="10" max="28" value="14">
+          <span class="slider-val" id="valBody">14px</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Preview -->
+  <div class="preview-area">
+    <div class="phone-frame">
+      <div class="phone-screen">
+        <div class="story-canvas" id="storyCanvas"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Gallery Overlay -->
+<div class="gallery-overlay" id="galleryOverlay">
+  <div class="gallery-modal">
+    <div class="gallery-header">
+      <h2>Template Gallery</h2>
+      <button class="gallery-close" id="galleryClose">&times;</button>
+    </div>
+    <div id="galleryContent"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ========================================
+// TEMPLATE DEFINITIONS - 30 Templates
+// ========================================
+const PALETTES = [
+  { name:'Midnight',   bg:'#0f0f0f', primary:'#ffffff', accent:'#a78bfa', secondary:'#666' },
+  { name:'Sunset',     bg:'#ff6b35', primary:'#fff',    accent:'#ffd700', secondary:'#fff8e1' },
+  { name:'Ocean',      bg:'#0077b6', primary:'#fff',    accent:'#90e0ef', secondary:'#caf0f8' },
+  { name:'Forest',     bg:'#2d6a4f', primary:'#fff',    accent:'#95d5b2', secondary:'#d8f3dc' },
+  { name:'Rose',       bg:'#e63946', primary:'#fff',    accent:'#ffc2c7', secondary:'#fff0f3' },
+  { name:'Lavender',   bg:'#7b2cbf', primary:'#fff',    accent:'#c77dff', secondary:'#e0aaff' },
+  { name:'Sand',       bg:'#e8d5b7', primary:'#2b2b2b', accent:'#b08968', secondary:'#6b4226' },
+  { name:'Arctic',     bg:'#e0fbfc', primary:'#1a1a2e', accent:'#3d5a80', secondary:'#98c1d9' },
+];
+
+const CATEGORIES = {
+  quotes: {
+    label: 'Quotes',
+    templates: [
+      { id:'q1', name:'Motivational', headline:'Dream Big.', subtitle:'Start Small.', body:'Every great journey begins with a single step. Make today the day you take yours.', layout:'center-stack', bgType:'gradient', grad1:'#667eea', grad2:'#764ba2', palette:0, headlineSize:36, decorStyle:'quote-marks' },
+      { id:'q2', name:'Business', headline:'Success is not final.', subtitle:'Failure is not fatal.', body:'It is the courage to continue that counts. - Winston Churchill', layout:'left-aligned', bgType:'solid', bgColor:'#0f0f0f', palette:0, headlineSize:30, decorStyle:'side-line' },
+      { id:'q3', name:'Minimal', headline:'Less is more.', subtitle:'', body:'Simplicity is the ultimate sophistication.', layout:'center-minimal', bgType:'solid', bgColor:'#fafafa', palette:7, headlineSize:40, decorStyle:'none' },
+      { id:'q4', name:'Bold', headline:'BE FEARLESS', subtitle:'IN THE PURSUIT OF', body:'WHAT SETS YOUR SOUL ON FIRE', layout:'bold-stack', bgType:'gradient', grad1:'#f093fb', grad2:'#f5576c', palette:4, headlineSize:42, decorStyle:'underline-accent' },
+      { id:'q5', name:'Aesthetic', headline:'Find your light.', subtitle:'in every shadow', body:'', layout:'aesthetic-center', bgType:'gradient', grad1:'#ffecd2', grad2:'#fcb69f', palette:6, headlineSize:34, decorStyle:'circle-frame' },
+    ]
+  },
+  polls: {
+    label: 'Polls',
+    templates: [
+      { id:'p1', name:'This or That', headline:'This or That?', subtitle:'Tap to vote!', body:'Coffee vs Tea', layout:'poll-split', bgType:'gradient', grad1:'#a18cd1', grad2:'#fbc2eb', palette:5, headlineSize:28, decorStyle:'split-vs' },
+      { id:'p2', name:'Rate', headline:'Rate This!', subtitle:'1 - 10', body:'How was your weekend?', layout:'poll-rate', bgType:'solid', bgColor:'#ff6b35', palette:1, headlineSize:30, decorStyle:'stars' },
+      { id:'p3', name:'Quiz', headline:'Pop Quiz!', subtitle:'Test your knowledge', body:'Swipe up for the answer', layout:'quiz-card', bgType:'gradient', grad1:'#0077b6', grad2:'#023e8a', palette:2, headlineSize:32, decorStyle:'question-mark' },
+      { id:'p4', name:'Yes / No', headline:'Quick Poll', subtitle:'Yes or No?', body:'Should we do more Q&As?', layout:'poll-yesno', bgType:'solid', bgColor:'#2d6a4f', palette:3, headlineSize:28, decorStyle:'buttons' },
+      { id:'p5', name:'Slider', headline:'How much do you agree?', subtitle:'Slide to answer', body:'Mondays are underrated', layout:'poll-slider', bgType:'gradient', grad1:'#e63946', grad2:'#a8201a', palette:4, headlineSize:26, decorStyle:'slider-emoji' },
+    ]
+  },
+  promotions: {
+    label: 'Promos',
+    templates: [
+      { id:'pr1', name:'Sale', headline:'MEGA SALE', subtitle:'Up to 70% OFF', body:'Limited time only. Shop now!', layout:'promo-bold', bgType:'solid', bgColor:'#0f0f0f', palette:0, headlineSize:44, decorStyle:'sale-badge' },
+      { id:'pr2', name:'New Product', headline:'Just Dropped', subtitle:'Introducing the new collection', body:'Available now. Link in bio.', layout:'promo-elegant', bgType:'gradient', grad1:'#2d6a4f', grad2:'#1b4332', palette:3, headlineSize:34, decorStyle:'sparkle' },
+      { id:'pr3', name:'Discount Code', headline:'EXCLUSIVE', subtitle:'Use code: SAVE20', body:'20% off your entire order', layout:'promo-code', bgType:'gradient', grad1:'#7b2cbf', grad2:'#5a189a', palette:5, headlineSize:32, decorStyle:'dashed-border' },
+      { id:'pr4', name:'Flash Sale', headline:'FLASH SALE', subtitle:'24 HOURS ONLY', body:'Everything must go!', layout:'promo-flash', bgType:'solid', bgColor:'#e63946', palette:4, headlineSize:40, decorStyle:'lightning' },
+      { id:'pr5', name:'Bundle', headline:'Bundle & Save', subtitle:'Buy 2, Get 1 Free', body:'Mix and match your favorites', layout:'promo-bundle', bgType:'gradient', grad1:'#ff6b35', grad2:'#f72585', palette:1, headlineSize:30, decorStyle:'gift-box' },
+    ]
+  },
+  personal: {
+    label: 'Personal',
+    templates: [
+      { id:'pe1', name:'Daily Routine', headline:'My Morning', subtitle:'6:00 AM - 9:00 AM', body:'Wake up\nMeditate\nWorkout\nHealthy breakfast', layout:'list-card', bgType:'gradient', grad1:'#ffecd2', grad2:'#fcb69f', palette:6, headlineSize:28, decorStyle:'sun-icon' },
+      { id:'pe2', name:'Mood', headline:'Current Mood', subtitle:'feeling grateful', body:'', layout:'mood-center', bgType:'gradient', grad1:'#a18cd1', grad2:'#fbc2eb', palette:5, headlineSize:32, decorStyle:'mood-emoji' },
+      { id:'pe3', name:'Travel', headline:'Wanderlust', subtitle:'Exploring new places', body:'Next destination: Bali', layout:'travel-overlay', bgType:'gradient', grad1:'#0077b6', grad2:'#00b4d8', palette:2, headlineSize:36, decorStyle:'plane-icon' },
+      { id:'pe4', name:'Food', headline:'Recipe of the Day', subtitle:'Homemade Pasta', body:'Fresh ingredients\nSimple steps\nAmazing taste', layout:'food-card', bgType:'solid', bgColor:'#e8d5b7', palette:6, headlineSize:28, decorStyle:'fork-knife' },
+      { id:'pe5', name:'Outfit', headline:'OOTD', subtitle:'Outfit of the Day', body:'Casual chic vibes', layout:'outfit-minimal', bgType:'solid', bgColor:'#fafafa', palette:7, headlineSize:34, decorStyle:'hanger' },
+    ]
+  },
+  business: {
+    label: 'Business',
+    templates: [
+      { id:'b1', name:'Tips', headline:'5 Tips', subtitle:'for better productivity', body:'1. Plan your day\n2. Take breaks\n3. Stay focused\n4. Delegate\n5. Review & improve', layout:'tips-numbered', bgType:'solid', bgColor:'#0f0f0f', palette:0, headlineSize:32, decorStyle:'numbered' },
+      { id:'b2', name:'Behind the Scenes', headline:'Behind the Scenes', subtitle:'A day at the studio', body:'Sneak peek at what we do', layout:'bts-card', bgType:'gradient', grad1:'#2d6a4f', grad2:'#40916c', palette:3, headlineSize:28, decorStyle:'camera' },
+      { id:'b3', name:'Q&A', headline:'Ask Me Anything', subtitle:'Drop your questions below', body:'I will answer the top 5!', layout:'qa-card', bgType:'gradient', grad1:'#7b2cbf', grad2:'#9d4edd', palette:5, headlineSize:30, decorStyle:'chat-bubble' },
+      { id:'b4', name:'Testimonial', headline:'"Best purchase ever!"', subtitle:'- Happy Customer', body:'Real reviews from real people', layout:'testimonial', bgType:'solid', bgColor:'#e0fbfc', palette:7, headlineSize:26, decorStyle:'five-stars' },
+      { id:'b5', name:'Announcement', headline:'BIG NEWS', subtitle:'We have something special', body:'Launching soon. Stay tuned!', layout:'announce-bold', bgType:'gradient', grad1:'#ff6b35', grad2:'#e63946', palette:1, headlineSize:38, decorStyle:'megaphone' },
+    ]
+  },
+  engagement: {
+    label: 'Engage',
+    templates: [
+      { id:'e1', name:'Challenge', headline:'7-Day Challenge', subtitle:'Are you in?', body:'Start today. Tag a friend!', layout:'challenge-card', bgType:'gradient', grad1:'#f093fb', grad2:'#f5576c', palette:4, headlineSize:32, decorStyle:'trophy' },
+      { id:'e2', name:'Giveaway', headline:'GIVEAWAY!', subtitle:'Win a free product', body:'Follow + Like + Tag 2 friends', layout:'giveaway-burst', bgType:'gradient', grad1:'#ffd700', grad2:'#ff6b35', palette:1, headlineSize:38, decorStyle:'gift-burst' },
+      { id:'e3', name:'Countdown', headline:'Coming Soon', subtitle:'3 Days Left', body:'Something exciting is on the way', layout:'countdown-center', bgType:'solid', bgColor:'#0f0f0f', palette:0, headlineSize:34, decorStyle:'countdown-boxes' },
+      { id:'e4', name:'Swipe Up', headline:'New Blog Post', subtitle:'Read the full story', body:'Swipe up to learn more', layout:'swipe-up', bgType:'gradient', grad1:'#0077b6', grad2:'#023e8a', palette:2, headlineSize:28, decorStyle:'arrow-up' },
+      { id:'e5', name:'DM Me', headline:'Let\'s Chat!', subtitle:'DM me the word "READY"', body:'I will send you the details', layout:'dm-card', bgType:'gradient', grad1:'#e63946', grad2:'#c1121f', palette:4, headlineSize:30, decorStyle:'dm-icon' },
+    ]
+  }
+};
+
+// ========================================
+// STATE
+// ========================================
+let state = {
+  category: 'quotes',
+  templateId: 'q1',
+  headline: '',
+  subtitle: '',
+  body: '',
+  paletteIdx: 0,
+  bgType: 'gradient',
+  bgColor: '#1a1a1a',
+  grad1: '#667eea',
+  grad2: '#764ba2',
+  gradDir: 'to bottom',
+  bgImage: '',
+  headlineSize: 32,
+  subtitleSize: 16,
+  bodySize: 14,
+};
+
+function getTemplate(id) {
+  for (const cat of Object.values(CATEGORIES)) {
+    const t = cat.templates.find(t => t.id === id);
+    if (t) return t;
+  }
+  return null;
+}
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem('storyTemplateState');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      Object.assign(state, parsed);
+    }
+  } catch(e) {}
+}
+
+function saveState() {
+  localStorage.setItem('storyTemplateState', JSON.stringify(state));
+}
+
+// ========================================
+// RENDERING
+// ========================================
+function renderCategoryTabs() {
+  const el = document.getElementById('categoryTabs');
+  el.innerHTML = '';
+  for (const [key, cat] of Object.entries(CATEGORIES)) {
+    const btn = document.createElement('button');
+    btn.className = 'category-tab' + (state.category === key ? ' active' : '');
+    btn.textContent = cat.label;
+    btn.onclick = () => {
+      state.category = key;
+      state.templateId = cat.templates[0].id;
+      applyTemplate(cat.templates[0]);
+      renderCategoryTabs();
+      renderTemplateList();
+      saveState();
+    };
+    el.appendChild(btn);
+  }
+}
+
+function renderTemplateList() {
+  const el = document.getElementById('templateList');
+  el.innerHTML = '';
+  const templates = CATEGORIES[state.category].templates;
+  templates.forEach(t => {
+    const div = document.createElement('div');
+    div.className = 'template-thumb' + (state.templateId === t.id ? ' active' : '');
+    const pal = PALETTES[t.palette];
+    const bg = t.bgType === 'gradient' ?
+      `linear-gradient(${t.grad1}, ${t.grad2})` :
+      (t.bgColor || pal.bg);
+    div.innerHTML = `<div class="template-thumb-inner" style="background:${bg};color:${pal.primary}">${t.name}</div>`;
+    div.onclick = () => {
+      state.templateId = t.id;
+      applyTemplate(t);
+      renderTemplateList();
+      saveState();
+    };
+    el.appendChild(div);
+  });
+}
+
+function applyTemplate(t) {
+  state.headline = t.headline;
+  state.subtitle = t.subtitle;
+  state.body = t.body;
+  state.paletteIdx = t.palette;
+  state.bgType = t.bgType;
+  state.bgColor = t.bgColor || '#1a1a1a';
+  state.grad1 = t.grad1 || '#667eea';
+  state.grad2 = t.grad2 || '#764ba2';
+  state.headlineSize = t.headlineSize || 32;
+  state.subtitleSize = t.subtitleSize || 16;
+  state.bodySize = t.bodySize || 14;
+  syncEditorFields();
+  renderPreview();
+  renderPalettes();
+  renderBgType();
+}
+
+function syncEditorFields() {
+  document.getElementById('inputHeadline').value = state.headline;
+  document.getElementById('inputSubtitle').value = state.subtitle;
+  document.getElementById('inputBody').value = state.body;
+  document.getElementById('inputBgColor').value = state.bgColor;
+  document.getElementById('inputGrad1').value = state.grad1;
+  document.getElementById('inputGrad2').value = state.grad2;
+  document.getElementById('sliderHeadline').value = state.headlineSize;
+  document.getElementById('sliderSubtitle').value = state.subtitleSize;
+  document.getElementById('sliderBody').value = state.bodySize;
+  document.getElementById('valHeadline').textContent = state.headlineSize + 'px';
+  document.getElementById('valSubtitle').textContent = state.subtitleSize + 'px';
+  document.getElementById('valBody').textContent = state.bodySize + 'px';
+}
+
+function renderPalettes() {
+  const el = document.getElementById('paletteGrid');
+  el.innerHTML = '';
+  PALETTES.forEach((p, i) => {
+    const div = document.createElement('div');
+    div.className = 'palette-swatch' + (state.paletteIdx === i ? ' active' : '');
+    div.innerHTML = `<div class="palette-swatch-colors">
+      <span style="background:${p.bg}"></span>
+      <span style="background:${p.accent}"></span>
+      <span style="background:${p.primary}"></span>
+    </div>`;
+    div.title = p.name;
+    div.onclick = () => {
+      state.paletteIdx = i;
+      renderPalettes();
+      renderPreview();
+      saveState();
+    };
+    el.appendChild(div);
+  });
+}
+
+function renderBgType() {
+  const types = ['solid','gradient','image'];
+  const labels = ['Solid','Gradient','Image'];
+  const row = document.getElementById('bgTypeRow');
+  row.innerHTML = '';
+  types.forEach((t, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'bg-type-btn' + (state.bgType === t ? ' active' : '');
+    btn.textContent = labels[i];
+    btn.onclick = () => {
+      state.bgType = t;
+      renderBgType();
+      renderPreview();
+      saveState();
+    };
+    row.appendChild(btn);
+  });
+  document.getElementById('bgSolidGroup').classList.toggle('hidden', state.bgType !== 'solid');
+  document.getElementById('bgGradientGroup').classList.toggle('hidden', state.bgType !== 'gradient');
+  document.getElementById('bgImageGroup').classList.toggle('hidden', state.bgType !== 'image');
+}
+
+// ========================================
+// PREVIEW RENDERING
+// ========================================
+function getStoryBackground() {
+  const pal = PALETTES[state.paletteIdx];
+  if (state.bgType === 'solid') return state.bgColor;
+  if (state.bgType === 'gradient') return `linear-gradient(${state.gradDir}, ${state.grad1}, ${state.grad2})`;
+  if (state.bgType === 'image' && state.bgImage) return `url(${state.bgImage}) center/cover no-repeat`;
+  return pal.bg;
+}
+
+function renderPreview() {
+  const canvas = document.getElementById('storyCanvas');
+  const pal = PALETTES[state.paletteIdx];
+  const t = getTemplate(state.templateId);
+  const bg = getStoryBackground();
+
+  canvas.style.background = bg;
+  canvas.style.fontFamily = "'Sora', sans-serif";
+
+  const textColor = pal.primary;
+  const accentColor = pal.accent;
+  const secondaryColor = pal.secondary;
+
+  let decorHTML = '';
+  const ds = t ? t.decorStyle : 'none';
+
+  // Decoration elements
+  switch(ds) {
+    case 'quote-marks':
+      decorHTML = `<div style="font-size:72px;line-height:1;opacity:0.2;color:${accentColor};margin-bottom:-10px;font-weight:800">"</div>`;
+      break;
+    case 'side-line':
+      decorHTML = `<div style="width:3px;height:40px;background:${accentColor};border-radius:2px;margin-bottom:16px"></div>`;
+      break;
+    case 'underline-accent':
+      decorHTML = `<div style="width:60px;height:4px;background:${accentColor};border-radius:2px;margin:12px auto 0"></div>`;
+      break;
+    case 'circle-frame':
+      decorHTML = `<div style="width:80px;height:80px;border:2px solid ${accentColor};border-radius:50%;margin-bottom:20px;opacity:0.4"></div>`;
+      break;
+    case 'split-vs':
+      decorHTML = `<div style="width:48px;height:48px;border-radius:50%;background:${accentColor};display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:${pal.bg};margin:16px auto">VS</div>`;
+      break;
+    case 'stars':
+      decorHTML = `<div style="font-size:28px;letter-spacing:6px;margin-bottom:12px;opacity:0.9">&#9733;&#9733;&#9733;&#9733;&#9733;</div>`;
+      break;
+    case 'question-mark':
+      decorHTML = `<div style="width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;color:${textColor};margin-bottom:16px">?</div>`;
+      break;
+    case 'buttons':
+      decorHTML = `<div style="display:flex;gap:12px;margin-top:20px">
+        <div style="flex:1;padding:14px;background:rgba(255,255,255,0.15);border-radius:12px;font-size:14px;font-weight:700;color:${textColor};backdrop-filter:blur(4px)">YES</div>
+        <div style="flex:1;padding:14px;background:rgba(255,255,255,0.15);border-radius:12px;font-size:14px;font-weight:700;color:${textColor};backdrop-filter:blur(4px)">NO</div>
+      </div>`;
+      break;
+    case 'slider-emoji':
+      decorHTML = `<div style="width:85%;margin:20px auto 0;position:relative">
+        <div style="height:6px;background:rgba(255,255,255,0.2);border-radius:3px;position:relative">
+          <div style="position:absolute;left:65%;top:50%;transform:translate(-50%,-50%);font-size:24px">&#128293;</div>
+          <div style="height:100%;width:65%;background:${accentColor};border-radius:3px"></div>
+        </div>
+      </div>`;
+      break;
+    case 'sale-badge':
+      decorHTML = `<div style="width:72px;height:72px;border-radius:50%;background:${accentColor};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:${pal.bg};margin-bottom:16px;transform:rotate(-12deg)">SALE</div>`;
+      break;
+    case 'sparkle':
+      decorHTML = `<div style="font-size:28px;margin-bottom:12px;opacity:0.8">&#10024;</div>`;
+      break;
+    case 'dashed-border':
+      decorHTML = `<div style="border:2px dashed ${accentColor};border-radius:16px;padding:20px 28px;margin:16px auto;display:inline-block">
+        <div style="font-size:22px;font-weight:800;color:${textColor};letter-spacing:4px">${state.subtitle || 'CODE'}</div>
+      </div>`;
+      break;
+    case 'lightning':
+      decorHTML = `<div style="font-size:36px;margin-bottom:8px">&#9889;</div>`;
+      break;
+    case 'gift-box':
+      decorHTML = `<div style="font-size:36px;margin-bottom:12px">&#127873;</div>`;
+      break;
+    case 'sun-icon':
+      decorHTML = `<div style="font-size:32px;margin-bottom:12px">&#9728;&#65039;</div>`;
+      break;
+    case 'mood-emoji':
+      decorHTML = `<div style="font-size:56px;margin-bottom:16px">&#10024;</div>`;
+      break;
+    case 'plane-icon':
+      decorHTML = `<div style="font-size:32px;margin-bottom:12px">&#9992;&#65039;</div>`;
+      break;
+    case 'fork-knife':
+      decorHTML = `<div style="font-size:32px;margin-bottom:12px">&#127860;</div>`;
+      break;
+    case 'hanger':
+      decorHTML = `<div style="width:40px;height:2px;background:${accentColor};margin:0 auto 16px;position:relative">
+        <div style="width:20px;height:20px;border:2px solid ${accentColor};border-radius:50%;position:absolute;top:-22px;left:50%;transform:translateX(-50%);border-bottom:none"></div>
+      </div>`;
+      break;
+    case 'numbered':
+      decorHTML = `<div style="width:40px;height:40px;border-radius:10px;background:${accentColor};display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:${pal.bg};margin-bottom:16px">5</div>`;
+      break;
+    case 'camera':
+      decorHTML = `<div style="font-size:28px;margin-bottom:12px">&#127909;</div>`;
+      break;
+    case 'chat-bubble':
+      decorHTML = `<div style="font-size:32px;margin-bottom:12px">&#128172;</div>`;
+      break;
+    case 'five-stars':
+      decorHTML = `<div style="font-size:18px;letter-spacing:4px;margin-bottom:12px;color:${accentColor}">&#9733;&#9733;&#9733;&#9733;&#9733;</div>`;
+      break;
+    case 'megaphone':
+      decorHTML = `<div style="font-size:36px;margin-bottom:12px">&#128227;</div>`;
+      break;
+    case 'trophy':
+      decorHTML = `<div style="font-size:36px;margin-bottom:12px">&#127942;</div>`;
+      break;
+    case 'gift-burst':
+      decorHTML = `<div style="font-size:44px;margin-bottom:8px">&#127881;</div>`;
+      break;
+    case 'countdown-boxes':
+      decorHTML = `<div style="display:flex;gap:8px;margin:16px auto">
+        <div style="width:52px;height:60px;background:rgba(255,255,255,0.1);border:1px solid ${accentColor};border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center">
+          <span style="font-size:22px;font-weight:800;color:${textColor}">0</span><span style="font-size:8px;color:${secondaryColor}">DAYS</span>
+        </div>
+        <div style="width:52px;height:60px;background:rgba(255,255,255,0.1);border:1px solid ${accentColor};border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center">
+          <span style="font-size:22px;font-weight:800;color:${textColor}">3</span><span style="font-size:8px;color:${secondaryColor}">HRS</span>
+        </div>
+        <div style="width:52px;height:60px;background:rgba(255,255,255,0.1);border:1px solid ${accentColor};border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center">
+          <span style="font-size:22px;font-weight:800;color:${textColor}">12</span><span style="font-size:8px;color:${secondaryColor}">MIN</span>
+        </div>
+      </div>`;
+      break;
+    case 'arrow-up':
+      decorHTML = `<div style="margin-top:24px;animation:bounceUp 1.5s infinite">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="${accentColor}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+      </div>
+      <style>@keyframes bounceUp{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}</style>`;
+      break;
+    case 'dm-icon':
+      decorHTML = `<div style="font-size:32px;margin-bottom:12px">&#9993;&#65039;</div>`;
+      break;
+    default:
+      decorHTML = '';
+  }
+
+  // Build layout
+  const layout = t ? t.layout : 'center-stack';
+  let html = '';
+  const headlineStyle = `font-size:${state.headlineSize}px;font-weight:800;color:${textColor};line-height:1.15;letter-spacing:-0.5px`;
+  const subtitleStyle = `font-size:${state.subtitleSize}px;font-weight:500;color:${secondaryColor};line-height:1.4;opacity:0.85`;
+  const bodyStyle = `font-size:${state.bodySize}px;font-weight:400;color:${secondaryColor};line-height:1.6;opacity:0.75;white-space:pre-line`;
+
+  switch(layout) {
+    case 'center-stack':
+      html = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:40px 28px;text-align:center">
+        ${decorHTML}
+        ${state.headline ? `<div style="${headlineStyle}">${state.headline}</div>` : ''}
+        ${state.subtitle ? `<div style="${subtitleStyle};margin-top:12px">${state.subtitle}</div>` : ''}
+        ${state.body ? `<div style="${bodyStyle};margin-top:16px;max-width:280px">${state.body}</div>` : ''}
+      </div>`;
+      break;
+    case 'left-aligned':
+      html = `<div style="display:flex;flex-direction:column;justify-content:center;height:100%;padding:48px 32px;text-align:left">
+        ${decorHTML}
+        ${state.headline ? `<div style="${headlineStyle}">${state.headline}</div>` : ''}
+        ${state.subtitle ? `<div style="${subtitleStyle};margin-top:10px">${state.subtitle}</div>` : ''}
+        ${state.body ? `<div style="${bodyStyle};margin-top:16px">${state.body}</div>` : ''}
+      </div>`;
+      break;
+    case 'center-minimal':
+      html = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:40px 32px;text-align:center">
+        ${state.headline ? `<div style="${headlineStyle};letter-spacing:-1px">${state.headline}</div>` : ''}
+        ${state.body ? `<div style="${bodyStyle};margin-top:20px;max-width:260px;font-style:italic">${state.body}</div>` : ''}
+      </div>`;
+      break;
+    case 'bold-stack':
+      html = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:40px 24px;text-align:center">
+        ${state.headline ? `<div style="${headlineStyle};letter-spacing:4px">${state.headline}</div>` : ''}
+        ${decorHTML}
+        ${state.subtitle ? `<div style="${subtitleStyle};margin-top:12px;letter-spacing:3px;text-transform:uppercase;font-size:${state.subtitleSize - 2}px">${state.subtitle}</div>` : ''}
+        ${state.body ? `<div style="${headlineStyle};font-size:${state.headlineSize - 8}px;margin-top:8px;letter-spacing:3px">${state.body}</div>` : ''}
+      </div>`;
+      break;
+    case 'aesthetic-center':
+      html = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:40px 32px;text-align:center">
+        ${decorHTML}
+        ${state.headline ? `<div style="${headlineStyle};font-weight:300;font-style:italic">${state.headline}</div>` : ''}
+        ${state.subtitle ? `<div style="${subtitleStyle};margin-top:10px;font-weight:300">${state.subtitle}</div>` : ''}
+      </div>`;
+      break;
+    case 'poll-split':
+      html = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:40px 24px;text-align:center">
+        ${state.headline ? `<div style="${headlineStyle}">${state.headline}</div>` : ''}
+        ${state.subtitle ? `<div style="${subtitleStyle};margin-top:8px">${state.subtitle}</div>` : ''}
+        ${decorHTML}
+        ${state.body ? `<div style="display:flex;gap:10px;margin-top:16px;width:100%">
+          <div style="flex:1;padding:24px 12px;background:rgba(255,255,255,0.12);border-radius:14px;backdrop-filter:blur(4px)">
+            <div style="font-size:${state.bodySize + 2}px;font-weight:700;color:${textColor}">${state.body.split(' vs ')[0] || state.body.split('\n')[0] || 'Option A'}</div>
+          </div>
+          <div style="flex:1;padding:24px 12px;background:rgba(255,255,255,0.12);border-radius:14px;backdrop-filter:blur(4px)">
+            <div style="font-size:${state.bodySize + 2}px;font-weight:700;color:${textColor}">${state.body.split(' vs ')[1] || state.body.split('\n')[1] || 'Option B'}</div>
+          </div>
+        </div>` : ''}
+      </div>`;
+      break;
+    case 'poll-rate':
+    case 'quiz-card':
+    case 'poll-yesno':
+    case 'poll-slider':
+      html = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:40px 28px;text-align:center">
+        ${decorHTML}
+        ${state.headline ? `<div style="${headlineStyle}">${state.headline}</div>` : ''}
+        ${state.subtitle ? `<div style="${subtitleStyle};margin-top:10px">${state.subtitle}</div>` : ''}
+        ${state.body ? `<div style="${bodyStyle};margin-top:16px">${state.body}</div>` : ''}
+        ${ds === 'buttons' ? decorHTML : ''}
+        ${ds === 'slider-emoji' ? decorHTML : ''}
+      </div>`;
+      // Re-render to avoid double decorations for these
+      if (ds === 'buttons' || ds === 'slider-emoji') {
+        html = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:40px 28px;text-align:center">
+          ${state.headline ? `<div style="${headlineStyle}">${state.headline}</div>` : ''}
+          ${state.subtitle ? `<div style="${subtitleStyle};margin-top:10px">${state.subtitle}</div>` : ''}
+          ${state.body ? `<div style="${bodyStyle};margin-top:16px">${state.body}</div>` : ''}
+          ${decorHTML}
+        </div>`;
+      }
+      break;
+    case 'promo-bold':
+      html = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:40px 24px;text-align:center">
+        ${decorHTML}
+        ${state.headline ? `<div style="${headlineStyle};letter-spacing:6px">${state.headline}</div>` : ''}
+        ${state.subtitle ? `<div style="margin-top:16px;padding:10px 24px;background:${accentColor};border-radius:8px;font-size:${state.subtitleSize}px;font-weight:700;color:${pal.bg}">${state.subtitle}</div>` : ''}
+        ${state.body ? `<div style="${bodyStyle};margin-top:16px">${state.body}</div>` : ''}
+      </div>`;
+      break;
+    case 'promo-elegant':
+      html = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:48px 32px;text-align:center">
+        ${decorHTML}
+        ${state.headline ? `<div style="${headlineStyle};font-weight:300;letter-spacing:1px">${state.headline}</div>` : ''}
+        <div style="width:40px;height:1px;background:${accentColor};margin:16px auto"></div>
+        ${state.subtitle ? `<div style="${subtitleStyle};margin-top:4px">${state.subtitle}</div>` : ''}
+        ${state.body ? `<div style="${bodyStyle};margin-top:20px">${state.body}</div>` : ''}
+      </div>`;
+      break;
+    case 'promo-code':
+      html = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:40px 24px;text-align:center">
+        ${state.headline ? `<div style="${headlineStyle};letter-spacing:6px">${state.headline}</div>` : ''}
+        ${decorHTML}
+        ${state.body ? `<div style="${bodyStyle};margin-top:16px">${state.body}</div>` : ''}
+      </div>`;
+      break;
+    case 'promo-flash':
+      html = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:40px 24px;text-align:center">
+        ${decorHTML}
+        ${state.headline ? `<div style="${headlineStyle};letter-spacing:8px">${state.headline}</div>` : ''}
+        ${state.subtitle ? `<div style="margin-top:16px;padding:8px 20px;border:2px solid ${textColor};border-radius:6px;font-size:${state.subtitleSize}px;font-weight:700;color:${textColor};letter-spacing:4px">${state.subtitle}</div>` : ''}
+        ${state.body ? `<div style="${bodyStyle};margin-top:16px">${state.body}</div>` : ''}
+      </div>`;
+      break;
+    case 'promo-bundle':
+      html = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:40px 28px;text-align:center">
+        ${decorHTML}
+        ${state.headline ? `<div style="${headlineStyle}">${state.headline}</div>` : ''}
+        ${state.subtitle ? `<div style="margin-top:14px;padding:12px 24px;background:rgba(255,255,255,0.15);border-radius:12px;backdrop-filter:blur(4px);font-size:${state.subtitleSize + 2}px;font-weight:700;color:${textColor}">${state.subtitle}</div>` : ''}
+        ${state.body ? `<div style="${bodyStyle};margin-top:16px">${state.body}</div>` : ''}
+      </div>`;
+      break;
+    case 'list-card':
+      const lines = (state.body || '').split('\n').filter(l => l.trim());
+      html = `<div style="display:flex;flex-direction:column;justify-content:center;height:100%;padding:48px 28px;text-align:left">
+        ${decorHTML}
+        ${state.headline ? `<div style="${headlineStyle}">${state.headline}</div>` : ''}
+        ${state.subtitle ? `<div style="${subtitleStyle};margin-top:6px">${state.subtitle}</div>` : ''}
+        <div style="margin-top:20px;display:flex;flex-direction:column;gap:10px">
+          ${lines.map((l, i) => `<div style="display:flex;align-items:center;gap:10px">
+            <div style="width:28px;height:28px;border-radius:8px;background:${accentColor};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:${pal.bg};flex-shrink:0">${i+1}</div>
+            <div style="font-size:${state.bodySize}px;color:${textColor};font-weight:500">${l}</div>
+          </div>`).join('')}
+        </div>
+      </div>`;
+      break;
+    case 'mood-center':
+      html = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:40px 32px;text-align:center">
+        ${decorHTML}
+        ${state.headline ? `<div style="${headlineStyle};font-weight:300">${state.headline}</div>` : ''}
+        ${state.subtitle ? `<div style="${subtitleStyle};margin-top:12px;font-style:italic">${state.subtitle}</div>` : ''}
+      </div>`;
+      break;
+    case 'travel-overlay':
+    case 'food-card':
+    case 'outfit-minimal':
+      html = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:40px 28px;text-align:center">
+        ${decorHTML}
+        ${state.headline ? `<div style="${headlineStyle}">${state.headline}</div>` : ''}
+        ${state.subtitle ? `<div style="${subtitleStyle};margin-top:10px">${state.subtitle}</div>` : ''}
+        ${state.body ? `<div style="${bodyStyle};margin-top:16px;white-space:pre-line">${state.body}</div>` : ''}
+      </div>`;
+      break;
+    case 'tips-numbered':
+      const tipLines = (state.body || '').split('\n').filter(l => l.trim());
+      html = `<div style="display:flex;flex-direction:column;justify-content:center;height:100%;padding:40px 24px;text-align:left">
+        ${decorHTML}
+        ${state.headline ? `<div style="${headlineStyle}">${state.headline}</div>` : ''}
+        ${state.subtitle ? `<div style="${subtitleStyle};margin-top:6px">${state.subtitle}</div>` : ''}
+        <div style="margin-top:20px;display:flex;flex-direction:column;gap:8px">
+          ${tipLines.map(l => `<div style="display:flex;align-items:flex-start;gap:8px">
+            <div style="width:6px;height:6px;border-radius:50%;background:${accentColor};margin-top:7px;flex-shrink:0"></div>
+            <div style="font-size:${state.bodySize}px;color:${textColor};font-weight:400;line-height:1.5">${l.replace(/^\d+\.\s*/, '')}</div>
+          </div>`).join('')}
+        </div>
+      </div>`;
+      break;
+    case 'bts-card':
+    case 'qa-card':
+    case 'testimonial':
+    case 'announce-bold':
+      html = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:40px 28px;text-align:center">
+        ${decorHTML}
+        ${state.headline ? `<div style="${headlineStyle}${layout === 'testimonial' ? ';font-style:italic;font-weight:500' : ''}">${state.headline}</div>` : ''}
+        ${state.subtitle ? `<div style="${subtitleStyle};margin-top:12px">${state.subtitle}</div>` : ''}
+        ${state.body ? `<div style="${bodyStyle};margin-top:16px">${state.body}</div>` : ''}
+      </div>`;
+      break;
+    case 'challenge-card':
+    case 'giveaway-burst':
+    case 'countdown-center':
+    case 'swipe-up':
+    case 'dm-card':
+      html = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:40px 24px;text-align:center">
+        ${decorHTML}
+        ${state.headline ? `<div style="${headlineStyle}">${state.headline}</div>` : ''}
+        ${state.subtitle ? `<div style="${subtitleStyle};margin-top:12px">${state.subtitle}</div>` : ''}
+        ${state.body ? `<div style="${bodyStyle};margin-top:16px">${state.body}</div>` : ''}
+        ${ds === 'arrow-up' ? '' : ''}
+      </div>`;
+      // Special: put arrow at end for swipe-up
+      if (ds === 'arrow-up') {
+        html = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:40px 24px;text-align:center">
+          ${state.headline ? `<div style="${headlineStyle}">${state.headline}</div>` : ''}
+          ${state.subtitle ? `<div style="${subtitleStyle};margin-top:12px">${state.subtitle}</div>` : ''}
+          ${state.body ? `<div style="${bodyStyle};margin-top:16px">${state.body}</div>` : ''}
+          ${decorHTML}
+        </div>`;
+      }
+      break;
+    default:
+      html = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:40px 28px;text-align:center">
+        ${decorHTML}
+        ${state.headline ? `<div style="${headlineStyle}">${state.headline}</div>` : ''}
+        ${state.subtitle ? `<div style="${subtitleStyle};margin-top:12px">${state.subtitle}</div>` : ''}
+        ${state.body ? `<div style="${bodyStyle};margin-top:16px">${state.body}</div>` : ''}
+      </div>`;
+  }
+
+  canvas.innerHTML = html;
+}
+
+// ========================================
+// GALLERY
+// ========================================
+function renderGallery() {
+  const el = document.getElementById('galleryContent');
+  let html = '';
+  for (const [key, cat] of Object.entries(CATEGORIES)) {
+    html += `<div class="gallery-category"><h3>${cat.label}</h3><div class="gallery-grid">`;
+    cat.templates.forEach(t => {
+      const pal = PALETTES[t.palette];
+      const bg = t.bgType === 'gradient' ?
+        `linear-gradient(${t.grad1}, ${t.grad2})` :
+        (t.bgColor || pal.bg);
+      html += `<div class="gallery-item${state.templateId === t.id ? ' active' : ''}" data-id="${t.id}" data-cat="${key}" onclick="selectFromGallery('${t.id}','${key}')">
+        <div class="gallery-item-inner" style="background:${bg};color:${pal.primary}">
+          <div style="font-size:11px;font-weight:700;line-height:1.3;margin-bottom:4px">${t.headline}</div>
+          ${t.subtitle ? `<div style="font-size:8px;opacity:0.7">${t.subtitle}</div>` : ''}
+        </div>
+        <div class="gallery-item-name">${t.name}</div>
+      </div>`;
+    });
+    html += '</div></div>';
+  }
+  el.innerHTML = html;
+}
+
+function selectFromGallery(id, cat) {
+  state.category = cat;
+  state.templateId = id;
+  const t = getTemplate(id);
+  if (t) applyTemplate(t);
+  renderCategoryTabs();
+  renderTemplateList();
+  saveState();
+  document.getElementById('galleryOverlay').classList.remove('open');
+}
+
+// ========================================
+// DOWNLOAD
+// ========================================
+function downloadAsImage() {
+  const storyEl = document.getElementById('storyCanvas');
+  const w = 1080;
+  const h = 1920;
+  const canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext('2d');
+  const pal = PALETTES[state.paletteIdx];
+
+  // Background
+  if (state.bgType === 'gradient') {
+    let grd;
+    if (state.gradDir === 'to bottom' || state.gradDir === '180deg') {
+      grd = ctx.createLinearGradient(0, 0, 0, h);
+    } else if (state.gradDir === 'to right') {
+      grd = ctx.createLinearGradient(0, 0, w, 0);
+    } else if (state.gradDir === 'to bottom right') {
+      grd = ctx.createLinearGradient(0, 0, w, h);
+    } else {
+      grd = ctx.createLinearGradient(0, 0, w * 0.7, h);
+    }
+    grd.addColorStop(0, state.grad1);
+    grd.addColorStop(1, state.grad2);
+    ctx.fillStyle = grd;
+    ctx.fillRect(0, 0, w, h);
+  } else if (state.bgType === 'image' && state.bgImage) {
+    ctx.fillStyle = state.bgColor || '#000';
+    ctx.fillRect(0, 0, w, h);
+  } else {
+    ctx.fillStyle = state.bgColor || '#000';
+    ctx.fillRect(0, 0, w, h);
+  }
+
+  // Text
+  const scale = w / 351; // scale from preview to 1080
+  const textColor = pal.primary;
+  ctx.textAlign = 'center';
+
+  let yPos = h * 0.42;
+  if (state.headline) {
+    ctx.font = `800 ${state.headlineSize * scale}px Sora, sans-serif`;
+    ctx.fillStyle = textColor;
+    wrapText(ctx, state.headline, w / 2, yPos, w * 0.8, state.headlineSize * scale * 1.2);
+    yPos += state.headlineSize * scale * 1.5;
+  }
+  if (state.subtitle) {
+    ctx.font = `500 ${state.subtitleSize * scale}px Sora, sans-serif`;
+    ctx.fillStyle = pal.secondary || 'rgba(255,255,255,0.7)';
+    ctx.fillText(state.subtitle, w / 2, yPos);
+    yPos += state.subtitleSize * scale * 2;
+  }
+  if (state.body) {
+    ctx.font = `400 ${state.bodySize * scale}px Sora, sans-serif`;
+    ctx.fillStyle = pal.secondary || 'rgba(255,255,255,0.6)';
+    const bodyLines = state.body.split('\n');
+    bodyLines.forEach(line => {
+      ctx.fillText(line, w / 2, yPos);
+      yPos += state.bodySize * scale * 1.8;
+    });
+  }
+
+  const link = document.createElement('a');
+  link.download = `story-${state.templateId}-${Date.now()}.png`;
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+  showToast('Image downloaded successfully!');
+}
+
+function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+  const words = text.split(' ');
+  let line = '';
+  for (let n = 0; n < words.length; n++) {
+    const testLine = line + words[n] + ' ';
+    const metrics = ctx.measureText(testLine);
+    if (metrics.width > maxWidth && n > 0) {
+      ctx.fillText(line.trim(), x, y);
+      line = words[n] + ' ';
+      y += lineHeight;
+    } else {
+      line = testLine;
+    }
+  }
+  ctx.fillText(line.trim(), x, y);
+}
+
+// ========================================
+// COPY CSS
+// ========================================
+function copyCSSToClipboard() {
+  const pal = PALETTES[state.paletteIdx];
+  let bgCSS = '';
+  if (state.bgType === 'solid') bgCSS = `background-color: ${state.bgColor};`;
+  else if (state.bgType === 'gradient') bgCSS = `background: linear-gradient(${state.gradDir}, ${state.grad1}, ${state.grad2});`;
+  else if (state.bgType === 'image') bgCSS = `background: url('${state.bgImage}') center/cover no-repeat;`;
+
+  const css = `.story-template {
+  width: 1080px;
+  height: 1920px;
+  ${bgCSS}
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-family: 'Sora', sans-serif;
+  padding: 80px 60px;
+}
+
+.story-headline {
+  font-size: ${Math.round(state.headlineSize * (1080/351))}px;
+  font-weight: 800;
+  color: ${pal.primary};
+  line-height: 1.15;
+  letter-spacing: -1px;
+}
+
+.story-subtitle {
+  font-size: ${Math.round(state.subtitleSize * (1080/351))}px;
+  font-weight: 500;
+  color: ${pal.secondary};
+  margin-top: 24px;
+}
+
+.story-body {
+  font-size: ${Math.round(state.bodySize * (1080/351))}px;
+  font-weight: 400;
+  color: ${pal.secondary};
+  margin-top: 32px;
+  line-height: 1.6;
+}`;
+
+  navigator.clipboard.writeText(css).then(() => {
+    showToast('CSS copied to clipboard!');
+  }).catch(() => {
+    showToast('Failed to copy CSS');
+  });
+}
+
+// ========================================
+// TOAST
+// ========================================
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// ========================================
+// EVENT BINDINGS
+// ========================================
+function bindEditorEvents() {
+  // Text fields
+  document.getElementById('inputHeadline').addEventListener('input', e => {
+    state.headline = e.target.value;
+    renderPreview();
+    saveState();
+  });
+  document.getElementById('inputSubtitle').addEventListener('input', e => {
+    state.subtitle = e.target.value;
+    renderPreview();
+    saveState();
+  });
+  document.getElementById('inputBody').addEventListener('input', e => {
+    state.body = e.target.value;
+    renderPreview();
+    saveState();
+  });
+
+  // Background
+  document.getElementById('inputBgColor').addEventListener('input', e => {
+    state.bgColor = e.target.value;
+    renderPreview();
+    saveState();
+  });
+  document.getElementById('inputGrad1').addEventListener('input', e => {
+    state.grad1 = e.target.value;
+    renderPreview();
+    saveState();
+  });
+  document.getElementById('inputGrad2').addEventListener('input', e => {
+    state.grad2 = e.target.value;
+    renderPreview();
+    saveState();
+  });
+  document.getElementById('inputGradDir').addEventListener('change', e => {
+    state.gradDir = e.target.value;
+    renderPreview();
+    saveState();
+  });
+  document.getElementById('inputBgImage').addEventListener('input', e => {
+    state.bgImage = e.target.value;
+    renderPreview();
+    saveState();
+  });
+
+  // Font size sliders
+  document.getElementById('sliderHeadline').addEventListener('input', e => {
+    state.headlineSize = parseInt(e.target.value);
+    document.getElementById('valHeadline').textContent = state.headlineSize + 'px';
+    renderPreview();
+    saveState();
+  });
+  document.getElementById('sliderSubtitle').addEventListener('input', e => {
+    state.subtitleSize = parseInt(e.target.value);
+    document.getElementById('valSubtitle').textContent = state.subtitleSize + 'px';
+    renderPreview();
+    saveState();
+  });
+  document.getElementById('sliderBody').addEventListener('input', e => {
+    state.bodySize = parseInt(e.target.value);
+    document.getElementById('valBody').textContent = state.bodySize + 'px';
+    renderPreview();
+    saveState();
+  });
+
+  // Top bar buttons
+  document.getElementById('btnDownload').addEventListener('click', downloadAsImage);
+  document.getElementById('btnCopyCSS').addEventListener('click', copyCSSToClipboard);
+
+  // Gallery
+  document.getElementById('btnGallery').addEventListener('click', () => {
+    renderGallery();
+    document.getElementById('galleryOverlay').classList.add('open');
+  });
+  document.getElementById('galleryClose').addEventListener('click', () => {
+    document.getElementById('galleryOverlay').classList.remove('open');
+  });
+  document.getElementById('galleryOverlay').addEventListener('click', e => {
+    if (e.target === e.currentTarget) {
+      document.getElementById('galleryOverlay').classList.remove('open');
+    }
+  });
+}
+
+// ========================================
+// INIT
+// ========================================
+function init() {
+  loadState();
+  renderCategoryTabs();
+  renderTemplateList();
+  renderPalettes();
+  renderBgType();
+  syncEditorFields();
+  renderPreview();
+  bindEditorEvents();
+}
+
+window.selectFromGallery = selectFromGallery;
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

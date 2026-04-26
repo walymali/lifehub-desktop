@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Typing Speed Test</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#f5f5f3;--card:#fff;--border:rgba(0,0,0,0.06);--heading:#1a1a1a;--text:#555;--text2:#999;--green:#16a34a;--red:#dc2626}
+body{font-family:'Sora',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.app{max-width:900px;width:100%}
+.header{text-align:center;margin-bottom:24px}
+.header h1{font-size:1.8rem;font-weight:700;color:var(--heading);letter-spacing:-0.02em;margin-bottom:4px}
+.header h1::before{content:'';display:inline-block;width:8px;height:8px;background:var(--heading);border-radius:50%;margin-right:10px;vertical-align:middle}
+.header p{color:var(--text2);font-size:0.82rem}
+.controls{display:flex;gap:8px;justify-content:center;margin-bottom:20px;flex-wrap:wrap}
+.control-group{display:flex;gap:4px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:4px}
+.ctrl-btn{padding:8px 16px;border:none;border-radius:9px;background:transparent;color:var(--text2);font-size:0.72rem;font-weight:500;cursor:pointer;font-family:inherit;transition:all 0.2s}
+.ctrl-btn.active{background:var(--heading);color:#fff}
+.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center}
+.stat .num{font-size:1.8rem;font-weight:700;color:var(--heading);line-height:1}
+.stat .lbl{font-size:0.6rem;color:var(--text2);text-transform:uppercase;letter-spacing:0.1em;margin-top:4px}
+.typing-area{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:32px;margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,0.04)}
+.text-display{font-family:'JetBrains Mono',monospace;font-size:1.2rem;line-height:1.8;color:var(--text2);margin-bottom:20px;min-height:120px;user-select:none}
+.text-display span.correct{color:var(--green)}
+.text-display span.wrong{color:var(--red);background:rgba(220,38,38,0.1);border-radius:3px}
+.text-display span.current{background:var(--heading);color:#fff;border-radius:3px;padding:0 2px;animation:blink 1s infinite}
+@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0.4}}
+#typing-input{width:100%;padding:14px 16px;background:var(--bg);border:1px solid var(--border);border-radius:12px;font-family:'JetBrains Mono',monospace;font-size:1rem;color:var(--heading);outline:none}
+#typing-input:focus{border-color:var(--heading)}
+.actions{display:flex;gap:8px;justify-content:center;margin-top:16px}
+.btn{padding:10px 24px;border-radius:10px;border:1px solid var(--border);background:#fff;color:var(--text);font-size:0.78rem;font-weight:500;cursor:pointer;font-family:inherit;transition:all 0.2s}
+.btn:hover{background:var(--heading);color:#fff;border-color:var(--heading)}
+.btn.primary{background:var(--heading);color:#fff;border-color:var(--heading)}
+.results{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:32px;text-align:center;display:none}
+.results.show{display:block}
+.results h2{font-size:1.4rem;font-weight:700;color:var(--heading);margin-bottom:6px}
+.results p{color:var(--text2);margin-bottom:20px}
+.results .big-stat{font-size:4rem;font-weight:700;color:var(--heading);line-height:1;margin-bottom:4px}
+.results .big-lbl{font-size:0.75rem;color:var(--text2);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:24px}
+.result-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px}
+.result-item{padding:14px;background:var(--bg);border-radius:10px}
+.result-item .v{font-size:1.2rem;font-weight:700;color:var(--heading)}
+.result-item .l{font-size:0.6rem;color:var(--text2);text-transform:uppercase;letter-spacing:0.08em;margin-top:2px}
+.history{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-top:16px}
+.history h3{font-size:0.85rem;font-weight:600;color:var(--heading);margin-bottom:12px}
+.history-list{display:flex;gap:8px;flex-wrap:wrap}
+.history-item{padding:8px 14px;background:var(--bg);border-radius:99px;font-size:0.72rem;color:var(--text2)}
+.history-item strong{color:var(--heading);font-weight:600}
+.pb{position:absolute;top:12px;right:12px;padding:4px 10px;background:#fef3c7;color:#d97706;border-radius:99px;font-size:0.62rem;font-weight:600}
+@media(max-width:600px){.stats-bar{grid-template-columns:1fr 1fr}.result-grid{grid-template-columns:1fr 1fr}.text-display{font-size:1rem}}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="header">
+  <h1>Typing Speed Test</h1>
+  <p>Measure your typing speed and accuracy</p>
+</div>
+
+<div class="controls">
+  <div class="control-group">
+    <button class="ctrl-btn active" onclick="setTime(15,this)">15s</button>
+    <button class="ctrl-btn" onclick="setTime(30,this)">30s</button>
+    <button class="ctrl-btn" onclick="setTime(60,this)">60s</button>
+    <button class="ctrl-btn" onclick="setTime(120,this)">2min</button>
+  </div>
+  <div class="control-group">
+    <button class="ctrl-btn active" onclick="setCategory('words',this)">Common Words</button>
+    <button class="ctrl-btn" onclick="setCategory('quotes',this)">Quotes</button>
+    <button class="ctrl-btn" onclick="setCategory('programming',this)">Programming</button>
+  </div>
+</div>
+
+<div class="stats-bar">
+  <div class="stat"><div class="num" id="s-wpm">0</div><div class="lbl">WPM</div></div>
+  <div class="stat"><div class="num" id="s-acc">100%</div><div class="lbl">Accuracy</div></div>
+  <div class="stat"><div class="num" id="s-time">15s</div><div class="lbl">Time Left</div></div>
+  <div class="stat"><div class="num" id="s-chars">0</div><div class="lbl">Characters</div></div>
+</div>
+
+<div class="typing-area" id="typing-area">
+  <div class="text-display" id="text-display"></div>
+  <input type="text" id="typing-input" placeholder="Start typing to begin..." autocomplete="off" autocorrect="off" spellcheck="false">
+  <div class="actions">
+    <button class="btn primary" onclick="resetTest()">Reset (Tab)</button>
+    <button class="btn" onclick="newText()">New Text</button>
+  </div>
+</div>
+
+<div class="results" id="results">
+  <h2>Test Complete!</h2>
+  <p id="new-pb"></p>
+  <div class="big-stat" id="r-wpm">0</div>
+  <div class="big-lbl">Words Per Minute</div>
+  <div class="result-grid">
+    <div class="result-item"><div class="v" id="r-acc">0%</div><div class="l">Accuracy</div></div>
+    <div class="result-item"><div class="v" id="r-correct">0</div><div class="l">Correct</div></div>
+    <div class="result-item"><div class="v" id="r-wrong">0</div><div class="l">Wrong</div></div>
+    <div class="result-item"><div class="v" id="r-cpm">0</div><div class="l">CPM</div></div>
+  </div>
+  <div class="actions">
+    <button class="btn primary" onclick="resetTest()">Try Again</button>
+  </div>
+</div>
+
+<div class="history">
+  <h3>Recent Tests &bull; Personal Best: <span id="pb-display">-- WPM</span></h3>
+  <div class="history-list" id="history-list"></div>
+</div>
+</div>
+
+<script>
+const TEXTS={
+  words:[
+    'the quick brown fox jumps over the lazy dog while a curious cat watches from afar and the birds sing sweetly in the morning light as the sun rises over the distant mountains',
+    'life is what happens when you are busy making other plans so enjoy every moment and remember that time is precious and cannot be bought back once it is gone forever',
+    'practice makes perfect and consistency is the key to success in any endeavor so keep going even when things get tough because the reward will be worth all the effort',
+    'a journey of a thousand miles begins with a single step and every expert was once a beginner who refused to give up on their dreams despite the challenges they faced',
+    'technology has changed the way we live work and communicate with each other in ways that would have been unimaginable just a few decades ago and the pace of change continues',
+    'reading is one of the best ways to expand your mind and learn new things while also providing entertainment and escape from the stresses of daily life and work',
+    'health is wealth and taking care of your body should be a top priority because you only get one and it has to last you for your entire lifetime so make it count',
+    'kindness costs nothing but means everything to the person receiving it so always try to be kind to others even when they are not kind to you because it matters'
+  ],
+  quotes:[
+    'The only way to do great work is to love what you do. If you have not found it yet keep looking. Do not settle.',
+    'In the middle of every difficulty lies opportunity. Sometimes we have to get creative and look beyond the obvious to find it.',
+    'Success is not final failure is not fatal it is the courage to continue that counts in the long run of life and work.',
+    'The future belongs to those who believe in the beauty of their dreams and are willing to work hard to make them a reality.',
+    'It does not matter how slowly you go as long as you do not stop moving forward toward your goals and aspirations in life.',
+    'Believe you can and you are halfway there. The rest is just hard work determination and never giving up on yourself.',
+    'The best time to plant a tree was twenty years ago. The second best time is now. Start today and make it happen.',
+    'Do not watch the clock do what it does keep going and never stop pushing forward to become the best version of yourself.'
+  ],
+  programming:[
+    'function calculateSum(arr) { return arr.reduce((acc, val) => acc + val, 0); } const numbers = [1, 2, 3, 4, 5];',
+    'const fetchData = async (url) => { const response = await fetch(url); return response.json(); }; fetchData("api/users");',
+    'class User { constructor(name, email) { this.name = name; this.email = email; } greet() { return `Hello ${this.name}`; } }',
+    'const items = data.filter(item => item.active).map(item => ({ ...item, updated: true })).sort((a, b) => a.id - b.id);',
+    'if (user && user.isAuthenticated) { router.push("/dashboard"); } else { router.push("/login"); return null; }',
+    'const debounce = (fn, delay) => { let id; return (...args) => { clearTimeout(id); id = setTimeout(() => fn(...args), delay); }; };',
+    'try { const result = await api.post("/users", data); console.log(result); } catch (err) { console.error(err.message); }',
+    'const { name, age, email = "unknown" } = user; const updated = { ...user, lastLogin: new Date().toISOString() };'
+  ]
+};
+
+let time=15,category='words',currentText='',position=0,correct=0,wrong=0,started=false,startTime=0,interval=null,timeLeft=15;
+let history=JSON.parse(localStorage.getItem('typing_history')||'[]');
+let pb=parseInt(localStorage.getItem('typing_pb')||'0');
+
+function setTime(t,btn){if(started)return;time=t;timeLeft=t;document.querySelectorAll('.control-group')[0].querySelectorAll('.ctrl-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.getElementById('s-time').textContent=t+'s';resetTest();}
+function setCategory(c,btn){if(started)return;category=c;document.querySelectorAll('.control-group')[1].querySelectorAll('.ctrl-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');newText();}
+function newText(){const arr=TEXTS[category];currentText=arr[Math.floor(Math.random()*arr.length)];renderText();}
+function renderText(){const display=document.getElementById('text-display');let html='';for(let i=0;i<currentText.length;i++){let cls='';if(i<position){cls=input[i]===currentText[i]?'correct':'wrong';}else if(i===position){cls='current';}html+=`<span class="${cls}">${currentText[i]==' '?'&nbsp;':currentText[i]}</span>`;}display.innerHTML=html;}
+
+let input='';
+document.getElementById('typing-input').addEventListener('input',(e)=>{
+  if(!started){started=true;startTime=Date.now();interval=setInterval(updateTimer,100);}
+  input=e.target.value;
+  position=input.length;
+  correct=0;wrong=0;
+  for(let i=0;i<input.length;i++){if(input[i]===currentText[i])correct++;else wrong++;}
+  renderText();
+  updateStats();
+  if(position>=currentText.length)newText(),input='',e.target.value='',position=0;
+});
+
+function updateTimer(){timeLeft=Math.max(0,time-Math.floor((Date.now()-startTime)/1000));document.getElementById('s-time').textContent=timeLeft+'s';if(timeLeft<=0)finishTest();}
+function updateStats(){const elapsed=(Date.now()-startTime)/1000/60;const wpm=elapsed>0?Math.round((correct/5)/elapsed):0;const acc=(correct+wrong)>0?Math.round(correct/(correct+wrong)*100):100;document.getElementById('s-wpm').textContent=wpm;document.getElementById('s-acc').textContent=acc+'%';document.getElementById('s-chars').textContent=correct+wrong;}
+
+function finishTest(){
+  clearInterval(interval);started=false;
+  const elapsed=time/60;
+  const wpm=Math.round((correct/5)/elapsed);
+  const acc=(correct+wrong)>0?Math.round(correct/(correct+wrong)*100):0;
+  const cpm=Math.round(correct/elapsed);
+  const isPB=wpm>pb;
+  if(isPB){pb=wpm;localStorage.setItem('typing_pb',pb);}
+  history.unshift({wpm,acc,time,date:Date.now()});history=history.slice(0,10);
+  localStorage.setItem('typing_history',JSON.stringify(history));
+  document.getElementById('typing-area').style.display='none';
+  document.getElementById('results').classList.add('show');
+  document.getElementById('r-wpm').textContent=wpm;
+  document.getElementById('r-acc').textContent=acc+'%';
+  document.getElementById('r-correct').textContent=correct;
+  document.getElementById('r-wrong').textContent=wrong;
+  document.getElementById('r-cpm').textContent=cpm;
+  document.getElementById('new-pb').textContent=isPB?'🎉 New Personal Best!':'';
+  renderHistory();
+}
+
+function resetTest(){clearInterval(interval);started=false;position=0;correct=0;wrong=0;input='';timeLeft=time;document.getElementById('typing-input').value='';document.getElementById('typing-area').style.display='block';document.getElementById('results').classList.remove('show');document.getElementById('s-wpm').textContent='0';document.getElementById('s-acc').textContent='100%';document.getElementById('s-time').textContent=time+'s';document.getElementById('s-chars').textContent='0';newText();document.getElementById('typing-input').focus();}
+
+function renderHistory(){document.getElementById('pb-display').textContent=pb+' WPM';document.getElementById('history-list').innerHTML=history.length?history.map(h=>`<div class="history-item"><strong>${h.wpm}</strong> WPM &bull; ${h.acc}% &bull; ${h.time}s</div>`).join(''):'<div style="color:var(--text2);font-size:0.75rem">No tests yet</div>';}
+
+document.addEventListener('keydown',e=>{if(e.key==='Tab'){e.preventDefault();resetTest();}});
+newText();renderHistory();
+</script>
+</body>
+</html>

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Habit Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#f5f5f3;--card:#fff;--border:rgba(0,0,0,0.06);--heading:#1a1a1a;--text:#555;--text2:#999;--accent:#1a1a1a;--green:#16a34a}
+body{font-family:'Sora',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.app{max-width:1200px;margin:0 auto;padding:28px 24px}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.header h1{font-size:1.5rem;font-weight:700;color:var(--heading);letter-spacing:-0.02em}
+.header h1::before{content:'';display:inline-block;width:8px;height:8px;background:var(--accent);border-radius:50%;margin-right:10px;vertical-align:middle}
+.header-actions{display:flex;gap:6px}
+.btn{padding:8px 16px;border:1px solid var(--border);background:#fff;color:var(--text);font-size:0.72rem;font-weight:500;cursor:pointer;font-family:inherit;border-radius:10px;transition:all 0.2s}
+.btn:hover{background:var(--heading);color:#fff;border-color:var(--heading)}
+.btn.primary{background:var(--heading);color:#fff;border-color:var(--heading)}
+.tagline{color:var(--text2);font-size:0.82rem;margin-bottom:24px}
+.tabs{display:flex;gap:4px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:4px;margin-bottom:20px;max-width:500px}
+.tab-btn{flex:1;padding:10px 16px;border:none;border-radius:10px;background:transparent;color:var(--text2);font-size:0.75rem;font-weight:500;cursor:pointer;font-family:inherit;transition:all 0.2s}
+.tab-btn.active{background:var(--heading);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+.tab-content{display:none}.tab-content.active{display:block}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.03)}
+.stat .num{font-size:1.6rem;font-weight:700;color:var(--heading);line-height:1}
+.stat .lbl{font-size:0.62rem;color:var(--text2);text-transform:uppercase;letter-spacing:0.1em;margin-top:4px}
+.stat.green .num{color:var(--green)}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,0.03)}
+.panel h2{font-size:0.9rem;font-weight:600;color:var(--heading);margin-bottom:14px}
+.add-row{display:flex;gap:8px;margin-bottom:14px}
+.add-row input,.add-row select{padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:10px;color:var(--heading);font-family:inherit;font-size:0.82rem}
+.add-row input{flex:1}
+.add-row input:focus{outline:none;border-color:var(--heading)}
+.habit-item{display:flex;align-items:center;gap:14px;padding:14px 16px;border:1px solid var(--border);border-radius:12px;margin-bottom:8px;transition:all 0.2s;background:var(--bg)}
+.habit-item:hover{border-color:rgba(0,0,0,0.12);transform:translateY(-1px)}
+.habit-emoji{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0}
+.habit-info{flex:1;min-width:0}
+.habit-name{font-size:0.88rem;font-weight:600;color:var(--heading)}
+.habit-meta{font-size:0.7rem;color:var(--text2);margin-top:2px;display:flex;gap:10px;flex-wrap:wrap}
+.habit-check{width:42px;height:42px;border-radius:50%;border:2px solid var(--border);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;color:transparent;transition:all 0.2s;flex-shrink:0}
+.habit-check.done{background:var(--green);border-color:var(--green);color:#fff}
+.habit-check:hover:not(.done){border-color:var(--heading)}
+.habit-del{background:none;border:none;color:var(--text2);cursor:pointer;padding:6px;font-size:0.85rem;opacity:0;transition:opacity 0.2s}
+.habit-item:hover .habit-del{opacity:1}
+.habit-streak{font-size:0.7rem;font-weight:600;color:#d97706;padding:4px 10px;background:#fef3c7;border-radius:99px}
+/* Calendar */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:12px}
+.cal-header{font-size:0.65rem;color:var(--text2);text-align:center;font-weight:600;text-transform:uppercase;padding:6px 0}
+.cal-day{aspect-ratio:1;background:var(--bg);border:1px solid var(--border);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:0.72rem;cursor:pointer;transition:all 0.2s;position:relative}
+.cal-day:hover{border-color:var(--heading)}
+.cal-day.today{border-color:var(--heading);border-width:2px}
+.cal-day .dots{display:flex;gap:2px;margin-top:2px}
+.cal-day .dot{width:4px;height:4px;border-radius:50%;background:var(--green)}
+/* Heatmap */
+.heatmap{display:grid;grid-template-columns:repeat(53,1fr);gap:2px;overflow-x:auto;padding-bottom:8px}
+.heat-day{aspect-ratio:1;min-width:10px;border-radius:2px;background:#ebedf0}
+.heat-day.l1{background:#9be9a8}
+.heat-day.l2{background:#40c463}
+.heat-day.l3{background:#30a14e}
+.heat-day.l4{background:#216e39}
+.empty{text-align:center;padding:32px;color:var(--text2);font-size:0.82rem}
+.emoji-picker{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;padding:8px;background:var(--bg);border-radius:8px}
+.emoji-opt{width:32px;height:32px;border:none;background:transparent;border-radius:6px;cursor:pointer;font-size:1.1rem;transition:all 0.15s}
+.emoji-opt:hover,.emoji-opt.selected{background:var(--card);transform:scale(1.1)}
+@media(max-width:768px){.stats{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="header">
+  <h1>Habit Tracker</h1>
+  <div class="header-actions">
+    <button class="btn" onclick="exportData()">Export</button>
+    <button class="btn" onclick="document.getElementById('imp').click()">Import</button>
+    <input type="file" id="imp" accept=".json" style="display:none" onchange="importData(this)">
+  </div>
+</div>
+<p class="tagline">Build better habits, one day at a time.</p>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="showTab('today',this)">Today</button>
+  <button class="tab-btn" onclick="showTab('calendar',this)">Calendar</button>
+  <button class="tab-btn" onclick="showTab('insights',this)">Insights</button>
+</div>
+
+<div class="stats" id="stats"></div>
+
+<div class="tab-content active" id="tab-today">
+  <div class="panel">
+    <h2>Add New Habit</h2>
+    <div class="add-row">
+      <input type="text" id="new-habit" placeholder="e.g. Drink 8 glasses of water">
+      <select id="new-category">
+        <option value="Health">Health</option>
+        <option value="Work">Work</option>
+        <option value="Learning">Learning</option>
+        <option value="Personal">Personal</option>
+      </select>
+      <button class="btn primary" onclick="addHabit()">Add Habit</button>
+    </div>
+    <div class="emoji-picker" id="emoji-picker"></div>
+  </div>
+  <div class="panel">
+    <h2>Today's Habits</h2>
+    <div id="habits-list"></div>
+  </div>
+</div>
+
+<div class="tab-content" id="tab-calendar">
+  <div class="panel">
+    <h2 id="cal-title">This Month</h2>
+    <div class="cal-grid" id="cal-grid"></div>
+  </div>
+</div>
+
+<div class="tab-content" id="tab-insights">
+  <div class="panel">
+    <h2>Year Heatmap</h2>
+    <div class="heatmap" id="heatmap"></div>
+  </div>
+  <div class="panel">
+    <h2>Category Breakdown</h2>
+    <div id="cat-breakdown"></div>
+  </div>
+</div>
+</div>
+
+<script>
+const STORE='habit_tracker';
+const EMOJIS=['💪','🏃','💧','📚','🧘','🌱','☕','🎨','✍️','🎯','😴','🥗','🚴','🧠','🙏'];
+let data=JSON.parse(localStorage.getItem(STORE))||{habits:[]};
+let selectedEmoji='💪';
+function save(){localStorage.setItem(STORE,JSON.stringify(data));}
+function showTab(id,btn){document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.getElementById('tab-'+id).classList.add('active');btn.classList.add('active');if(id==='calendar')renderCalendar();if(id==='insights')renderInsights();}
+
+// Emoji picker
+document.getElementById('emoji-picker').innerHTML=EMOJIS.map(e=>`<button class="emoji-opt${e===selectedEmoji?' selected':''}" onclick="selectEmoji('${e}',this)">${e}</button>`).join('');
+function selectEmoji(e,el){selectedEmoji=e;document.querySelectorAll('.emoji-opt').forEach(b=>b.classList.remove('selected'));el.classList.add('selected');}
+
+// Demo data
+if(!data.habits.length){
+  const today=new Date();
+  const makeDays=(density)=>{const days={};for(let i=0;i<180;i++){const d=new Date(today);d.setDate(d.getDate()-i);if(Math.random()<density)days[d.toISOString().split('T')[0]]=true;}return days;};
+  data.habits=[
+    {id:1,name:'Morning Run',emoji:'🏃',category:'Health',days:makeDays(0.75)},
+    {id:2,name:'Drink Water 8 Glasses',emoji:'💧',category:'Health',days:makeDays(0.85)},
+    {id:3,name:'Read 20 Pages',emoji:'📚',category:'Learning',days:makeDays(0.65)},
+    {id:4,name:'Deep Work 2h',emoji:'💪',category:'Work',days:makeDays(0.7)},
+    {id:5,name:'Meditate',emoji:'🧘',category:'Personal',days:makeDays(0.55)},
+    {id:6,name:'Journal',emoji:'✍️',category:'Personal',days:makeDays(0.5)},
+    {id:7,name:'Learn Something New',emoji:'🧠',category:'Learning',days:makeDays(0.6)},
+    {id:8,name:'Eat Healthy',emoji:'🥗',category:'Health',days:makeDays(0.72)}
+  ];
+  save();
+}
+
+function todayKey(){return new Date().toISOString().split('T')[0]}
+function calcStreak(h){let streak=0;const d=new Date();while(h.days&&h.days[d.toISOString().split('T')[0]]){streak++;d.setDate(d.getDate()-1);}return streak;}
+function longestStreak(h){if(!h.days)return 0;const dates=Object.keys(h.days).filter(k=>h.days[k]).sort();if(!dates.length)return 0;let max=1,cur=1;for(let i=1;i<dates.length;i++){const prev=new Date(dates[i-1]),curD=new Date(dates[i]);if((curD-prev)/86400000===1){cur++;max=Math.max(max,cur);}else cur=1;}return max;}
+
+function addHabit(){const name=document.getElementById('new-habit').value.trim();if(!name)return;data.habits.push({id:Date.now(),name,emoji:selectedEmoji,category:document.getElementById('new-category').value,days:{}});document.getElementById('new-habit').value='';save();render();}
+function toggleHabit(id){const h=data.habits.find(x=>x.id===id);if(!h.days)h.days={};const k=todayKey();h.days[k]=!h.days[k];if(!h.days[k])delete h.days[k];save();render();}
+function deleteHabit(id){if(!confirm('Delete this habit?'))return;data.habits=data.habits.filter(h=>h.id!==id);save();render();}
+
+function renderStats(){
+  const total=data.habits.length;
+  const done=data.habits.filter(h=>h.days&&h.days[todayKey()]).length;
+  const longest=data.habits.reduce((m,h)=>Math.max(m,longestStreak(h)),0);
+  const rate=total?Math.round(done/total*100):0;
+  document.getElementById('stats').innerHTML=`
+    <div class="stat"><div class="num">${total}</div><div class="lbl">Total Habits</div></div>
+    <div class="stat green"><div class="num">${done}/${total}</div><div class="lbl">Done Today</div></div>
+    <div class="stat"><div class="num">${rate}%</div><div class="lbl">Today's Rate</div></div>
+    <div class="stat"><div class="num">${longest}</div><div class="lbl">Longest Streak</div></div>`;
+}
+
+function renderHabits(){
+  const list=document.getElementById('habits-list');
+  if(!data.habits.length){list.innerHTML='<div class="empty">No habits yet. Add one above!</div>';return;}
+  const k=todayKey();
+  list.innerHTML=data.habits.map(h=>{
+    const done=h.days&&h.days[k];
+    const streak=calcStreak(h);
+    return`<div class="habit-item"><div class="habit-emoji">${h.emoji}</div><div class="habit-info"><div class="habit-name">${h.name}</div><div class="habit-meta"><span>${h.category}</span>${streak?`<span class="habit-streak">🔥 ${streak} day${streak>1?'s':''}</span>`:''}</div></div><button class="habit-check${done?' done':''}" onclick="toggleHabit(${h.id})">${done?'✓':''}</button><button class="habit-del" onclick="deleteHabit(${h.id})">✕</button></div>`;
+  }).join('');
+}
+
+function renderCalendar(){
+  const today=new Date();
+  const year=today.getFullYear(),month=today.getMonth();
+  const first=new Date(year,month,1);
+  const last=new Date(year,month+1,0);
+  document.getElementById('cal-title').textContent=today.toLocaleDateString('en-US',{month:'long',year:'numeric'});
+  let html='';
+  ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach(d=>html+=`<div class="cal-header">${d}</div>`);
+  const start=(first.getDay()+6)%7;
+  for(let i=0;i<start;i++)html+='<div></div>';
+  for(let d=1;d<=last.getDate();d++){
+    const date=new Date(year,month,d);
+    const k=date.toISOString().split('T')[0];
+    const isToday=k===todayKey();
+    const count=data.habits.filter(h=>h.days&&h.days[k]).length;
+    const dots=Array(Math.min(count,5)).fill('<span class="dot"></span>').join('');
+    html+=`<div class="cal-day${isToday?' today':''}">${d}<div class="dots">${dots}</div></div>`;
+  }
+  document.getElementById('cal-grid').innerHTML=html;
+}
+
+function renderInsights(){
+  const today=new Date();
+  let html='';
+  for(let i=364;i>=0;i--){
+    const d=new Date(today);d.setDate(d.getDate()-i);
+    const k=d.toISOString().split('T')[0];
+    const count=data.habits.filter(h=>h.days&&h.days[k]).length;
+    const level=count===0?0:count<=2?1:count<=4?2:count<=6?3:4;
+    html+=`<div class="heat-day l${level}" title="${k}: ${count} habits"></div>`;
+  }
+  document.getElementById('heatmap').innerHTML=html;
+  const cats={};data.habits.forEach(h=>{const c=Object.values(h.days||{}).filter(Boolean).length;cats[h.category]=(cats[h.category]||0)+c;});
+  document.getElementById('cat-breakdown').innerHTML=Object.entries(cats).map(([c,n])=>`<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)"><span style="font-size:0.85rem;color:var(--heading);font-weight:500">${c}</span><span style="color:var(--text2);font-size:0.82rem">${n} completions</span></div>`).join('')||'<div class="empty">No data yet</div>';
+}
+
+function exportData(){const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.download='habit-tracker.json';a.href=URL.createObjectURL(blob);a.click();}
+function importData(input){const f=input.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{try{data=JSON.parse(e.target.result);save();render();alert('Imported!');}catch(err){alert('Invalid file');}};r.readAsText(f);}
+
+function render(){renderStats();renderHabits();}
+render();
+</script>
+<script src="../dashboard/lifehub-sdk.js"
+        data-tool-id="habit-tracker"
+        data-tool-name="Habit Tracker"
+        data-category="productivity"></script>
+</body>
+</html>

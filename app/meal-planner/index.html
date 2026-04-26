@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meal Planner</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f5f5f3;--card:#fff;--heading:#1a1a1a;--text:#555;
+  --breakfast:#f6c343;--breakfast-light:#fef9e7;
+  --lunch:#4caf50;--lunch-light:#e8f5e9;
+  --dinner:#ef6c00;--dinner-light:#fff3e0;
+  --snack:#9c27b0;--snack-light:#f3e5f5;
+  --accent:#ef6c00;--accent-light:#fff3e0;
+  --green:#4caf50;--red:#e53935;
+  --border:#e8e8e6;--shadow:0 2px 12px rgba(0,0,0,.06);
+  --radius:14px;--radius-sm:10px;
+}
+html{font-size:15px}
+body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
+
+/* HEADER */
+.header{background:var(--card);border-bottom:1px solid var(--border);padding:0 2rem;position:sticky;top:0;z-index:100}
+.header-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{display:flex;align-items:center;gap:.6rem;font-weight:700;font-size:1.25rem;color:var(--heading);letter-spacing:-.02em}
+.logo-icon{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.1rem}
+.header-actions{display:flex;gap:.5rem}
+.btn{font-family:inherit;font-size:.8rem;font-weight:500;padding:.5rem 1rem;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:.4rem}
+.btn:hover{border-color:#ccc;background:#fafafa}
+.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-primary:hover{background:#d45f00}
+.btn-sm{padding:.35rem .7rem;font-size:.75rem}
+.btn-danger{color:var(--red);border-color:var(--red)}
+.btn-danger:hover{background:#fef2f2}
+
+/* TABS */
+.tabs{background:var(--card);border-bottom:1px solid var(--border);padding:0 2rem}
+.tabs-inner{max-width:1280px;margin:0 auto;display:flex;gap:0;overflow-x:auto}
+.tab{font-family:inherit;font-size:.85rem;font-weight:500;padding:.85rem 1.3rem;border:none;background:none;color:var(--text);cursor:pointer;position:relative;transition:color .15s;white-space:nowrap}
+.tab:hover{color:var(--heading)}
+.tab.active{color:var(--accent);font-weight:600}
+.tab.active::after{content:'';position:absolute;bottom:0;left:.5rem;right:.5rem;height:2.5px;background:var(--accent);border-radius:2px}
+
+/* MAIN */
+.main{max-width:1280px;margin:0 auto;padding:1.5rem 2rem 3rem}
+.panel{display:none}
+.panel.active{display:block}
+.section-title{font-size:1.3rem;font-weight:700;color:var(--heading);margin-bottom:1rem;letter-spacing:-.02em}
+.section-subtitle{font-size:.85rem;color:var(--text);margin-bottom:1.2rem;font-weight:400}
+
+/* WEEKLY PLAN */
+.week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:.75rem}
+@media(max-width:1100px){.week-grid{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:700px){.week-grid{grid-template-columns:repeat(2,1fr)}}
+.day-card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;box-shadow:var(--shadow)}
+.day-header{padding:.7rem .8rem;font-weight:600;font-size:.85rem;color:var(--heading);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.day-cal{font-size:.7rem;font-weight:500;color:var(--text);background:var(--bg);padding:.15rem .5rem;border-radius:20px}
+.day-cal.over{background:#fef2f2;color:var(--red)}
+.day-cal.under{background:#e8f5e9;color:var(--green)}
+.meal-slot{padding:.55rem .8rem;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s;min-height:52px;position:relative}
+.meal-slot:last-child{border-bottom:none}
+.meal-slot:hover{background:#fafaf8}
+.meal-slot-label{font-size:.6rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.15rem;display:flex;align-items:center;gap:.3rem}
+.meal-slot-label::before{content:'';width:6px;height:6px;border-radius:50%;display:inline-block}
+.meal-slot[data-type="breakfast"] .meal-slot-label{color:var(--breakfast)}
+.meal-slot[data-type="breakfast"] .meal-slot-label::before{background:var(--breakfast)}
+.meal-slot[data-type="breakfast"].has-meal{background:var(--breakfast-light)}
+.meal-slot[data-type="lunch"] .meal-slot-label{color:var(--lunch)}
+.meal-slot[data-type="lunch"] .meal-slot-label::before{background:var(--lunch)}
+.meal-slot[data-type="lunch"].has-meal{background:var(--lunch-light)}
+.meal-slot[data-type="dinner"] .meal-slot-label{color:var(--dinner)}
+.meal-slot[data-type="dinner"] .meal-slot-label::before{background:var(--dinner)}
+.meal-slot[data-type="dinner"].has-meal{background:var(--dinner-light)}
+.meal-slot[data-type="snack"] .meal-slot-label{color:var(--snack)}
+.meal-slot[data-type="snack"] .meal-slot-label::before{background:var(--snack)}
+.meal-slot[data-type="snack"].has-meal{background:var(--snack-light)}
+.meal-slot-name{font-size:.78rem;font-weight:500;color:var(--heading)}
+.meal-slot-cal{font-size:.65rem;color:var(--text)}
+.meal-slot-empty{font-size:.7rem;color:#bbb;font-style:italic}
+.meal-slot .remove-meal{position:absolute;top:.4rem;right:.5rem;width:18px;height:18px;border-radius:50%;border:none;background:#eee;color:#999;font-size:.65rem;cursor:pointer;display:none;align-items:center;justify-content:center;line-height:1}
+.meal-slot:hover .remove-meal{display:flex}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:200;display:none;align-items:center;justify-content:center;padding:1rem}
+.modal-overlay.show{display:flex}
+.modal{background:var(--card);border-radius:var(--radius);width:100%;max-width:440px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.15);padding:1.5rem}
+.modal h3{font-size:1.1rem;font-weight:700;color:var(--heading);margin-bottom:1rem}
+.form-group{margin-bottom:.9rem}
+.form-group label{display:block;font-size:.75rem;font-weight:600;color:var(--heading);margin-bottom:.3rem}
+.form-group input,.form-group select,.form-group textarea{font-family:inherit;font-size:.85rem;padding:.55rem .75rem;border:1px solid var(--border);border-radius:var(--radius-sm);width:100%;color:var(--heading);background:var(--card);transition:border .15s}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--accent)}
+.form-group textarea{resize:vertical;min-height:70px}
+.modal-actions{display:flex;gap:.5rem;justify-content:flex-end;margin-top:1.2rem}
+
+/* RECIPES */
+.recipes-header{display:flex;gap:.75rem;margin-bottom:1.2rem;flex-wrap:wrap;align-items:center}
+.search-box{flex:1;min-width:200px;font-family:inherit;font-size:.85rem;padding:.55rem 1rem;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card);color:var(--heading)}
+.search-box:focus{outline:none;border-color:var(--accent)}
+.recipe-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:.9rem}
+.recipe-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem;box-shadow:var(--shadow);cursor:pointer;transition:all .15s;position:relative}
+.recipe-card:hover{border-color:#ddd;transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.08)}
+.recipe-card-cat{font-size:.6rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;padding:.2rem .55rem;border-radius:20px;display:inline-block;margin-bottom:.5rem}
+.recipe-card-cat.breakfast{background:var(--breakfast-light);color:#b8860b}
+.recipe-card-cat.lunch{background:var(--lunch-light);color:#2e7d32}
+.recipe-card-cat.dinner{background:var(--dinner-light);color:#d84315}
+.recipe-card-cat.snack,.recipe-card-cat.dessert{background:var(--snack-light);color:#7b1fa2}
+.recipe-card-title{font-size:.95rem;font-weight:600;color:var(--heading);margin-bottom:.3rem}
+.recipe-card-meta{font-size:.7rem;color:var(--text);display:flex;gap:.9rem}
+.recipe-card-actions{display:flex;gap:.4rem;margin-top:.7rem}
+.recipe-fav-btn{position:absolute;top:.8rem;right:.8rem;background:none;border:none;font-size:1.1rem;cursor:pointer;opacity:.5;transition:opacity .15s}
+.recipe-fav-btn:hover,.recipe-fav-btn.is-fav{opacity:1}
+
+/* RECIPE DETAIL MODAL */
+.recipe-detail{max-width:520px}
+.recipe-detail .meta-row{display:flex;gap:1rem;margin-bottom:1rem;flex-wrap:wrap}
+.recipe-detail .meta-item{font-size:.75rem;color:var(--text)}
+.recipe-detail .meta-item strong{color:var(--heading);font-weight:600}
+.recipe-detail h4{font-size:.85rem;font-weight:600;color:var(--heading);margin:.8rem 0 .4rem}
+.recipe-detail ul{padding-left:1.2rem;margin-bottom:.5rem}
+.recipe-detail li{font-size:.8rem;margin-bottom:.2rem}
+.recipe-detail p{font-size:.8rem;line-height:1.6}
+.add-to-plan-row{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)}
+.add-to-plan-row select{font-family:inherit;font-size:.8rem;padding:.4rem .6rem;border:1px solid var(--border);border-radius:var(--radius-sm)}
+
+/* SHOPPING LIST */
+.shopping-header{display:flex;gap:.75rem;margin-bottom:1.2rem;flex-wrap:wrap;align-items:center}
+.shopping-category{margin-bottom:1.2rem}
+.shopping-cat-header{font-size:.85rem;font-weight:600;color:var(--heading);padding:.5rem 0;border-bottom:1px solid var(--border);margin-bottom:.4rem;display:flex;justify-content:space-between;align-items:center}
+.shopping-cat-count{font-size:.7rem;color:var(--text);font-weight:400}
+.shopping-item{display:flex;align-items:center;gap:.6rem;padding:.45rem 0;font-size:.85rem}
+.shopping-item input[type="checkbox"]{width:16px;height:16px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+.shopping-item.checked label{text-decoration:line-through;color:#bbb}
+.shopping-item label{cursor:pointer;flex:1}
+.shopping-item .remove-item{background:none;border:none;color:#ccc;cursor:pointer;font-size:.75rem;padding:.2rem}
+.shopping-item .remove-item:hover{color:var(--red)}
+.add-custom-row{display:flex;gap:.5rem;margin-bottom:1.2rem}
+.add-custom-row input{flex:1}
+.add-custom-row select{width:140px}
+
+/* NUTRITION */
+.nutrition-top{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1.5rem}
+@media(max-width:700px){.nutrition-top{grid-template-columns:1fr}}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem;box-shadow:var(--shadow);text-align:center}
+.stat-card .stat-value{font-size:2rem;font-weight:700;color:var(--heading);line-height:1.2}
+.stat-card .stat-label{font-size:.75rem;color:var(--text);margin-top:.2rem}
+.stat-card.over .stat-value{color:var(--red)}
+.stat-card.under .stat-value{color:var(--green)}
+.target-row{display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.target-row label{font-size:.85rem;font-weight:500;color:var(--heading)}
+.target-row input{width:100px;font-family:inherit;font-size:.85rem;padding:.45rem .6rem;border:1px solid var(--border);border-radius:var(--radius-sm);text-align:center}
+.daily-breakdown{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.75rem;margin-bottom:1.5rem}
+.day-stat{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.8rem;box-shadow:var(--shadow)}
+.day-stat-name{font-size:.75rem;font-weight:600;color:var(--heading);margin-bottom:.4rem}
+.day-stat-total{font-size:1.1rem;font-weight:700;margin-bottom:.4rem}
+.day-stat-bar{height:6px;background:#eee;border-radius:4px;overflow:hidden;margin-bottom:.5rem}
+.day-stat-fill{height:100%;border-radius:4px;transition:width .3s}
+.day-stat-breakdown{display:flex;flex-direction:column;gap:.15rem}
+.day-stat-breakdown span{font-size:.65rem;display:flex;align-items:center;gap:.3rem}
+.day-stat-breakdown span::before{content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.day-stat-breakdown .b-breakfast::before{background:var(--breakfast)}
+.day-stat-breakdown .b-lunch::before{background:var(--lunch)}
+.day-stat-breakdown .b-dinner::before{background:var(--dinner)}
+.day-stat-breakdown .b-snack::before{background:var(--snack)}
+
+/* PIE CHART (CSS) */
+.pie-section{display:flex;gap:2rem;align-items:flex-start;flex-wrap:wrap;margin-bottom:1.5rem}
+.pie-chart{width:180px;height:180px;border-radius:50%;position:relative;flex-shrink:0}
+.pie-legend{display:flex;flex-direction:column;gap:.5rem;padding-top:.5rem}
+.pie-legend-item{display:flex;align-items:center;gap:.5rem;font-size:.8rem}
+.pie-legend-item .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+
+/* FAVORITES */
+.favorites-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.75rem}
+.fav-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:.9rem;box-shadow:var(--shadow);cursor:grab;transition:all .15s;position:relative}
+.fav-card:hover{border-color:#ddd;box-shadow:0 4px 16px rgba(0,0,0,.08)}
+.fav-card.dragging{opacity:.5;transform:scale(.96)}
+.fav-card-name{font-size:.85rem;font-weight:600;color:var(--heading);margin-bottom:.15rem}
+.fav-card-meta{font-size:.7rem;color:var(--text)}
+.fav-card-cat{font-size:.6rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;padding:.15rem .45rem;border-radius:12px;display:inline-block;margin-bottom:.4rem}
+.fav-card .remove-fav{position:absolute;top:.6rem;right:.6rem;background:none;border:none;color:#ccc;cursor:pointer;font-size:.8rem}
+.fav-card .remove-fav:hover{color:var(--red)}
+.fav-drop-hint{border:2px dashed var(--accent);background:var(--accent-light);border-radius:var(--radius);padding:1rem;text-align:center;font-size:.8rem;color:var(--accent);margin-bottom:1rem;display:none}
+.fav-drop-hint.visible{display:block}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:3rem 1rem;color:#bbb;font-size:.9rem}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--heading);color:#fff;padding:.65rem 1.2rem;border-radius:var(--radius-sm);font-size:.8rem;font-family:'Sora',sans-serif;z-index:300;transform:translateY(100px);opacity:0;transition:all .3s}
+.toast.show{transform:translateY(0);opacity:1}
+
+/* FILE INPUT HIDDEN */
+.file-input-hidden{display:none}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">MP</div>
+      Meal Planner
+    </div>
+    <div class="header-actions">
+      <button class="btn" onclick="exportData()">Export JSON</button>
+      <button class="btn" onclick="document.getElementById('importFile').click()">Import JSON</button>
+      <input type="file" id="importFile" class="file-input-hidden" accept=".json" onchange="importData(event)">
+      <button class="btn btn-danger" onclick="resetData()">Reset</button>
+    </div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tabs-inner">
+    <button class="tab active" data-tab="weekly">Weekly Plan</button>
+    <button class="tab" data-tab="recipes">Recipes</button>
+    <button class="tab" data-tab="shopping">Shopping List</button>
+    <button class="tab" data-tab="nutrition">Nutrition</button>
+    <button class="tab" data-tab="favorites">Favorites</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <!-- WEEKLY PLAN -->
+  <div id="panel-weekly" class="panel active">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.3rem">
+      <h2 class="section-title">Weekly Meal Plan</h2>
+    </div>
+    <p class="section-subtitle">Click any slot to add or edit a meal. Drag favorites onto a slot to fill it.</p>
+    <div class="week-grid" id="weekGrid"></div>
+  </div>
+
+  <!-- RECIPES -->
+  <div id="panel-recipes" class="panel">
+    <h2 class="section-title">Recipe Collection</h2>
+    <div class="recipes-header">
+      <input class="search-box" type="text" id="recipeSearch" placeholder="Search recipes..." oninput="renderRecipes()">
+      <button class="btn btn-primary" onclick="openRecipeModal()">+ Add Recipe</button>
+    </div>
+    <div class="recipe-grid" id="recipeGrid"></div>
+  </div>
+
+  <!-- SHOPPING LIST -->
+  <div id="panel-shopping" class="panel">
+    <h2 class="section-title">Shopping List</h2>
+    <p class="section-subtitle">Auto-generated from your weekly plan. Add custom items below.</p>
+    <div class="shopping-header">
+      <div class="add-custom-row" style="flex:1;display:flex;gap:.5rem">
+        <input class="search-box" type="text" id="customItemInput" placeholder="Add custom item...">
+        <select class="search-box" id="customItemCategory" style="width:140px;flex:none">
+          <option value="Produce">Produce</option>
+          <option value="Dairy">Dairy</option>
+          <option value="Meat">Meat</option>
+          <option value="Grains">Grains</option>
+          <option value="Other">Other</option>
+        </select>
+        <button class="btn btn-primary" onclick="addCustomShoppingItem()">Add</button>
+      </div>
+      <button class="btn" onclick="generateShoppingList()">Regenerate from Plan</button>
+    </div>
+    <div id="shoppingListContainer"></div>
+  </div>
+
+  <!-- NUTRITION -->
+  <div id="panel-nutrition" class="panel">
+    <h2 class="section-title">Nutrition Overview</h2>
+    <div class="target-row">
+      <label>Daily Calorie Target:</label>
+      <input type="number" id="calorieTarget" value="2000" onchange="updateCalorieTarget(this.value)">
+      <span style="font-size:.75rem;color:var(--text)">kcal</span>
+    </div>
+    <div class="nutrition-top" id="nutritionSummary"></div>
+    <div class="pie-section" id="pieSection"></div>
+    <h3 style="font-size:1rem;font-weight:600;color:var(--heading);margin-bottom:.8rem">Daily Breakdown</h3>
+    <div class="daily-breakdown" id="dailyBreakdown"></div>
+  </div>
+
+  <!-- FAVORITES -->
+  <div id="panel-favorites" class="panel">
+    <h2 class="section-title">Favorite Meals</h2>
+    <p class="section-subtitle">Drag a favorite to a meal slot in the Weekly Plan tab, or click to add it.</p>
+    <div class="fav-drop-hint" id="favDropHint">Drop a favorite onto a meal slot in Weekly Plan</div>
+    <div class="favorites-grid" id="favoritesGrid"></div>
+  </div>
+</div>
+
+<!-- MEAL MODAL -->
+<div class="modal-overlay" id="mealModal">
+  <div class="modal">
+    <h3 id="mealModalTitle">Add Meal</h3>
+    <div class="form-group">
+      <label>Meal Name</label>
+      <input type="text" id="mealName" placeholder="e.g. Avocado Toast">
+    </div>
+    <div class="form-group">
+      <label>Estimated Calories</label>
+      <input type="number" id="mealCalories" placeholder="e.g. 350">
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeMealModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveMeal()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- RECIPE MODAL -->
+<div class="modal-overlay" id="recipeModal">
+  <div class="modal" style="max-width:520px">
+    <h3 id="recipeModalTitle">Add Recipe</h3>
+    <div class="form-group">
+      <label>Recipe Name</label>
+      <input type="text" id="recipeName" placeholder="e.g. Grilled Chicken Salad">
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
+      <div class="form-group">
+        <label>Category</label>
+        <select id="recipeCategory">
+          <option value="breakfast">Breakfast</option>
+          <option value="lunch">Lunch</option>
+          <option value="dinner">Dinner</option>
+          <option value="snack">Snack</option>
+          <option value="dessert">Dessert</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Prep Time (min)</label>
+        <input type="number" id="recipePrepTime" placeholder="30">
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
+      <div class="form-group">
+        <label>Servings</label>
+        <input type="number" id="recipeServings" placeholder="4">
+      </div>
+      <div class="form-group">
+        <label>Calories per Serving</label>
+        <input type="number" id="recipeCalories" placeholder="350">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Ingredients (one per line)</label>
+      <textarea id="recipeIngredients" placeholder="2 chicken breasts&#10;1 cup mixed greens&#10;1 avocado"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Instructions</label>
+      <textarea id="recipeInstructions" placeholder="Step-by-step instructions..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeRecipeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveRecipe()">Save Recipe</button>
+    </div>
+  </div>
+</div>
+
+<!-- RECIPE DETAIL MODAL -->
+<div class="modal-overlay" id="recipeDetailModal">
+  <div class="modal recipe-detail" id="recipeDetailContent"></div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== DATA MANAGEMENT =====
+const STORAGE_KEY = 'meal_planner';
+const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+const MEAL_TYPES = ['breakfast','lunch','dinner','snack'];
+
+function getDefaultData() {
+  return {
+    weeklyPlan: {},
+    recipes: [],
+    shoppingList: [],
+    favorites: [],
+    calorieTarget: 2000,
+    checkedItems: {}
+  };
+}
+
+function loadData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return null;
+}
+
+function saveData() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ===== DEMO DATA =====
+function getDemoData() {
+  const recipes = [
+    {id:'r1',name:'Avocado Toast',category:'breakfast',ingredients:['2 slices whole grain bread','1 ripe avocado','2 eggs','Salt and pepper','Red pepper flakes','1 lemon'],instructions:'Toast bread. Mash avocado with lemon juice, salt and pepper. Spread on toast. Top with fried or poached eggs and red pepper flakes.',prepTime:10,servings:2,calories:320},
+    {id:'r2',name:'Greek Yogurt Parfait',category:'breakfast',ingredients:['1 cup Greek yogurt','1/2 cup granola','1/2 cup mixed berries','1 tbsp honey','1 tbsp chia seeds'],instructions:'Layer yogurt, granola, and berries in a glass. Drizzle with honey and sprinkle chia seeds on top.',prepTime:5,servings:1,calories:280},
+    {id:'r3',name:'Grilled Chicken Salad',category:'lunch',ingredients:['2 chicken breasts','4 cups mixed greens','1 cucumber','1 cup cherry tomatoes','1/4 cup feta cheese','2 tbsp olive oil','1 lemon'],instructions:'Season and grill chicken for 6-7 minutes per side. Slice and arrange over mixed greens with cucumber, tomatoes, and feta. Dress with olive oil and lemon.',prepTime:25,servings:2,calories:380},
+    {id:'r4',name:'Quinoa Buddha Bowl',category:'lunch',ingredients:['1 cup quinoa','1 can chickpeas','1 sweet potato','2 cups spinach','1 avocado','2 tbsp tahini','1 lemon'],instructions:'Cook quinoa. Roast diced sweet potato and chickpeas at 400F for 25 min. Assemble bowls with quinoa, roasted veg, spinach, sliced avocado. Drizzle with tahini-lemon dressing.',prepTime:35,servings:2,calories:420},
+    {id:'r5',name:'Salmon with Roasted Vegetables',category:'dinner',ingredients:['2 salmon fillets','2 cups broccoli florets','1 cup carrots','1 cup zucchini','2 tbsp olive oil','2 cloves garlic','1 lemon','Fresh dill'],instructions:'Toss vegetables with olive oil and garlic, roast at 425F for 20 min. Season salmon, add to pan for last 12 min. Serve with lemon and dill.',prepTime:35,servings:2,calories:450},
+    {id:'r6',name:'Vegetable Stir Fry',category:'dinner',ingredients:['1 block firm tofu','2 cups broccoli','1 red bell pepper','1 cup snap peas','3 tbsp soy sauce','1 tbsp sesame oil','2 cloves garlic','1 tbsp ginger','Brown rice'],instructions:'Press and cube tofu, pan-fry until golden. Stir-fry vegetables with garlic and ginger. Add soy sauce and sesame oil. Serve over brown rice.',prepTime:25,servings:3,calories:360},
+    {id:'r7',name:'Chicken Pasta Primavera',category:'dinner',ingredients:['8 oz penne pasta','2 chicken breasts','1 cup cherry tomatoes','1 zucchini','1 cup bell peppers','2 cloves garlic','2 tbsp olive oil','1/4 cup parmesan','Fresh basil'],instructions:'Cook pasta. Saute diced chicken until done, set aside. Saute vegetables with garlic. Toss everything together with olive oil, parmesan, and basil.',prepTime:30,servings:4,calories:480},
+    {id:'r8',name:'Trail Mix Energy Bites',category:'snack',ingredients:['1 cup oats','1/2 cup peanut butter','1/3 cup honey','1/2 cup dark chocolate chips','1/4 cup flax seeds','1 tsp vanilla'],instructions:'Mix all ingredients in a bowl. Refrigerate for 30 minutes. Roll into 1-inch balls. Store in fridge for up to a week.',prepTime:15,servings:12,calories:120},
+    {id:'r9',name:'Hummus Veggie Wrap',category:'lunch',ingredients:['2 large tortillas','1/2 cup hummus','1 cucumber','1 cup shredded carrots','1 cup spinach','1/4 cup roasted red peppers','Salt and pepper'],instructions:'Spread hummus on tortilla. Layer vegetables on top. Roll tightly, tucking in sides. Slice in half diagonally.',prepTime:10,servings:2,calories:310},
+    {id:'r10',name:'Berry Smoothie Bowl',category:'breakfast',ingredients:['1 cup frozen mixed berries','1 banana','1/2 cup almond milk','2 tbsp granola','1 tbsp coconut flakes','1 tbsp chia seeds','Fresh berries for topping'],instructions:'Blend frozen berries, banana, and almond milk until thick and smooth. Pour into bowl. Top with granola, coconut flakes, chia seeds, and fresh berries.',prepTime:8,servings:1,calories:290}
+  ];
+
+  const weeklyPlan = {};
+  DAYS.forEach(d => weeklyPlan[d] = {breakfast:null,lunch:null,dinner:null,snack:null});
+  weeklyPlan['Monday'] = {breakfast:{name:'Avocado Toast',calories:320},lunch:{name:'Grilled Chicken Salad',calories:380},dinner:{name:'Salmon with Roasted Vegetables',calories:450},snack:{name:'Trail Mix Energy Bites',calories:120}};
+  weeklyPlan['Tuesday'] = {breakfast:{name:'Greek Yogurt Parfait',calories:280},lunch:{name:'Quinoa Buddha Bowl',calories:420},dinner:{name:'Vegetable Stir Fry',calories:360},snack:null};
+  weeklyPlan['Wednesday'] = {breakfast:{name:'Berry Smoothie Bowl',calories:290},lunch:{name:'Hummus Veggie Wrap',calories:310},dinner:{name:'Chicken Pasta Primavera',calories:480},snack:{name:'Trail Mix Energy Bites',calories:120}};
+  weeklyPlan['Thursday'] = {breakfast:{name:'Avocado Toast',calories:320},lunch:{name:'Grilled Chicken Salad',calories:380},dinner:{name:'Vegetable Stir Fry',calories:360},snack:null};
+  weeklyPlan['Friday'] = {breakfast:{name:'Greek Yogurt Parfait',calories:280},lunch:{name:'Quinoa Buddha Bowl',calories:420},dinner:{name:'Salmon with Roasted Vegetables',calories:450},snack:{name:'Trail Mix Energy Bites',calories:120}};
+  weeklyPlan['Saturday'] = {breakfast:{name:'Berry Smoothie Bowl',calories:290},lunch:{name:'Hummus Veggie Wrap',calories:310},dinner:{name:'Chicken Pasta Primavera',calories:480},snack:null};
+  weeklyPlan['Sunday'] = {breakfast:{name:'Avocado Toast',calories:320},lunch:{name:'Grilled Chicken Salad',calories:380},dinner:{name:'Salmon with Roasted Vegetables',calories:450},snack:{name:'Trail Mix Energy Bites',calories:120}};
+
+  const shoppingList = generateShoppingListFromPlan(weeklyPlan, recipes);
+
+  return {
+    weeklyPlan,
+    recipes,
+    shoppingList,
+    favorites: [
+      {name:'Avocado Toast',calories:320,category:'breakfast'},
+      {name:'Grilled Chicken Salad',calories:380,category:'lunch'},
+      {name:'Trail Mix Energy Bites',calories:120,category:'snack'}
+    ],
+    calorieTarget: 2000,
+    checkedItems: {}
+  };
+}
+
+function generateShoppingListFromPlan(plan, recipes) {
+  const ingredientMap = {};
+  const categoryMap = {
+    'bread':'Grains','tortillas':'Grains','pasta':'Grains','penne':'Grains','rice':'Grains','quinoa':'Grains','oats':'Grains','granola':'Grains','flax':'Grains',
+    'chicken':'Meat','salmon':'Meat','tofu':'Meat',
+    'yogurt':'Dairy','feta':'Dairy','parmesan':'Dairy','cheese':'Dairy','milk':'Dairy','butter':'Dairy',
+    'avocado':'Produce','egg':'Produce','lemon':'Produce','tomato':'Produce','cucumber':'Produce','spinach':'Produce','broccoli':'Produce','carrot':'Produce',
+    'zucchini':'Produce','pepper':'Produce','banana':'Produce','berr':'Produce','greens':'Produce','sweet potato':'Produce','snap pea':'Produce','basil':'Produce','dill':'Produce','ginger':'Produce','garlic':'Produce','onion':'Produce','lettuce':'Produce','chickpea':'Produce',
+    'olive oil':'Other','soy sauce':'Other','sesame':'Other','honey':'Other','peanut butter':'Other','chocolate':'Other','vanilla':'Other','tahini':'Other','hummus':'Other','chia':'Other','coconut':'Other','salt':'Other','flakes':'Other'
+  };
+
+  function getCategory(item) {
+    const lower = item.toLowerCase();
+    for (const [kw, cat] of Object.entries(categoryMap)) {
+      if (lower.includes(kw)) return cat;
+    }
+    return 'Other';
+  }
+
+  DAYS.forEach(day => {
+    MEAL_TYPES.forEach(type => {
+      const meal = plan[day]?.[type];
+      if (!meal) return;
+      const recipe = recipes.find(r => r.name === meal.name);
+      if (recipe) {
+        recipe.ingredients.forEach(ing => {
+          const key = ing.toLowerCase().trim();
+          if (!ingredientMap[key]) {
+            ingredientMap[key] = {name: ing, category: getCategory(ing), checked: false, custom: false};
+          }
+        });
+      }
+    });
+  });
+
+  return Object.values(ingredientMap);
+}
+
+// ===== APP STATE =====
+let appData = loadData() || getDemoData();
+let currentMealSlot = null; // {day, type}
+let editingRecipeId = null;
+
+// ===== TABS =====
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+    if (tab.dataset.tab === 'nutrition') renderNutrition();
+    if (tab.dataset.tab === 'shopping') renderShoppingList();
+    if (tab.dataset.tab === 'favorites') renderFavorites();
+    if (tab.dataset.tab === 'recipes') renderRecipes();
+    if (tab.dataset.tab === 'weekly') renderWeeklyPlan();
+  });
+});
+
+// ===== WEEKLY PLAN =====
+function renderWeeklyPlan() {
+  const grid = document.getElementById('weekGrid');
+  grid.innerHTML = '';
+  DAYS.forEach(day => {
+    const dayData = appData.weeklyPlan[day] || {};
+    let total = 0;
+    MEAL_TYPES.forEach(t => { if (dayData[t]) total += (dayData[t].calories || 0); });
+    const target = appData.calorieTarget || 2000;
+    const calClass = total > target ? 'over' : (total > 0 ? 'under' : '');
+
+    let slotsHTML = '';
+    MEAL_TYPES.forEach(type => {
+      const meal = dayData[type];
+      const hasMeal = meal && meal.name;
+      slotsHTML += `
+        <div class="meal-slot ${hasMeal ? 'has-meal' : ''}" data-type="${type}" data-day="${day}"
+             onclick="openMealModal('${day}','${type}')"
+             ondragover="event.preventDefault();this.style.outline='2px solid var(--accent)'"
+             ondragleave="this.style.outline=''"
+             ondrop="handleDrop(event,'${day}','${type}')">
+          <div class="meal-slot-label">${type.charAt(0).toUpperCase() + type.slice(1)}</div>
+          ${hasMeal ? `
+            <div class="meal-slot-name">${meal.name}</div>
+            <div class="meal-slot-cal">${meal.calories} kcal</div>
+            <button class="remove-meal" onclick="event.stopPropagation();removeMeal('${day}','${type}')">x</button>
+          ` : `<div class="meal-slot-empty">+ Add meal</div>`}
+        </div>`;
+    });
+
+    grid.innerHTML += `
+      <div class="day-card">
+        <div class="day-header">
+          ${day.slice(0,3)}
+          <span class="day-cal ${calClass}">${total > 0 ? total + ' kcal' : '--'}</span>
+        </div>
+        ${slotsHTML}
+      </div>`;
+  });
+}
+
+function openMealModal(day, type) {
+  currentMealSlot = {day, type};
+  const existing = appData.weeklyPlan[day]?.[type];
+  document.getElementById('mealName').value = existing?.name || '';
+  document.getElementById('mealCalories').value = existing?.calories || '';
+  document.getElementById('mealModalTitle').textContent = existing?.name ? 'Edit Meal' : 'Add Meal';
+  document.getElementById('mealModal').classList.add('show');
+  document.getElementById('mealName').focus();
+}
+
+function closeMealModal() {
+  document.getElementById('mealModal').classList.remove('show');
+  currentMealSlot = null;
+}
+
+function saveMeal() {
+  if (!currentMealSlot) return;
+  const name = document.getElementById('mealName').value.trim();
+  const cal = parseInt(document.getElementById('mealCalories').value) || 0;
+  if (!name) return;
+  if (!appData.weeklyPlan[currentMealSlot.day]) {
+    appData.weeklyPlan[currentMealSlot.day] = {breakfast:null,lunch:null,dinner:null,snack:null};
+  }
+  appData.weeklyPlan[currentMealSlot.day][currentMealSlot.type] = {name, calories: cal};
+  saveData();
+  renderWeeklyPlan();
+  closeMealModal();
+  showToast('Meal saved');
+}
+
+function removeMeal(day, type) {
+  if (appData.weeklyPlan[day]) {
+    appData.weeklyPlan[day][type] = null;
+    saveData();
+    renderWeeklyPlan();
+    showToast('Meal removed');
+  }
+}
+
+// ===== RECIPES =====
+function renderRecipes() {
+  const grid = document.getElementById('recipeGrid');
+  const query = (document.getElementById('recipeSearch')?.value || '').toLowerCase();
+  const filtered = appData.recipes.filter(r =>
+    r.name.toLowerCase().includes(query) ||
+    r.category.toLowerCase().includes(query) ||
+    r.ingredients.some(i => i.toLowerCase().includes(query))
+  );
+  if (!filtered.length) {
+    grid.innerHTML = '<div class="empty-state">No recipes found. Add one!</div>';
+    return;
+  }
+  grid.innerHTML = filtered.map(r => {
+    const isFav = appData.favorites.some(f => f.name === r.name);
+    return `
+    <div class="recipe-card" onclick="openRecipeDetail('${r.id}')">
+      <button class="recipe-fav-btn ${isFav ? 'is-fav' : ''}" onclick="event.stopPropagation();toggleFavorite('${r.id}')" title="Toggle favorite">
+        ${isFav ? '\u2605' : '\u2606'}
+      </button>
+      <div class="recipe-card-cat ${r.category}">${r.category}</div>
+      <div class="recipe-card-title">${r.name}</div>
+      <div class="recipe-card-meta">
+        <span>${r.prepTime} min</span>
+        <span>${r.servings} servings</span>
+        <span>${r.calories} kcal</span>
+      </div>
+      <div class="recipe-card-actions">
+        <button class="btn btn-sm btn-primary" onclick="event.stopPropagation();addRecipeToPlanPrompt('${r.id}')">Add to Plan</button>
+        <button class="btn btn-sm" onclick="event.stopPropagation();editRecipe('${r.id}')">Edit</button>
+        <button class="btn btn-sm btn-danger" onclick="event.stopPropagation();deleteRecipe('${r.id}')">Delete</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openRecipeDetail(id) {
+  const r = appData.recipes.find(x => x.id === id);
+  if (!r) return;
+  const content = document.getElementById('recipeDetailContent');
+  content.innerHTML = `
+    <h3>${r.name}</h3>
+    <div class="recipe-card-cat ${r.category}" style="margin-bottom:.8rem">${r.category}</div>
+    <div class="meta-row">
+      <div class="meta-item"><strong>Prep:</strong> ${r.prepTime} min</div>
+      <div class="meta-item"><strong>Servings:</strong> ${r.servings}</div>
+      <div class="meta-item"><strong>Calories:</strong> ${r.calories}/serving</div>
+    </div>
+    <h4>Ingredients</h4>
+    <ul>${r.ingredients.map(i => `<li>${i}</li>`).join('')}</ul>
+    <h4>Instructions</h4>
+    <p>${r.instructions}</p>
+    <div class="add-to-plan-row">
+      <label style="font-size:.8rem;font-weight:500;color:var(--heading)">Add to plan:</label>
+      <select id="detailDay">${DAYS.map(d => `<option value="${d}">${d}</option>`).join('')}</select>
+      <select id="detailType">
+        <option value="breakfast">Breakfast</option>
+        <option value="lunch">Lunch</option>
+        <option value="dinner">Dinner</option>
+        <option value="snack">Snack</option>
+      </select>
+      <button class="btn btn-primary btn-sm" onclick="addRecipeToPlan('${r.id}',document.getElementById('detailDay').value,document.getElementById('detailType').value)">Add</button>
+    </div>
+    <div class="modal-actions" style="margin-top:1rem">
+      <button class="btn" onclick="closeRecipeDetail()">Close</button>
+    </div>`;
+  document.getElementById('recipeDetailModal').classList.add('show');
+}
+
+function closeRecipeDetail() {
+  document.getElementById('recipeDetailModal').classList.remove('show');
+}
+
+function addRecipeToPlanPrompt(id) {
+  openRecipeDetail(id);
+}
+
+function addRecipeToPlan(id, day, type) {
+  const r = appData.recipes.find(x => x.id === id);
+  if (!r) return;
+  if (!appData.weeklyPlan[day]) appData.weeklyPlan[day] = {breakfast:null,lunch:null,dinner:null,snack:null};
+  appData.weeklyPlan[day][type] = {name: r.name, calories: r.calories};
+  saveData();
+  closeRecipeDetail();
+  showToast(`${r.name} added to ${day} ${type}`);
+  renderWeeklyPlan();
+}
+
+function openRecipeModal(recipe) {
+  editingRecipeId = recipe ? recipe.id : null;
+  document.getElementById('recipeModalTitle').textContent = recipe ? 'Edit Recipe' : 'Add Recipe';
+  document.getElementById('recipeName').value = recipe?.name || '';
+  document.getElementById('recipeCategory').value = recipe?.category || 'breakfast';
+  document.getElementById('recipePrepTime').value = recipe?.prepTime || '';
+  document.getElementById('recipeServings').value = recipe?.servings || '';
+  document.getElementById('recipeCalories').value = recipe?.calories || '';
+  document.getElementById('recipeIngredients').value = recipe ? recipe.ingredients.join('\n') : '';
+  document.getElementById('recipeInstructions').value = recipe?.instructions || '';
+  document.getElementById('recipeModal').classList.add('show');
+  document.getElementById('recipeName').focus();
+}
+
+function closeRecipeModal() {
+  document.getElementById('recipeModal').classList.remove('show');
+  editingRecipeId = null;
+}
+
+function saveRecipe() {
+  const name = document.getElementById('recipeName').value.trim();
+  if (!name) return;
+  const data = {
+    id: editingRecipeId || 'r' + Date.now(),
+    name,
+    category: document.getElementById('recipeCategory').value,
+    prepTime: parseInt(document.getElementById('recipePrepTime').value) || 0,
+    servings: parseInt(document.getElementById('recipeServings').value) || 1,
+    calories: parseInt(document.getElementById('recipeCalories').value) || 0,
+    ingredients: document.getElementById('recipeIngredients').value.split('\n').map(s => s.trim()).filter(Boolean),
+    instructions: document.getElementById('recipeInstructions').value.trim()
+  };
+  if (editingRecipeId) {
+    const idx = appData.recipes.findIndex(r => r.id === editingRecipeId);
+    if (idx >= 0) appData.recipes[idx] = data;
+  } else {
+    appData.recipes.push(data);
+  }
+  saveData();
+  renderRecipes();
+  closeRecipeModal();
+  showToast('Recipe saved');
+}
+
+function editRecipe(id) {
+  const r = appData.recipes.find(x => x.id === id);
+  if (r) openRecipeModal(r);
+}
+
+function deleteRecipe(id) {
+  if (!confirm('Delete this recipe?')) return;
+  appData.recipes = appData.recipes.filter(r => r.id !== id);
+  saveData();
+  renderRecipes();
+  showToast('Recipe deleted');
+}
+
+function toggleFavorite(id) {
+  const r = appData.recipes.find(x => x.id === id);
+  if (!r) return;
+  const idx = appData.favorites.findIndex(f => f.name === r.name);
+  if (idx >= 0) {
+    appData.favorites.splice(idx, 1);
+    showToast('Removed from favorites');
+  } else {
+    appData.favorites.push({name: r.name, calories: r.calories, category: r.category});
+    showToast('Added to favorites');
+  }
+  saveData();
+  renderRecipes();
+  renderFavorites();
+}
+
+// ===== SHOPPING LIST =====
+function generateShoppingList() {
+  appData.shoppingList = generateShoppingListFromPlan(appData.weeklyPlan, appData.recipes);
+  // Keep custom items
+  const customItems = (appData.shoppingList || []).filter(i => i.custom);
+  appData.shoppingList = [...appData.shoppingList, ...customItems.filter(ci => !appData.shoppingList.some(si => si.name.toLowerCase() === ci.name.toLowerCase()))];
+  appData.checkedItems = {};
+  saveData();
+  renderShoppingList();
+  showToast('Shopping list regenerated');
+}
+
+function renderShoppingList() {
+  const container = document.getElementById('shoppingListContainer');
+  const items = appData.shoppingList || [];
+  if (!items.length) {
+    container.innerHTML = '<div class="empty-state">No items yet. Add meals to your weekly plan or add custom items.</div>';
+    return;
+  }
+  const groups = {};
+  ['Produce','Dairy','Meat','Grains','Other'].forEach(c => groups[c] = []);
+  items.forEach(item => {
+    const cat = item.category || 'Other';
+    if (!groups[cat]) groups[cat] = [];
+    groups[cat].push(item);
+  });
+
+  container.innerHTML = Object.entries(groups).filter(([,items]) => items.length).map(([cat, items]) => {
+    const checked = items.filter(i => appData.checkedItems[i.name]).length;
+    return `
+    <div class="shopping-category">
+      <div class="shopping-cat-header">
+        ${cat}
+        <span class="shopping-cat-count">${checked}/${items.length} checked</span>
+      </div>
+      ${items.map((item, idx) => {
+        const isChecked = appData.checkedItems[item.name];
+        return `
+        <div class="shopping-item ${isChecked ? 'checked' : ''}">
+          <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="toggleShoppingItem('${item.name.replace(/'/g,"\\'")}')">
+          <label onclick="toggleShoppingItem('${item.name.replace(/'/g,"\\'")}')">${item.name}</label>
+          <button class="remove-item" onclick="removeShoppingItem('${item.name.replace(/'/g,"\\'")}')" title="Remove">x</button>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }).join('');
+}
+
+function toggleShoppingItem(name) {
+  appData.checkedItems[name] = !appData.checkedItems[name];
+  saveData();
+  renderShoppingList();
+}
+
+function removeShoppingItem(name) {
+  appData.shoppingList = appData.shoppingList.filter(i => i.name !== name);
+  delete appData.checkedItems[name];
+  saveData();
+  renderShoppingList();
+}
+
+function addCustomShoppingItem() {
+  const input = document.getElementById('customItemInput');
+  const name = input.value.trim();
+  if (!name) return;
+  const cat = document.getElementById('customItemCategory').value;
+  if (appData.shoppingList.some(i => i.name.toLowerCase() === name.toLowerCase())) {
+    showToast('Item already exists');
+    return;
+  }
+  appData.shoppingList.push({name, category: cat, checked: false, custom: true});
+  saveData();
+  renderShoppingList();
+  input.value = '';
+  showToast('Item added');
+}
+
+// ===== NUTRITION =====
+function updateCalorieTarget(val) {
+  appData.calorieTarget = parseInt(val) || 2000;
+  saveData();
+  renderNutrition();
+  renderWeeklyPlan();
+}
+
+function renderNutrition() {
+  const target = appData.calorieTarget || 2000;
+  document.getElementById('calorieTarget').value = target;
+
+  let totalWeek = 0, daysWithMeals = 0;
+  const mealTypeTotals = {breakfast:0, lunch:0, dinner:0, snack:0};
+  const dailyData = [];
+
+  DAYS.forEach(day => {
+    const dayData = appData.weeklyPlan[day] || {};
+    let dayTotal = 0;
+    const dayMeals = {};
+    MEAL_TYPES.forEach(type => {
+      const cal = dayData[type]?.calories || 0;
+      dayTotal += cal;
+      mealTypeTotals[type] += cal;
+      dayMeals[type] = cal;
+    });
+    if (dayTotal > 0) daysWithMeals++;
+    totalWeek += dayTotal;
+    dailyData.push({day, total: dayTotal, meals: dayMeals});
+  });
+
+  const avgDaily = daysWithMeals > 0 ? Math.round(totalWeek / daysWithMeals) : 0;
+  const avgClass = avgDaily > target ? 'over' : 'under';
+
+  document.getElementById('nutritionSummary').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-value">${totalWeek.toLocaleString()}</div>
+      <div class="stat-label">Total Weekly Calories</div>
+    </div>
+    <div class="stat-card ${avgClass}">
+      <div class="stat-value">${avgDaily.toLocaleString()}</div>
+      <div class="stat-label">Avg Daily Calories</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">${target.toLocaleString()}</div>
+      <div class="stat-label">Daily Target</div>
+    </div>`;
+
+  // Pie chart
+  const grandTotal = Object.values(mealTypeTotals).reduce((a,b) => a+b, 0);
+  if (grandTotal > 0) {
+    const pcts = {};
+    let cumulative = 0;
+    const colors = {breakfast:'var(--breakfast)',lunch:'var(--lunch)',dinner:'var(--dinner)',snack:'var(--snack)'};
+    const segments = [];
+    MEAL_TYPES.forEach(type => {
+      const pct = (mealTypeTotals[type] / grandTotal) * 100;
+      pcts[type] = pct;
+      segments.push(`${colors[type]} ${cumulative}% ${cumulative + pct}%`);
+      cumulative += pct;
+    });
+
+    document.getElementById('pieSection').innerHTML = `
+      <div class="pie-chart" style="background:conic-gradient(${segments.join(',')})"></div>
+      <div class="pie-legend">
+        ${MEAL_TYPES.map(type => `
+          <div class="pie-legend-item">
+            <span class="dot" style="background:${colors[type]}"></span>
+            ${type.charAt(0).toUpperCase() + type.slice(1)}: ${mealTypeTotals[type].toLocaleString()} kcal (${Math.round(pcts[type])}%)
+          </div>`).join('')}
+      </div>`;
+  } else {
+    document.getElementById('pieSection').innerHTML = '<div class="empty-state">Add meals to see calorie breakdown</div>';
+  }
+
+  // Daily breakdown
+  document.getElementById('dailyBreakdown').innerHTML = dailyData.map(d => {
+    const pct = target > 0 ? Math.min(100, (d.total / target) * 100) : 0;
+    const barColor = d.total > target ? 'var(--red)' : 'var(--green)';
+    const statusColor = d.total > target ? 'var(--red)' : (d.total > 0 ? 'var(--green)' : 'var(--text)');
+    return `
+    <div class="day-stat">
+      <div class="day-stat-name">${d.day.slice(0,3)}</div>
+      <div class="day-stat-total" style="color:${statusColor}">${d.total > 0 ? d.total : '--'}</div>
+      <div class="day-stat-bar"><div class="day-stat-fill" style="width:${pct}%;background:${barColor}"></div></div>
+      <div class="day-stat-breakdown">
+        <span class="b-breakfast">Breakfast: ${d.meals.breakfast || 0}</span>
+        <span class="b-lunch">Lunch: ${d.meals.lunch || 0}</span>
+        <span class="b-dinner">Dinner: ${d.meals.dinner || 0}</span>
+        <span class="b-snack">Snack: ${d.meals.snack || 0}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ===== FAVORITES =====
+function renderFavorites() {
+  const grid = document.getElementById('favoritesGrid');
+  if (!appData.favorites.length) {
+    grid.innerHTML = '<div class="empty-state">No favorites yet. Star a recipe to add it here!</div>';
+    return;
+  }
+  grid.innerHTML = appData.favorites.map((fav, idx) => `
+    <div class="fav-card" draggable="true"
+         ondragstart="handleFavDragStart(event, ${idx})"
+         ondragend="handleFavDragEnd(event)"
+         onclick="addFavToPlanPrompt(${idx})">
+      <button class="remove-fav" onclick="event.stopPropagation();removeFavorite(${idx})" title="Remove">\u2715</button>
+      <div class="fav-card-cat ${fav.category || ''}" style="background:var(--${fav.category || 'snack'}-light);color:var(--${fav.category || 'snack'})">${fav.category || 'meal'}</div>
+      <div class="fav-card-name">${fav.name}</div>
+      <div class="fav-card-meta">${fav.calories} kcal</div>
+    </div>`).join('');
+}
+
+function removeFavorite(idx) {
+  appData.favorites.splice(idx, 1);
+  saveData();
+  renderFavorites();
+  renderRecipes();
+  showToast('Removed from favorites');
+}
+
+function addFavToPlanPrompt(idx) {
+  const fav = appData.favorites[idx];
+  if (!fav) return;
+  // Open a quick modal to pick day/type
+  const content = document.getElementById('recipeDetailContent');
+  content.innerHTML = `
+    <h3>Add "${fav.name}" to Plan</h3>
+    <p style="font-size:.85rem;margin-bottom:1rem;color:var(--text)">${fav.calories} kcal | ${fav.category || 'meal'}</p>
+    <div class="add-to-plan-row" style="border:none;padding:0">
+      <select id="favDay">${DAYS.map(d => `<option value="${d}">${d}</option>`).join('')}</select>
+      <select id="favType">
+        <option value="breakfast">Breakfast</option>
+        <option value="lunch">Lunch</option>
+        <option value="dinner">Dinner</option>
+        <option value="snack">Snack</option>
+      </select>
+      <button class="btn btn-primary btn-sm" onclick="addFavToPlan(${idx})">Add</button>
+    </div>
+    <div class="modal-actions"><button class="btn" onclick="closeRecipeDetail()">Cancel</button></div>`;
+  document.getElementById('recipeDetailModal').classList.add('show');
+}
+
+function addFavToPlan(idx) {
+  const fav = appData.favorites[idx];
+  if (!fav) return;
+  const day = document.getElementById('favDay').value;
+  const type = document.getElementById('favType').value;
+  if (!appData.weeklyPlan[day]) appData.weeklyPlan[day] = {breakfast:null,lunch:null,dinner:null,snack:null};
+  appData.weeklyPlan[day][type] = {name: fav.name, calories: fav.calories};
+  saveData();
+  closeRecipeDetail();
+  showToast(`${fav.name} added to ${day} ${type}`);
+  renderWeeklyPlan();
+}
+
+// ===== DRAG AND DROP =====
+let draggedFavIdx = null;
+
+function handleFavDragStart(e, idx) {
+  draggedFavIdx = idx;
+  e.target.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'copy';
+  e.dataTransfer.setData('text/plain', idx);
+}
+
+function handleFavDragEnd(e) {
+  e.target.classList.remove('dragging');
+  draggedFavIdx = null;
+  document.querySelectorAll('.meal-slot').forEach(s => s.style.outline = '');
+}
+
+function handleDrop(e, day, type) {
+  e.preventDefault();
+  e.currentTarget.style.outline = '';
+  if (draggedFavIdx === null) return;
+  const fav = appData.favorites[draggedFavIdx];
+  if (!fav) return;
+  if (!appData.weeklyPlan[day]) appData.weeklyPlan[day] = {breakfast:null,lunch:null,dinner:null,snack:null};
+  appData.weeklyPlan[day][type] = {name: fav.name, calories: fav.calories};
+  draggedFavIdx = null;
+  saveData();
+  renderWeeklyPlan();
+  showToast(`${fav.name} added to ${day} ${type}`);
+}
+
+// ===== EXPORT / IMPORT =====
+function exportData() {
+  const blob = new Blob([JSON.stringify(appData, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'meal_planner_backup.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Data exported');
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const imported = JSON.parse(e.target.result);
+      if (imported.weeklyPlan && imported.recipes) {
+        appData = imported;
+        saveData();
+        renderAll();
+        showToast('Data imported successfully');
+      } else {
+        showToast('Invalid data format');
+      }
+    } catch(err) {
+      showToast('Failed to import: invalid JSON');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+function resetData() {
+  if (!confirm('Reset all data to demo defaults? This cannot be undone.')) return;
+  appData = getDemoData();
+  saveData();
+  renderAll();
+  showToast('Data reset to defaults');
+}
+
+// ===== KEYBOARD SHORTCUTS =====
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeMealModal();
+    closeRecipeModal();
+    closeRecipeDetail();
+  }
+});
+
+// Close modals on overlay click
+['mealModal','recipeModal','recipeDetailModal'].forEach(id => {
+  document.getElementById(id).addEventListener('click', function(e) {
+    if (e.target === this) {
+      this.classList.remove('show');
+      if (id === 'mealModal') currentMealSlot = null;
+      if (id === 'recipeModal') editingRecipeId = null;
+    }
+  });
+});
+
+// ===== INIT =====
+function renderAll() {
+  renderWeeklyPlan();
+  renderRecipes();
+  renderShoppingList();
+  renderNutrition();
+  renderFavorites();
+}
+
+renderAll();
+</script>
+</body>
+</html>
