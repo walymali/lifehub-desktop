@@ -1,8 +1,9 @@
 /*!
- * LifeHub SDK v2.0
+ * LifeHub SDK v2.1
  * Shared analytics + licensing + branding for LifeHub tools
- * v2 changes: bundle-aware access check, server-side license validation,
- *             usage tracking via WP REST, device fingerprinting.
+ * v2.1: 7-day free trial (device-bound, auto-starts on first Pro tool open)
+ * v2.0: bundle-aware access check, server-side license validation,
+ *       usage tracking via WP REST, device fingerprinting.
  * Usage: <script src="../dashboard/lifehub-sdk.js"
  *                data-tool-id="habit-tracker"
  *                data-tool-name="Habit Tracker"
@@ -194,6 +195,42 @@
     return id;
   }
 
+  // ── Free trial (7 days, device-bound) ──
+  // Anyone can download + use any Pro tool for the first 7 days.
+  // After that, Pro tools lock until they activate a real license.
+  // Storage: localStorage 'lifehub:trial' = { startedAt: <ms>, alertedExpired: bool }
+  const TRIAL_DAYS = 7;
+  const TRIAL_KEY = 'lifehub:trial';
+  const DAY_MS = 24 * 60 * 60 * 1000;
+
+  function getTrialState() {
+    let raw, t;
+    try { raw = localStorage.getItem(TRIAL_KEY); } catch { raw = null; }
+    if (!raw) return { status: 'never_started', daysLeft: TRIAL_DAYS, startedAt: 0 };
+    try { t = JSON.parse(raw); } catch { return { status: 'never_started', daysLeft: TRIAL_DAYS, startedAt: 0 }; }
+    const startedAt = t.startedAt || 0;
+    if (!startedAt) return { status: 'never_started', daysLeft: TRIAL_DAYS, startedAt: 0 };
+    const elapsed = Date.now() - startedAt;
+    const daysLeft = Math.max(0, Math.ceil((TRIAL_DAYS * DAY_MS - elapsed) / DAY_MS));
+    if (elapsed >= TRIAL_DAYS * DAY_MS) {
+      return { status: 'expired', daysLeft: 0, startedAt };
+    }
+    return { status: 'active', daysLeft, startedAt };
+  }
+
+  function startTrialIfNeeded() {
+    if (isFreeTool(cfg.toolId)) return getTrialState(); // free tools don't trigger trial
+    const state = getTrialState();
+    if (state.status === 'never_started') {
+      try {
+        localStorage.setItem(TRIAL_KEY, JSON.stringify({ startedAt: Date.now() }));
+      } catch (e) { /* ignore */ }
+      try { trackUsage('trial_started', { tool: cfg.toolId }); } catch (e) {}
+      return getTrialState();
+    }
+    return state;
+  }
+
   // ── License system (v2: bundle-aware + server-validated) ──
   // Storage shape (single account-wide license per bundle):
   //   store.account = {
@@ -261,10 +298,19 @@
 
   function hasAccessToTool(toolId) {
     toolId = toolId || cfg.toolId;
+    // Always free
     if (FREE_TOOLS.indexOf(toolId) !== -1) return true;
+    // A real license takes precedence: bundle-aware
     const license = getLicense();
-    if (license.status !== 'active') return false;
-    return bundleHasTool(license.bundleId, toolId);
+    if (license.status === 'active') {
+      return bundleHasTool(license.bundleId, toolId);
+    }
+    // No license — fall back to trial. Active trial unlocks all Pro tools
+    // (treat trial as Enterprise-level access for the duration).
+    const trial = getTrialState();
+    if (trial.status === 'active') return true;
+    // Expired or never started — no access (free tools were handled above)
+    return false;
   }
 
   // ── Server-side activate (calls Cloudflare Worker) ──
@@ -452,13 +498,19 @@
     }
   }
 
-  // ── Pro gating ──
+  // ── Pro gating (trial-aware) ──
+  // During an active trial, gating treats Pro features as unlocked.
+  // After expiry (and without a license), they re-lock.
   function gate(element, feature) {
     if (!element) return;
-    if (isPro(feature)) {
+    const trial = getTrialState();
+    const trialActive = trial.status === 'active';
+    if (isPro(feature) || trialActive) {
       element.classList.remove('lifehub-locked');
       element.style.pointerEvents = '';
       element.style.opacity = '';
+      const old = element.querySelector('.lifehub-lock-overlay');
+      if (old) old.remove();
       return;
     }
     element.classList.add('lifehub-locked');
@@ -618,6 +670,20 @@
       .lh-banner-ghost:hover { background:rgba(255,255,255,0.15); }
       body:has(#lifehub-upgrade-banner) { padding-top:68px !important; }
 
+      /* Trial-expired variant — red gradient instead of orange */
+      #lifehub-upgrade-banner.lh-banner-expired { background:linear-gradient(135deg,#7f1d1d,#1a1a1a); }
+      #lifehub-upgrade-banner.lh-banner-expired .lh-banner-text strong { color:#fca5a5; }
+
+      /* ── Trial ribbon (active trial countdown) ── */
+      #lifehub-trial-ribbon { position:fixed; top:14px; right:14px; display:flex; align-items:center; gap:8px; padding:7px 11px 7px 7px; background:rgba(26,26,26,0.94); backdrop-filter:blur(12px); color:#fff; border:1px solid rgba(245,158,11,0.3); border-radius:99px; font-family:'Sora',system-ui,sans-serif; font-size:0.7rem; z-index:9995; box-shadow:0 4px 16px rgba(0,0,0,0.2); animation:lhSlideIn 0.4s }
+      @keyframes lhSlideIn { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+      .lh-trial-pill { background:linear-gradient(135deg,#f59e0b,#dc2626); color:#fff; font-size:0.55rem; font-weight:700; letter-spacing:0.1em; padding:3px 7px; border-radius:99px }
+      .lh-trial-text { color:rgba(255,255,255,0.85); font-weight:600 }
+      .lh-trial-cta { color:#f59e0b; text-decoration:none; font-weight:600; padding:0 4px }
+      .lh-trial-cta:hover { color:#fbbf24 }
+      .lh-trial-close { background:transparent; border:none; color:rgba(255,255,255,0.4); cursor:pointer; font-size:0.95rem; padding:0 2px; line-height:1 }
+      .lh-trial-close:hover { color:#fff }
+
       /* ── Watermark ── */
       #lifehub-watermark { position:fixed; bottom:60px; right:20px; background:rgba(26,26,26,0.9); color:#f59e0b; padding:6px 14px; border-radius:99px; font-family:'Sora',system-ui,sans-serif; font-size:0.6rem; font-weight:700; letter-spacing:0.1em; z-index:9996; pointer-events:none; border:1px solid rgba(245,158,11,0.3); }
 
@@ -667,28 +733,75 @@
     document.body.appendChild(footer);
   }
 
-  // ── Upgrade Banner for locked tools ──
+  // ── Upgrade Banner for locked tools (trial-aware) ──
+  // Three states the customer can be in (besides licensed/free):
+  //   • Trial active   → blue banner showing days left + soft CTA
+  //   • Trial expired  → red banner: "Your 7-day trial ended" + hard CTA
+  //   • Never started  → trial auto-starts on init, so this state is rare
   function injectUpgradeBanner() {
-    if (hasAccess()) return; // licensed or free tool
+    if (hasAccess()) return; // licensed, free tool, or active trial unlocks → no banner
     if (document.getElementById('lifehub-upgrade-banner')) return;
 
+    const trial = getTrialState();
     const banner = document.createElement('div');
     banner.id = 'lifehub-upgrade-banner';
+
+    // Trial-expired state — full lock + strong CTA
+    if (trial.status === 'expired') {
+      banner.classList.add('lh-banner-expired');
+      banner.innerHTML = `
+        <div class="lh-banner-inner">
+          <div class="lh-banner-text">
+            <strong>⏰ Your 7-day free trial has ended.</strong>
+            <span>Pick a bundle to keep using all 43 tools — from <strong>$9/mo</strong> or <strong>$149 lifetime</strong>.</span>
+          </div>
+          <div class="lh-banner-actions">
+            <a href="${BUNDLE.purchaseUrl}" target="_blank" class="lh-banner-btn lh-banner-primary">See pricing</a>
+            <button class="lh-banner-btn lh-banner-ghost" onclick="LifeHub.showUpgradeModal()">I have a key</button>
+          </div>
+        </div>`;
+      document.body.appendChild(banner);
+      applyLockWatermark();
+      return;
+    }
+
+    // Fallback (trial not started or never_started but isFreeTool=false somehow)
+    // — show generic Pro lock banner. In practice this almost never fires
+    // because trial auto-starts in init().
     banner.innerHTML = `
       <div class="lh-banner-inner">
         <div class="lh-banner-text">
           <strong>🔒 This is a Pro tool.</strong>
-          <span>Unlock all 43 tools for <strong>$${BUNDLE.launchPrice}</strong> <s>$${BUNDLE.fullPrice}</s> — launch price</span>
+          <span>Start your <strong>7-day free trial</strong> — no credit card needed. Or paste a license key.</span>
         </div>
         <div class="lh-banner-actions">
-          <a href="${BUNDLE.purchaseUrl}" target="_blank" class="lh-banner-btn lh-banner-primary">Get LifeHub Bundle</a>
+          <button class="lh-banner-btn lh-banner-primary" onclick="LifeHub.startTrial()">Start free trial</button>
           <button class="lh-banner-btn lh-banner-ghost" onclick="LifeHub.showUpgradeModal()">I have a key</button>
         </div>
       </div>`;
     document.body.appendChild(banner);
-
-    // Apply blur watermark to main content
     applyLockWatermark();
+  }
+
+  // Subtle countdown ribbon shown during ACTIVE trial (doesn't lock the tool).
+  function injectTrialRibbon() {
+    if (document.getElementById('lifehub-trial-ribbon')) return;
+    const license = getLicense();
+    if (license.status === 'active') return; // licensed users don't see this
+    if (isFreeTool()) return;                 // free tools don't show trial UI
+    const trial = getTrialState();
+    if (trial.status !== 'active') return;
+
+    const r = document.createElement('div');
+    r.id = 'lifehub-trial-ribbon';
+    const dayWord = trial.daysLeft === 1 ? 'day' : 'days';
+    r.innerHTML = `
+      <span class="lh-trial-pill">FREE TRIAL</span>
+      <span class="lh-trial-text">${trial.daysLeft} ${dayWord} left</span>
+      <a href="${BUNDLE.purchaseUrl}" target="_blank" class="lh-trial-cta">Upgrade →</a>
+      <button class="lh-trial-close" onclick="this.parentElement.remove()" aria-label="Dismiss">×</button>
+    `;
+    document.body.appendChild(r);
   }
 
   function applyLockWatermark() {
@@ -713,10 +826,18 @@
     // Track tool open as a usage event (Phase 1 telemetry)
     trackUsage('opened', { tool: cfg.toolId });
 
+    // Auto-start the 7-day trial the first time anyone opens any Pro tool.
+    // Free tools and licensed users skip this. Idempotent.
+    const license = getLicense();
+    if (license.status !== 'active' && !isFreeTool(cfg.toolId)) {
+      startTrialIfNeeded();
+    }
+
     const onReady = () => {
       applyProGating();
       injectFooter();
       injectUpgradeBanner();
+      injectTrialRibbon();
     };
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', onReady);
@@ -742,7 +863,7 @@
 
   // ── Expose API ──
   window.LifeHub = {
-    version: '2.0',
+    version: '2.1',
     tool: cfg,
     bundle: BUNDLE,
     bundles: BUNDLES,
@@ -766,6 +887,19 @@
     applyProGating: applyProGating,
     showUpgradeModal: showUpgradeModal,
     removeLock: removeLock,
+    // Trial API
+    getTrialState: getTrialState,
+    startTrial: () => {
+      const s = startTrialIfNeeded();
+      // Refresh UI: remove banner if present + add ribbon
+      const b = document.getElementById('lifehub-upgrade-banner');
+      if (b) b.remove();
+      const w = document.getElementById('lifehub-watermark');
+      if (w) w.remove();
+      injectTrialRibbon();
+      applyProGating();
+      return s;
+    },
     get cloudEndpoint() {
       const store = loadStore();
       return store.global.cloudEndpoint || '';
