@@ -9,6 +9,11 @@ on:
     tags:
       - 'v*.*.*'
 
+# GITHUB_TOKEN is read-only by default in new repos (since 2024).
+# We need write to publish releases.
+permissions:
+  contents: write
+
 jobs:
   release:
     runs-on: ${{ matrix.os }}
