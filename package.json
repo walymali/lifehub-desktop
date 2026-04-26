@@ -1,6 +1,6 @@
 {
   "name": "lifehub-desktop",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "LifeHub — 43 productivity tools in one app",
   "main": "main.js",
   "author": "LifeHub <hello@trylifehub.com>",
@@ -45,6 +45,7 @@
           ]
         }
       ],
+      "artifactName": "LifeHub-mac-${arch}.${ext}",
       "darkModeSupport": true,
       "hardenedRuntime": false,
       "gatekeeperAssess": false,
@@ -87,7 +88,8 @@
             "x64"
           ]
         }
-      ]
+      ],
+      "artifactName": "LifeHub-windows-${arch}.${ext}"
     },
     "nsis": {
       "oneClick": false,
@@ -102,7 +104,8 @@
       "target": [
         "AppImage",
         "deb"
-      ]
+      ],
+      "artifactName": "LifeHub-linux-${arch}.${ext}"
     },
     "publish": [
       {
