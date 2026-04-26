@@ -46,33 +46,23 @@ jobs:
           # APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
           # APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
 
+      # Build the .exe locally — never publish (electron-builder's GitHub
+      # uploader hangs on 95MB+ files about half the time). Upload happens
+      # in the next step via softprops/action-gh-release which is more robust.
       - name: Build (Windows)
         if: matrix.os == 'windows-latest'
-        # Wrap in PowerShell retry loop — Windows runners flake on the NSIS
-        # binary download from electron-builder's CDN about 30% of the time.
-        # Three attempts with a short backoff is plenty to clear transient
-        # network blips without lengthening the happy-path build.
-        shell: pwsh
-        run: |
-          $attempt = 1
-          $maxAttempts = 3
-          while ($attempt -le $maxAttempts) {
-            Write-Host "::group::Windows build attempt $attempt/$maxAttempts"
-            npx electron-builder --win --publish always
-            if ($LASTEXITCODE -eq 0) {
-              Write-Host "::endgroup::"
-              Write-Host "✓ Windows build succeeded on attempt $attempt"
-              exit 0
-            }
-            Write-Host "::endgroup::"
-            Write-Host "⚠ attempt $attempt failed (exit $LASTEXITCODE), retrying in 10s..."
-            Start-Sleep -Seconds 10
-            $attempt++
-          }
-          Write-Host "✗ Windows build failed after $maxAttempts attempts"
-          exit 1
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx electron-builder --win --publish never
+
+      - name: Upload Windows artifacts to release
+        if: matrix.os == 'windows-latest'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: |
+            dist/*.exe
+            dist/*.exe.blockmap
+            dist/latest.yml
+          fail_on_unmatched_files: false
 
       - name: Build (Linux)
         if: matrix.os == 'ubuntu-latest'
