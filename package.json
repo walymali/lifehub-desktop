@@ -97,8 +97,7 @@
       "category": "Office",
       "target": [
         "AppImage",
-        "deb",
-        "snap"
+        "deb"
       ],
       "artifactName": "LifeHub-linux-${arch}.${ext}"
     },

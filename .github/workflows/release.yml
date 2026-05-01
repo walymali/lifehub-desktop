@@ -97,16 +97,27 @@ jobs:
           files: dist/*.appx
           fail_on_unmatched_files: false
 
-      # ── Linux: AppImage + deb + snap. snap requires snapcraft on Ubuntu — ──
-      # ── ubuntu-latest comes with snapd preinstalled so it works out-of-box ──
-      - name: Build (Linux)
+      # ── Linux: AppImage + deb (snap is a separate step below) ──
+      - name: Build (Linux AppImage + deb)
         if: matrix.os == 'ubuntu-latest'
-        run: npx electron-builder --linux --publish always
+        run: npx electron-builder --linux AppImage deb --publish always
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        continue-on-error: false
 
-      - name: Upload Linux extra artifacts (snap)
+      # ── Linux Snap (Snap Store distribution). snapcraft has to be installed ──
+      # ── on the runner first; this step is best-effort because snap builds   ──
+      # ── occasionally fail upstream and we'd rather still ship AppImage+deb. ──
+      - name: Install snapcraft
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo snap install snapcraft --classic
+        continue-on-error: true
+
+      - name: Build (Linux Snap)
+        if: matrix.os == 'ubuntu-latest'
+        run: npx electron-builder --linux snap --publish never
+        continue-on-error: true
+
+      - name: Upload Linux Snap
         if: matrix.os == 'ubuntu-latest'
         uses: softprops/action-gh-release@v2
         with:
