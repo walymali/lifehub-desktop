@@ -1,16 +1,19 @@
 name: Release
 
-# Triggers on a version tag push (e.g. v1.0.1) — builds Mac + Windows + Linux
-# installers and publishes them as a GitHub Release. electron-updater on
-# customers' machines polls this release feed and auto-downloads new versions.
+# Triggers on a version tag push (e.g. v1.2.0) — builds Mac (Intel + Silicon),
+# Windows (NSIS + portable + AppX for Microsoft Store), and Linux (AppImage +
+# deb + snap) installers, then publishes them as a GitHub Release.
+#
+# Mac App Store (.pkg) only builds when APPLE_ID is configured as a secret —
+# without an Apple Developer cert the build fails, so we gate it explicitly.
+# All other targets work without paid accounts.
 
 on:
   push:
     tags:
       - 'v*.*.*'
+  workflow_dispatch: {}
 
-# GITHUB_TOKEN is read-only by default in new repos (since 2024).
-# We need write to publish releases.
 permissions:
   contents: write
 
@@ -36,24 +39,40 @@ jobs:
       - name: Install deps
         run: npm ci
 
-      - name: Build (Mac)
+      # ── macOS: arm64 + x64 (Intel) DMG/zip — works without code signing ──
+      - name: Build (Mac standalone)
         if: matrix.os == 'macos-latest'
         run: npx electron-builder --mac --publish always
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Add Apple notarization secrets here once you have an Apple Developer account:
-          # APPLE_ID: ${{ secrets.APPLE_ID }}
-          # APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
-          # APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
 
-      # Build the .exe locally — never publish (electron-builder's GitHub
-      # uploader hangs on 95MB+ files about half the time). Upload happens
-      # in the next step via softprops/action-gh-release which is more robust.
-      - name: Build (Windows)
+      # ── Mac App Store .pkg — only when Apple Developer cert is configured ──
+      - name: Build (Mac App Store)
+        if: matrix.os == 'macos-latest' && env.APPLE_ID != ''
+        run: npx electron-builder --mac mas --publish never
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+
+      - name: Upload Mac App Store package
+        if: matrix.os == 'macos-latest' && env.APPLE_ID != ''
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: dist/*.pkg
+          fail_on_unmatched_files: false
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+
+      # ── Windows: NSIS installer + portable EXE — build local, upload separately ──
+      # (electron-builder's GitHub uploader hangs on 95MB+ files about half the
+      # time. Upload happens via softprops/action-gh-release which is more robust.)
+      - name: Build (Windows standalone)
         if: matrix.os == 'windows-latest'
         run: npx electron-builder --win --publish never
 
-      - name: Upload Windows artifacts to release
+      - name: Upload Windows artifacts
         if: matrix.os == 'windows-latest'
         uses: softprops/action-gh-release@v2
         with:
@@ -64,8 +83,33 @@ jobs:
             dist/latest.yml
           fail_on_unmatched_files: false
 
+      # ── Microsoft Store AppX — works without dev account; user uploads later ──
+      - name: Build (Windows Store AppX)
+        if: matrix.os == 'windows-latest'
+        run: npx electron-builder --win appx --publish never
+        continue-on-error: true
+
+      - name: Upload Windows Store package
+        if: matrix.os == 'windows-latest'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: dist/*.appx
+          fail_on_unmatched_files: false
+
+      # ── Linux: AppImage + deb + snap. snap requires snapcraft on Ubuntu — ──
+      # ── ubuntu-latest comes with snapd preinstalled so it works out-of-box ──
       - name: Build (Linux)
         if: matrix.os == 'ubuntu-latest'
         run: npx electron-builder --linux --publish always
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: false
+
+      - name: Upload Linux extra artifacts (snap)
+        if: matrix.os == 'ubuntu-latest'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: dist/*.snap
+          fail_on_unmatched_files: false

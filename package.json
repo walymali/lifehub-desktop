@@ -1,6 +1,6 @@
 {
   "name": "lifehub-desktop",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "LifeHub — 43 productivity tools in one app",
   "main": "main.js",
   "author": "LifeHub <hello@trylifehub.com>",
@@ -8,8 +8,11 @@
   "scripts": {
     "start": "electron .",
     "build-mac": "electron-builder --mac",
+    "build-mac-store": "electron-builder --mac mas",
     "build-win": "electron-builder --win",
+    "build-win-store": "electron-builder --win appx",
     "build-linux": "electron-builder --linux",
+    "build-linux-snap": "electron-builder --linux snap",
     "build-all": "electron-builder -mwl"
   },
   "build": {
@@ -32,64 +35,55 @@
       "category": "public.app-category.productivity",
       "icon": "build/icon.icns",
       "target": [
-        {
-          "target": "dmg",
-          "arch": [
-            "arm64"
-          ]
-        },
-        {
-          "target": "zip",
-          "arch": [
-            "arm64"
-          ]
-        }
+        { "target": "dmg",  "arch": ["arm64", "x64"] },
+        { "target": "zip",  "arch": ["arm64", "x64"] }
       ],
       "artifactName": "LifeHub-mac-${arch}.${ext}",
       "darkModeSupport": true,
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "extendInfo": {
+        "NSCameraUsageDescription": "LifeHub does not use the camera.",
+        "NSMicrophoneUsageDescription": "LifeHub does not use the microphone.",
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "mas": {
+      "category": "public.app-category.productivity",
+      "entitlements": "build/entitlements.mas.plist",
+      "entitlementsInherit": "build/entitlements.mas.inherit.plist",
       "hardenedRuntime": false,
       "gatekeeperAssess": false,
-      "identity": null
+      "artifactName": "LifeHub-mac-store-${arch}.${ext}"
     },
     "dmg": {
       "title": "LifeHub Installer",
       "icon": "build/icon.icns",
       "iconSize": 110,
-      "window": {
-        "width": 540,
-        "height": 380
-      },
+      "window": { "width": 540, "height": 380 },
       "contents": [
-        {
-          "x": 140,
-          "y": 200,
-          "type": "file"
-        },
-        {
-          "x": 400,
-          "y": 200,
-          "type": "link",
-          "path": "/Applications"
-        }
+        { "x": 140, "y": 200, "type": "file" },
+        { "x": 400, "y": 200, "type": "link", "path": "/Applications" }
       ]
     },
     "win": {
       "icon": "build/icon.ico",
       "target": [
-        {
-          "target": "nsis",
-          "arch": [
-            "x64"
-          ]
-        },
-        {
-          "target": "portable",
-          "arch": [
-            "x64"
-          ]
-        }
+        { "target": "nsis",     "arch": ["x64"] },
+        { "target": "portable", "arch": ["x64"] }
       ],
       "artifactName": "LifeHub-windows-${arch}.${ext}"
+    },
+    "appx": {
+      "applicationId": "LifeHub",
+      "displayName": "LifeHub",
+      "publisherDisplayName": "LifeHub",
+      "identityName": "LifeHub.Desktop",
+      "backgroundColor": "#0a0a0b",
+      "languages": ["en-US", "ar-SA"],
+      "artifactName": "LifeHub-windows-store-${arch}.${ext}"
     },
     "nsis": {
       "oneClick": false,
@@ -103,9 +97,16 @@
       "category": "Office",
       "target": [
         "AppImage",
-        "deb"
+        "deb",
+        "snap"
       ],
       "artifactName": "LifeHub-linux-${arch}.${ext}"
+    },
+    "snap": {
+      "summary": "43 productivity tools in one app",
+      "grade": "stable",
+      "confinement": "strict",
+      "publish": "github"
     },
     "publish": [
       {
